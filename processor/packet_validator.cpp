@@ -2,7 +2,7 @@
 #include "../include/task.hpp"
 #include "../include/debug_rp.hpp"
 #include "../sched/task_pool.hpp"
-#include "../receiver/receiver_sink.hpp"
+#include "../sink/sink_stack.hpp"
 #include "packet_validator.hpp"
 
 static json packetSchema = R"(
