@@ -2,32 +2,32 @@
 #define SINK_STACK_H
 #include "prevalidate_json.hpp"
 #include <semaphore.h>
+#include "../include/task.hpp"
 #define MAX_POOL_SIZE 20
+
+struct SinkItem{
+    void *dataObject;
+    TaskPriority priority;
+    std::uint8_t starveCounter;
+    SinkItem *next;
+    SinkItem(){
+        next = NULL;
+        starveCounter = 0;
+    };
+};
 
 class Sink 
 {
     private:
-        struct SinkItem{
-            void *dataObject;
-            std::uint8_t priority;
-            std::uint8_t starveCounter;
-            SinkItem *next;
-            SinkItem(){
-                next = NULL;
-                starveCounter = 0;
-            };
-        };
         sem_t sinkLock;
         SinkItem *sinkHead;
         std::uint64_t sinkItemCount;
+        std::uint64_t sinkLimit;
     public:
-        Sink(){
-            sinkHead = new SinkItem();
-            sinkItemCount = 0;
-            sem_init(&sinkLock, 0, 0);
-        }
+        Sink(std::uint64_t maxSize);
         int pushObject(void *object, std::uint8_t priority);
-        int getCurrentSinkSpace() { return sinkItemCount;}
+        int getCurrentSinkSpace();
+        bool isSinkFull();
         void* popObject();
 };
 

@@ -19,6 +19,13 @@ int getStraveLimit(int prior)
     }
 }
 
+Sink::Sink(std::uint64_t maxSinkSize){
+    sinkHead = new SinkItem();
+    sinkItemCount = 0;
+    sinkLimit = maxSinkSize;
+    sem_init(&sinkLock, 0, 0);
+}
+
 int Sink::pushObject(void *object, std::uint8_t priority)
 {
     SinkItem *currentSinkItem, *sinkIterator, *prevSinkItem;
@@ -80,4 +87,16 @@ void* Sink::popObject(){
     delete topSinkItem;
     sem_post(&sinkLock);
     return object;
+}
+
+int Sink::getCurrentSinkSpace()
+{
+    return sinkItemCount;
+}
+
+bool Sink::isSinkFull()
+{
+    if(sinkItemCount > sinkLimit)
+        return true;
+    return false;
 }
