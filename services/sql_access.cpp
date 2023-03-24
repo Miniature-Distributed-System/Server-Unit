@@ -16,13 +16,13 @@ void SqlAccess::initialize()
     }
 }
 
-std::string* SqlAccess::sqlQueryDb(std::string queryStatement, std::string columnName)
+std::string* SqlAccess::sqlQueryDb(std::string queryStatement, std::string columnName = "")
 {
     std::string result;
     sqlExecutor = conn->prepareStatement(queryStatement);
     sqlExecutor->executeQuery();
     while(res->next())
-        result = result + res->getString(columnName);
+        result = result + res->getString(columnName.empty() ? 1 : columnName);
     return result;
 }
 
