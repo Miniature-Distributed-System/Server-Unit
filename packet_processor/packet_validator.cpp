@@ -53,7 +53,7 @@ void PacketValidator::validatePacket()
 
 int start_validator(void *data)
 {
-    PacketValidator *packet = new PacketValidator(globalReceiverSink.popPacket());
+    PacketValidator *packet = new PacketValidator(*(json*)globalReceiverSink.popObject());
     packet->validatePacket();
     if(packet->isDataPacket()){
         ProcessDataPacket processData(packet->getPacket());
