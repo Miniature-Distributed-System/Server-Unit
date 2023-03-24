@@ -37,3 +37,16 @@ int SqlAccess::sqlWriteBlob(std::string fileLoc, std::string columnName, std::st
         result = result + res->getString(columnName);
     return result;
 }
+std::list<std::string> SqlAccess::sqlReadList(std::string tableID, std::string columnName)
+{
+    int j = 0;
+    std::list<std::string> resultList;
+    std::string query = "SELECT " + columnName + " FROM " + tableID +";";
+    sqlExecutor = conn->prepareStatement(queryStatement);
+    sqlExecutor->executeQuery();
+    while(res->next()){
+        resultList.push_back(res->getString(columnName));
+    }
+
+    return resultList;
+}

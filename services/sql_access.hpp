@@ -31,8 +31,7 @@ class SqlAccess{
         SqlAccess(std::string url, std::string username, std::string password, std::string database, 
         std::string dataTable) : url{url}, password{password}, database{database}, dataTable{dataTable};
         void initlize();
-        std::string* sqlQueryDb(std::string, std::string);
-        int sqlWriteBlob(std::string fileLoc, std::string columnName, std::string tableID);
+        std::list<std::string> sqlReadList(std::string tableID, std::string columnName);
 };
 
 SqlAccess globalSqlAccess; 
