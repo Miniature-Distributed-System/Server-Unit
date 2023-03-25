@@ -1,60 +1,66 @@
 #include "sink_stack.hpp"
 #include "../include/debug_rp.hpp"
 
+//TO-DO:
+//These are randomly choosen values no actual research has been done on this
 enum starveLimit
 {
-    PRIOR_1_STRVLMT = 4,
-    PRIOR_2_STRVLMT = 6,
-    PRIOR_3_STRVLMT = 8
+    PRIOR_1_STRVLMT = 6, // High priority process are default very starved
+    PRIOR_2_STRVLMT = 4,
+    PRIOR_3_STRVLMT = 0 // Lowest priority least starved
 };
 
-//Return priority based on how straved the process is
-int getStraveLimit(int prior)
+// Calculate and return the starvation value based on data items priority
+int calculateStarveCounter(TaskPriority priority)
 {
-    switch(prior){
-        case 1: return PRIOR_1_STRVLMT;
-        case 2: return PRIOR_2_STRVLMT;
-        case 3: return PRIOR_3_STRVLMT;
-        default: return 0;
+    switch(priority){
+        case HIGH_PRIORITY: return PRIOR_1_STRVLMT;
+        case MEDIUM_PRIORITY: return PRIOR_2_STRVLMT;
+        default: return PRIOR_3_STRVLMT;
     }
 }
 
-Sink::Sink(std::uint64_t maxSinkSize){
-    sinkHead = new SinkItem();
+Sink::Sink(std::uint64_t maxSinkSize, std::string debugPrefix){
+    sinkHead = new SinkItem(NULL, Flag(), 0);
     sinkItemCount = 0;
     sinkLimit = maxSinkSize;
+    this->debugPrefix = debugPrefix + ": ";
     sem_init(&sinkLock, 0, 0);
+    DEBUG_MSG(__func__, debugPrefix, " sink initlilized");
 }
 
-int Sink::pushObject(void *object, std::uint8_t priority)
+int Sink::pushObject(void *object, TaskPriority priority, bool isUserData = false)
 {
     SinkItem *currentSinkItem, *sinkIterator, *prevSinkItem;
-    std::uint8_t curPacketPriority;
+    std::uint8_t curDataStarvation;
+    Flag userData;
 
     if(sinkItemCount >= MAX_POOL_SIZE){
-        DEBUG_MSG(__func__, "Max pool size reached cannot push anymore");
+        DEBUG_MSG(__func__, debugPrefix, "Max pool size reached cannot push anymore");
         return -1;
     }
+
+    userData.initFlag();
+    if(isUserData){
+        userData.setFlag();
+    }
+
     sem_wait(&sinkLock);
     if(sinkHead->next == NULL){
-        currentSinkItem = new SinkItem();
-        currentSinkItem->dataObject = object;
-        // currentSinkItem->packet = packet;
+        currentSinkItem = new SinkItem(object, userData, calculateStarveCounter(priority));
         sinkHead->next = currentSinkItem;
-    }else{
-        prevSinkItem = currentSinkItem;
-        sinkIterator = prevSinkItem->next;
+        DEBUG_MSG(__func__, debugPrefix, "first data element created");
+    } else {
+        prevSinkItem = sinkHead;
+        sinkIterator = sinkHead->next;
+        curDataStarvation = calculateStarveCounter(priority);
 
         while(sinkIterator){
-            curPacketPriority = priority;
-            if(curPacketPriority > sinkIterator->priority){
-                //Item is already starved beyond its threshold then it won't be skipped
-                if(sinkIterator->starveCounter > getStraveLimit(sinkIterator->priority)){
-                    SinkItem* temp = sinkIterator->next;
-                    sinkIterator->next = currentSinkItem;
-                    currentSinkItem->next = temp;
-                    goto end;
-                }
+            //Check who is more hungry current Data or data in List
+            if(curDataStarvation > sinkIterator->starveCounter){
+                prevSinkItem->next = currentSinkItem;
+                currentSinkItem->next = sinkIterator;
+                goto end;
             } else if(sinkIterator->next == NULL){
                 sinkIterator->next = currentSinkItem;
                 goto end;
@@ -63,30 +69,32 @@ int Sink::pushObject(void *object, std::uint8_t priority)
             sinkIterator = sinkIterator->next;
         }
     }
-    DEBUG_ERR(__func__, "Insertion failed for some reason");
+    DEBUG_ERR(__func__, debugPrefix, "Insertion failed for some reason");
     return -1;
 end:
     sinkItemCount++;
     sem_post(&sinkLock);
-    DEBUG_MSG(__func__, "Item added to sink");
+    DEBUG_MSG(__func__, debugPrefix, "Item added to sink");
     return 0;
 }
 
-void* Sink::popObject(){
+ExportSinkItem* Sink::popObject(){
     SinkItem *topSinkItem, *nextTopSinkItem;
-    void* object;
+    ExportSinkItem *exportSinkItem;
     
     if(sinkItemCount <= 0){
-        DEBUG_MSG(__func__, "Empty no more Items");
+        DEBUG_MSG(__func__, debugPrefix, "Empty no more Items");
         return NULL;
     }
+
     sem_wait(&sinkLock);
     topSinkItem = sinkHead->next;
     sinkHead->next = topSinkItem->next;
-    object = topSinkItem->dataObject;
+    exportSinkItem = topSinkItem->sinkItem;
     delete topSinkItem;
     sem_post(&sinkLock);
-    return object;
+    DEBUG_MSG(__func__, debugPrefix, "topmost sink item popped");
+    return exportSinkItem;
 }
 
 int Sink::getCurrentSinkSpace()
