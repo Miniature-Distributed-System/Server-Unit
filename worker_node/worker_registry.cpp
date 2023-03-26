@@ -56,3 +56,8 @@ bool WorkerRegistry::getNewWorkersStatus()
         return true;
     return false;
 }
+
+std::list<Worker*> WorkerRegistry::getWorkerList()
+{
+    return currentWorkerList;
+}

@@ -15,6 +15,7 @@ class WorkerRegistry{
         int getWorkerUid();
         void deleteWorker(Worker*);
         bool getNewWorkersStatus();
+        std::list<Worker*> getWorkerList();
 };
 
 extern WorkerRegistry globalWorkerRegistry;
