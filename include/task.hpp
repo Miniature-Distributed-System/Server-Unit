@@ -15,4 +15,11 @@ enum TaskPriority {
     DEFAULT_PRIORITY = LOW_PRIORITY,
 };
 
+enum UserTaskStatus {
+    DATA_QUEUED,
+    DATA_READY,
+    DATA_SENT,
+    DATA_RECEIVED
+};
+
 #endif
