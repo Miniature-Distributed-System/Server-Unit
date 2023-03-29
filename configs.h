@@ -19,4 +19,6 @@
 #define INSTANCE_PRIO_COL_ID
 
 #define DB_POLL_THREAD_SLEEP_TIMER 2
+
+#define WORKER_QUEUE_SIZE
 #endif
