@@ -34,6 +34,7 @@ class SqlAccess{
         void initlize();
         std::string* sqlQueryDb(std::string queryString, std::string columnName = "");
         int sqlQueryDbGetInt(std::string, std::string columnName = "");
+        int sqlWriteBlob(std::string fileLoc, std::string tableID, std::string columnName);
         std::list<std::string> sqlReadList(std::string tableID, std::string columnName);
 };
 
