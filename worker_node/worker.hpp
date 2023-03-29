@@ -19,6 +19,7 @@ class Worker {
         bool getAttendance();
         int queuePacket(json);
         json getQueuedPacket();
+        int getQueueSize();
         std::uint64_t getWorkerUID();
 };
 #endif

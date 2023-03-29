@@ -44,3 +44,8 @@ json Worker::getQueuedPacket()
     return packet;
 }
 
+int Worker::getQueueSize()
+{
+    return WORKER_QUEUE_SIZE - senderQueue.size();
+}
+
