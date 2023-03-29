@@ -2,7 +2,7 @@
 #include "../include/debug_rp.hpp"
 #include "worker_registry.hpp"
 
-int WorkerRegistry::getWorkerUid()
+int WorkerRegistry::generateWorkerUid()
 {
     Flag exit, failed;
     std::uint64_t computeNodeId;

@@ -12,7 +12,7 @@ class WorkerRegistry{
         Flag newWorker;
     public:
         WorkerRegistry();
-        int getWorkerUid();
+        int generateWorkerUid();
         void deleteWorker(Worker*);
         bool getNewWorkersStatus();
         std::list<Worker*> getWorkerList();
