@@ -26,7 +26,7 @@ std::uint64_t Worker::getWorkerUID()
 
 int Worker::queuePacket(json packet)
 {
-    if(senderQueue.size() > workerQueueMaxSize){
+    if(senderQueue.size() > WORKER_QUEUE_SIZE){
         DEBUG_MSG(__func__, "max limit reached");
         return 1;
     }

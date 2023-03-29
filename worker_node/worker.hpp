@@ -13,7 +13,6 @@ class Worker {
         std::list<json> senderQueue;
         Flag attendance;
         sem_t workerLock;
-        std::uint8_t workerQueueMaxSize = WORKER_QUEUE_SIZE;
     public:
         Worker(std::uint64_t workerUID);
         void markAttendance();
