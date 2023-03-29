@@ -1,3 +1,4 @@
+#include "../include/debug_rp.hpp"
 #include "worker.hpp"
 
 Worker::Worker(std::uint64_t workerUID)
@@ -8,7 +9,8 @@ Worker::Worker(std::uint64_t workerUID)
 }
 
 void Worker::markAttendance()
-{  
+{
+    DEBUG_MSG(__func__,"Worker-",workerUID, ": attendence marked");  
     attendance.setFlag();
 }
 
@@ -27,6 +29,7 @@ void Worker::queuePacket(json packet)
     sem_wait(&workerLock);
     senderQueue.push_back(packet);
     sem_post(&workerLock);
+    DEBUG_MSG(__func__, "worker-", workerUID, ": pushed packet to queue");
 }
 
 json Worker::getQueuedPacket()
