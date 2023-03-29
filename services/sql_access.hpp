@@ -12,6 +12,7 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
+#include <list>
 
 class SqlAccess{
         std::string url;
@@ -32,6 +33,7 @@ class SqlAccess{
         std::string dataTable) : url{url}, password{password}, database{database}, dataTable{dataTable};
         void initlize();
         std::string* sqlQueryDb(std::string queryString, std::string columnName = "");
+        int sqlQueryDbGetInt(std::string, std::string columnName = "");
         std::list<std::string> sqlReadList(std::string tableID, std::string columnName);
 };
 

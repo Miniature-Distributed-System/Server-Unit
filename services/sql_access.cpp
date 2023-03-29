@@ -26,6 +26,16 @@ std::string* SqlAccess::sqlQueryDb(std::string queryStatement, std::string colum
     return result;
 }
 
+int SqlAccess::sqlQueryDbGetInt(std::string queryStatement, std::string columnName = "")
+{
+    int result;
+    sqlExecutor = conn->prepareStatement(queryStatement);
+    sqlExecutor->executeQuery();
+    while(res->next())
+        result = res->getInt(columnName.empty() ? 1 : columnName);
+    return result;
+}
+
 int SqlAccess::sqlWriteBlob(std::string fileLoc, std::string columnName, std::string tableID)
 {
     std::string result;
@@ -37,6 +47,7 @@ int SqlAccess::sqlWriteBlob(std::string fileLoc, std::string columnName, std::st
         result = result + res->getString(columnName);
     return result;
 }
+
 std::list<std::string> SqlAccess::sqlReadList(std::string tableID, std::string columnName)
 {
     int j = 0;
