@@ -24,12 +24,17 @@ std::uint64_t Worker::getWorkerUID()
     return workerUID;
 }
 
-void Worker::queuePacket(json packet)
+int Worker::queuePacket(json packet)
 {
+    if(senderQueue.size() > workerQueueMaxSize){
+        DEBUG_MSG(__func__, "max limit reached");
+        return 1;
+    }
     sem_wait(&workerLock);
     senderQueue.push_back(packet);
     sem_post(&workerLock);
     DEBUG_MSG(__func__, "worker-", workerUID, ": pushed packet to queue");
+    return 0;
 }
 
 json Worker::getQueuedPacket()
