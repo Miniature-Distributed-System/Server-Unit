@@ -4,6 +4,7 @@ Worker::Worker(std::uint64_t workerUID)
 {
     this->workerUID = workerUID;
     attendance.initFlag(true);
+    sem_init(&workerLock, 0, 0);
 }
 
 void Worker::markAttendance()
@@ -23,7 +24,9 @@ std::uint64_t Worker::getWorkerUID()
 
 void Worker::queuePacket(json packet)
 {
+    sem_wait(&workerLock);
     senderQueue.push_back(packet);
+    sem_post(&workerLock);
 }
 
 json Worker::getQueuedPacket()
