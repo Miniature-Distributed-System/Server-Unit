@@ -16,6 +16,7 @@ class WorkerRegistry{
         void deleteWorker(Worker*);
         bool getNewWorkersStatus();
         std::list<Worker*> getWorkerList();
+        Worker* getWorkerFromUid(std::uint64_t);
 };
 
 extern WorkerRegistry globalWorkerRegistry;

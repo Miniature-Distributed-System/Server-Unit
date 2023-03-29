@@ -61,3 +61,18 @@ std::list<Worker*> WorkerRegistry::getWorkerList()
 {
     return currentWorkerList;
 }
+
+Worker* WorkerRegistry::getWorkerFromUid(std::uint64_t workerUid)
+{
+    Worker* worker;
+    for(auto i = currentWorkerList.begin(); i != currentWorkerList.end(); i++)
+    {
+        worker = *i;
+        if(worker != NULL){
+            if(worker->getWorkerUID() == workerUid)
+                return worker;
+        } 
+    }
+    DEBUG_ERR(__func__, "could not find worker with UID: ", workerUid + 0);
+    return NULL;
+}
