@@ -8,10 +8,9 @@
 
 struct ExportSinkItem {
     void *dataObject;
-    Flag isUserData;
-    ExportSinkItem(void *object, Flag isUserData){
+    ExportSinkItem();
+    ExportSinkItem(void *object){
         dataObject = object;
-        this->isUserData = isUserData;
     }
 };
 
@@ -19,10 +18,10 @@ struct SinkItem{
     ExportSinkItem *sinkItem;
     std::uint8_t starveCounter;
     SinkItem *next;
-    SinkItem(void *object, Flag isUserData, std::uint8_t starveCounter){
+    SinkItem(void *object, std::uint8_t starveCounter){
         next = NULL;
         starveCounter = 0;
-        sinkItem = new ExportSinkItem(object, isUserData);
+        sinkItem = new ExportSinkItem(object);
     };
 };
 
@@ -36,10 +35,10 @@ class Sink
         std::string debugPrefix;
     public:
         Sink(std::uint64_t maxSize, std::string debugPrefix);
-        int pushObject(void *object, TaskPriority priority, bool isUserData = false);
+        int pushObject(void *object, TaskPriority priority);
         int getCurrentSinkSpace();
         bool isSinkFull();
-        ExportSinkItem* popObject();
+        ExportSinkItem popObject();
 };
 
 extern Sink globalReceiverSink;

@@ -21,7 +21,7 @@ int calculateStarveCounter(TaskPriority priority)
 }
 
 Sink::Sink(std::uint64_t maxSinkSize, std::string debugPrefix){
-    sinkHead = new SinkItem(NULL, Flag(), 0);
+    sinkHead = new SinkItem(NULL, 0);
     sinkItemCount = 0;
     sinkLimit = maxSinkSize;
     this->debugPrefix = debugPrefix + ": ";
@@ -29,25 +29,19 @@ Sink::Sink(std::uint64_t maxSinkSize, std::string debugPrefix){
     DEBUG_MSG(__func__, debugPrefix, " sink initlilized");
 }
 
-int Sink::pushObject(void *object, TaskPriority priority, bool isUserData = false)
+int Sink::pushObject(void *object, TaskPriority priority)
 {
     SinkItem *currentSinkItem, *sinkIterator, *prevSinkItem;
     std::uint8_t curDataStarvation;
-    Flag userData;
 
     if(sinkItemCount >= MAX_POOL_SIZE){
         DEBUG_MSG(__func__, debugPrefix, "Max pool size reached cannot push anymore");
         return -1;
     }
 
-    userData.initFlag();
-    if(isUserData){
-        userData.setFlag();
-    }
-
     sem_wait(&sinkLock);
     if(sinkHead->next == NULL){
-        currentSinkItem = new SinkItem(object, userData, calculateStarveCounter(priority));
+        currentSinkItem = new SinkItem(object, calculateStarveCounter(priority));
         sinkHead->next = currentSinkItem;
         DEBUG_MSG(__func__, debugPrefix, "first data element created");
     } else {
@@ -78,19 +72,19 @@ end:
     return 0;
 }
 
-ExportSinkItem* Sink::popObject(){
+ExportSinkItem Sink::popObject(){
     SinkItem *topSinkItem, *nextTopSinkItem;
-    ExportSinkItem *exportSinkItem;
+    ExportSinkItem exportSinkItem;
     
     if(sinkItemCount <= 0){
         DEBUG_MSG(__func__, debugPrefix, "Empty no more Items");
-        return NULL;
+        return exportSinkItem;
     }
 
     sem_wait(&sinkLock);
     topSinkItem = sinkHead->next;
     sinkHead->next = topSinkItem->next;
-    exportSinkItem = topSinkItem->sinkItem;
+    exportSinkItem.dataObject = topSinkItem->sinkItem->dataObject;
     delete topSinkItem;
     sem_post(&sinkLock);
     DEBUG_MSG(__func__, debugPrefix, "topmost sink item popped");
