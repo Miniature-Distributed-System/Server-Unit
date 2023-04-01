@@ -24,7 +24,7 @@ std::uint64_t Worker::getWorkerUID()
     return workerUID;
 }
 
-int Worker::queuePacket(json packet)
+int Worker::queuePacket(OutPacket* packet)
 {
     if(senderQueue.size() > WORKER_QUEUE_SIZE){
         DEBUG_MSG(__func__, "max limit reached");
@@ -39,9 +39,25 @@ int Worker::queuePacket(json packet)
 
 json Worker::getQueuedPacket()
 {
-    json packet = senderQueue.front();
+    OutPacket* outPacket = senderQueue.front();
+    if(outPacket->ackable){
+        if(ackPendingQueue.size() > WORKER_QUEUE_SIZE / 2){
+            //TO-DO: need to add timeout indicating resend packet and wait
+            while(1){
+                for(auto i = senderQueue.begin(); i != senderQueue.end(); i++){
+                    if(!(*i)->ackable){
+                        outPacket = (*i);
+                        senderQueue.erase(i);
+                        return (*i)->packet;
+                    }
+                }
+            }
+        } else {
+            ackPendingQueue.push_back(outPacket);
+        }
+    }
     senderQueue.pop_front();
-    return packet;
+    return outPacket->packet;
 }
 
 int Worker::getQueueSize()
