@@ -11,11 +11,11 @@ using json = nlohmann::json;
 //TO-DO: need to implement timeout register which needs to be updated for sent packets
 struct OutPacket {
     json packet;
-    std::string tableName;
+    std::string id;
     bool ackable;
     OutPacket(json packet, std::string tableName, bool ackable){
         this->packet = packet;
-        this->tableName = tableName;
+        this->id = tableName;
         this->ackable = ackable;
     }
 };
@@ -34,5 +34,6 @@ class Worker {
         json getQueuedPacket();
         int getQueueSize();
         std::uint64_t getWorkerUID();
+        bool matchAckablePacket(std::string id);
 };
 #endif

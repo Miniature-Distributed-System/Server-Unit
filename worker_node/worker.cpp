@@ -65,3 +65,16 @@ int Worker::getQueueSize()
     return WORKER_QUEUE_SIZE - senderQueue.size();
 }
 
+bool Worker::matchAckablePacket(std::string id)
+{
+    for(auto i = ackPendingQueue.begin(); i != ackPendingQueue.end(); i++){
+        if((*i)->id == id){
+            ackPendingQueue.erase(i);
+            DEBUG_MSG(__func__, "packet acked");
+            return true;
+        }
+    }
+
+    DEBUG_ERR(__func__, "no such packet found");
+    return false;
+}
