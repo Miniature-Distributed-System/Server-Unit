@@ -53,7 +53,7 @@ bool UserTableRegistry::findMatchInList(std::string userTableName)
     return false;
 }
 
-int UserTableRegistry::updateStatus(std::string userTableName, UserTaskStatus status)
+int UserTableRegistry::updateTaskStatus(std::string userTableName, UserTaskStatus status)
 {
     for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
         if((*i)->userTableName == userTableName){

@@ -23,7 +23,8 @@ class UserTableRegistry {
         bool findMatchInList(std::string tableName);
         bool assignWorker(std::string tableName, Worker *worker);
         long long int getWorkerUid(std::string tableName);
-        int updateStatus(std::string tableName, UserTaskStatus status);
+        int updateTaskStatus(std::string tableName, UserTaskStatus status);
+        
 };
 
 extern UserTableRegistry globalUserTableRegistry;
