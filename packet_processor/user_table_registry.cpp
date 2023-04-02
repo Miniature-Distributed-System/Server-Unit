@@ -92,3 +92,29 @@ long long int UserTableRegistry::getWorkerUid(std::string tableName)
     DEBUG_ERR(__func__, "found no match for table name:", tableName, " get Worker UID");
     return -1;
 }
+
+void UserTableRegistry::checkIn(std::string tableId)
+{
+    for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
+        if((*i)->userTableName == tableId){
+            (*i)->status.setFlag();
+            DEBUG_MSG(__func__, "updating status for table name: ", tableId, " with state: ", (*i)->status.isFlagSet());
+            return;
+        }
+    }
+
+    DEBUG_ERR(__func__, "found no match for table name:", tableId, " failed to update status");
+}
+
+void UserTableRegistry::checkIn(std::string tableId)
+{
+    for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
+        if((*i)->userTableName == tableId){
+            (*i)->status.resetFlag();
+            DEBUG_MSG(__func__, "updating status for table name: ", tableId, " with state: ", (*i)->status.isFlagSet());
+            return;
+        }
+    }
+
+    DEBUG_ERR(__func__, "found no match for table name:", tableId, " failed to update status");
+}
