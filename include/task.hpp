@@ -19,7 +19,8 @@ enum UserTaskStatus {
     DATA_QUEUED,
     DATA_READY,
     DATA_SENT,
-    DATA_RECEIVED
+    DATA_INTER,
+    DATA_FINAL,
 };
 
 #endif
