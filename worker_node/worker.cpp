@@ -69,6 +69,7 @@ bool Worker::matchAckablePacket(std::string id)
 {
     for(auto i = ackPendingQueue.begin(); i != ackPendingQueue.end(); i++){
         if((*i)->id == id){
+            delete (*i);
             ackPendingQueue.erase(i);
             DEBUG_MSG(__func__, "packet acked");
             return true;
