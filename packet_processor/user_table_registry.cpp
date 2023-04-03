@@ -2,10 +2,10 @@
 #include "../include/flag.h"
 #include "../include/debug_rp.hpp"
 
-std::list<std::string> UserTableRegistry::pushList(std::list<std::string> userTableList)
+std::list<std::string> OutDataRegistry::pushList(std::list<std::string> userTableList)
 {
     std::list<std::string> resultList;
-    UserTableState *userTable = NULL;
+    OutDataState *userTable = NULL;
     Flag resultStatus;
     for(auto j = userTableList.begin(); j != userTableList.end(); j++){
         resultStatus.initFlag();
@@ -17,7 +17,7 @@ std::list<std::string> UserTableRegistry::pushList(std::list<std::string> userTa
         }
         if(!resultStatus.isFlagSet()){
             DEBUG_MSG(__func__, "New table :", *j, " added to list");
-            userTable = new UserTableState(*j, DATA_QUEUED);
+            userTable = new OutDataState(*j, DATA_QUEUED);
             resultList.push_back(*j);
         }
     }
@@ -25,7 +25,7 @@ std::list<std::string> UserTableRegistry::pushList(std::list<std::string> userTa
     return resultList;
 }
 
-int UserTableRegistry::popList(std::string userTableName)
+int OutDataRegistry::popList(std::string userTableName)
 {
     for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
         if((*i)->userTableName == userTableName){
@@ -40,7 +40,7 @@ int UserTableRegistry::popList(std::string userTableName)
     return -1;
 }
 
-bool UserTableRegistry::findMatchInList(std::string userTableName)
+bool OutDataRegistry::findMatchInList(std::string userTableName)
 {
     for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
         if((*i)->userTableName == userTableName){
@@ -53,7 +53,7 @@ bool UserTableRegistry::findMatchInList(std::string userTableName)
     return false;
 }
 
-int UserTableRegistry::updateTaskStatus(std::string userTableName, UserTaskStatus status)
+int OutDataRegistry::updateTaskStatus(std::string userTableName, UserTaskStatus status)
 {
     for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
         if((*i)->userTableName == userTableName){
@@ -67,7 +67,7 @@ int UserTableRegistry::updateTaskStatus(std::string userTableName, UserTaskStatu
     return false;
 }
 
-bool UserTableRegistry::assignWorker(std::string tableName, Worker *worker)
+bool OutDataRegistry::assignWorker(std::string tableName, Worker *worker)
 {
     for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
         if((*i)->userTableName == tableName){
@@ -81,7 +81,7 @@ bool UserTableRegistry::assignWorker(std::string tableName, Worker *worker)
     return false;
 }
 
-long long int UserTableRegistry::getWorkerUid(std::string tableName)
+long long int OutDataRegistry::getWorkerUid(std::string tableName)
 {
     for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
         if((*i)->userTableName == tableName){
@@ -91,30 +91,4 @@ long long int UserTableRegistry::getWorkerUid(std::string tableName)
 
     DEBUG_ERR(__func__, "found no match for table name:", tableName, " get Worker UID");
     return -1;
-}
-
-void UserTableRegistry::checkIn(std::string tableId)
-{
-    for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
-        if((*i)->userTableName == tableId){
-            (*i)->status.setFlag();
-            DEBUG_MSG(__func__, "updating status for table name: ", tableId, " with state: ", (*i)->status.isFlagSet());
-            return;
-        }
-    }
-
-    DEBUG_ERR(__func__, "found no match for table name:", tableId, " failed to update status");
-}
-
-void UserTableRegistry::checkIn(std::string tableId)
-{
-    for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
-        if((*i)->userTableName == tableId){
-            (*i)->status.resetFlag();
-            DEBUG_MSG(__func__, "updating status for table name: ", tableId, " with state: ", (*i)->status.isFlagSet());
-            return;
-        }
-    }
-
-    DEBUG_ERR(__func__, "found no match for table name:", tableId, " failed to update status");
 }

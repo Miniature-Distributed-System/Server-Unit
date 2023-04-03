@@ -3,20 +3,21 @@
 #include <list>
 #include <string>
 #include "../include/task.hpp"
+#include "../include/flag.h"
 #include "../worker_node/worker.hpp"
 
-struct UserTableState {
+struct OutDataState {
     std::string userTableName;
     UserTaskStatus taskStatus;
     Worker *worker;
-    UserTableState(std::string userTableName, UserTaskStatus taskStatus){
+    OutDataState(std::string userTableName, UserTaskStatus taskStatus){
         this->userTableName = userTableName;
         this->taskStatus = taskStatus;
     }
 };
 
-class UserTableRegistry {
-        std::list<UserTableState*> userTableRegistryList;
+class OutDataRegistry {
+        std::list<OutDataState*> userTableRegistryList;
     public:
         std::list<std::string> pushList(std::list<std::string> packetList);
         int popList(std::string tableName);
@@ -24,9 +25,8 @@ class UserTableRegistry {
         bool assignWorker(std::string tableName, Worker *worker);
         long long int getWorkerUid(std::string tableName);
         int updateTaskStatus(std::string tableName, UserTaskStatus status);
-        
 };
 
-extern UserTableRegistry globalUserTableRegistry;
+extern OutDataRegistry globalOutDataRegistry;
 
 #endif
