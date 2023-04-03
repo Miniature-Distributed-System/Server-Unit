@@ -7,20 +7,20 @@
 #include "../worker_node/worker.hpp"
 
 struct OutDataState {
-    std::string userTableName;
+    std::string id;
     UserTaskStatus taskStatus;
     Worker *worker;
-    OutDataState(std::string userTableName, UserTaskStatus taskStatus){
-        this->userTableName = userTableName;
+    OutDataState(std::string id, UserTaskStatus taskStatus){
+        this->id = id;
         this->taskStatus = taskStatus;
     }
 };
 
 class OutDataRegistry {
-        std::list<OutDataState*> userTableRegistryList;
+        std::list<OutDataState*> outDataRegistryList;
     public:
-        std::list<std::string> pushList(std::list<std::string> packetList);
-        int popList(std::string tableName);
+        int addTable(std::string packetList, Worker *worker = NULL);
+        int deleteTable(std::string tableName);
         bool findMatchInList(std::string tableName);
         bool assignWorker(std::string tableName, Worker *worker);
         long long int getWorkerUid(std::string tableName);

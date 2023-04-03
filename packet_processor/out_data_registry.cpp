@@ -2,75 +2,75 @@
 #include "../include/flag.h"
 #include "../include/debug_rp.hpp"
 
-std::list<std::string> OutDataRegistry::pushList(std::list<std::string> userTableList)
+int OutDataRegistry::addTable(std::string dataTableName, Worker *worker)
 {
-    std::list<std::string> resultList;
-    OutDataState *userTable = NULL;
+    OutDataState *outData = NULL;
     Flag resultStatus;
-    for(auto j = userTableList.begin(); j != userTableList.end(); j++){
-        resultStatus.initFlag();
-        for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
-            if(*j == (*i)->userTableName){
-                resultStatus.setFlag();
-                break;
-            }
-        }
-        if(!resultStatus.isFlagSet()){
-            DEBUG_MSG(__func__, "New table :", *j, " added to list");
-            userTable = new OutDataState(*j, DATA_QUEUED);
-            resultList.push_back(*j);
+
+    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
+        if(dataTableName == (*i)->id){
+            resultStatus.setFlag();
+            break;
         }
     }
+
+    if(!resultStatus.isFlagSet()){
+        DEBUG_MSG(__func__, "New table :", dataTableName, " added to list");
+        outData = new OutDataState(dataTableName, DATA_QUEUED);
+        if(worker)
+            outData->worker = worker;
+        outDataRegistryList.push_back(outData);
+    }
     
-    return resultList;
+    return 0;
 }
 
-int OutDataRegistry::popList(std::string userTableName)
+int OutDataRegistry::deleteTable(std::string dataTableName)
 {
-    for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
-        if((*i)->userTableName == userTableName){
-            DEBUG_MSG(__func__, "table: ", userTableName, " successfully popped from list");
-            userTableRegistryList.remove(*i);
+    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
+        if((*i)->id == dataTableName){
+            DEBUG_MSG(__func__, "table: ", dataTableName, " successfully popped from list");
+            outDataRegistryList.remove(*i);
             delete (*i);
             return 0;
         }
     }
 
-    DEBUG_ERR(__func__, "Popping table: ", userTableName, " failed as not found in list");
+    DEBUG_ERR(__func__, "Popping table: ", dataTableName, " failed as not found in list");
     return -1;
 }
 
-bool OutDataRegistry::findMatchInList(std::string userTableName)
+bool OutDataRegistry::findMatchInList(std::string dataTableName)
 {
-    for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
-        if((*i)->userTableName == userTableName){
-            DEBUG_MSG(__func__, "found match for table name: ", userTableName);
+    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
+        if((*i)->id == dataTableName){
+            DEBUG_MSG(__func__, "found match for table name: ", dataTableName);
             return true;
         }
     }
 
-    DEBUG_ERR(__func__, "found no match for table name:", userTableName);
+    DEBUG_ERR(__func__, "found no match for table name:", dataTableName);
     return false;
 }
 
-int OutDataRegistry::updateTaskStatus(std::string userTableName, UserTaskStatus status)
+int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus status)
 {
-    for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
-        if((*i)->userTableName == userTableName){
-            DEBUG_MSG(__func__, "updating status for table name: ", userTableName, " with state: ", status);
+    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
+        if((*i)->id == dataTableName){
+            DEBUG_MSG(__func__, "updating status for table name: ", dataTableName, " with state: ", status);
             (*i)->taskStatus = status;
             return true;
         }
     }
 
-    DEBUG_ERR(__func__, "found no match for table name:", userTableName, " failed to update status");
+    DEBUG_ERR(__func__, "found no match for table name:", dataTableName, " failed to update status");
     return false;
 }
 
 bool OutDataRegistry::assignWorker(std::string tableName, Worker *worker)
 {
-    for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
-        if((*i)->userTableName == tableName){
+    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
+        if((*i)->id == tableName){
             (*i)->worker = worker;
             DEBUG_MSG(__func__, "assigned worker", worker->getWorkerUID(), " with tableId", tableName);
             return true;
@@ -83,8 +83,8 @@ bool OutDataRegistry::assignWorker(std::string tableName, Worker *worker)
 
 long long int OutDataRegistry::getWorkerUid(std::string tableName)
 {
-    for(auto i = userTableRegistryList.begin(); i != userTableRegistryList.end(); i++){
-        if((*i)->userTableName == tableName){
+    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
+        if((*i)->id == tableName){
             return (*i)->worker->getWorkerUID();
         }
     }
