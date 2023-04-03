@@ -55,10 +55,14 @@ bool OutDataRegistry::findMatchInList(std::string dataTableName)
 
 int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus status)
 {
+    OutDataState *outDataState;
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
-        if((*i)->id == dataTableName){
+        outDataState = *i;
+        if(outDataState->id == dataTableName){
             DEBUG_MSG(__func__, "updating status for table name: ", dataTableName, " with state: ", status);
-            (*i)->taskStatus = status;
+            outDataState->taskStatus = status;
+            if(outDataState->worker)
+                outDataState->worker->checkIn();
             return true;
         }
     }
