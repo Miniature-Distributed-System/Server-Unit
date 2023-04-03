@@ -1,3 +1,5 @@
+#ifndef PACKET_H
+#define PACKET_H
 
 enum computeUnitPacketStatus {
     P_RESET     = 1 << 0, //Empty packet essentially
@@ -9,3 +11,4 @@ enum computeUnitPacketStatus {
     P_QSEND     = 1 << 6, //Client is in quick send mode
     P_SEIZE     = 1 << 7, //Client has seized receiving packets
 };
+#endif
