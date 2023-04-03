@@ -28,8 +28,9 @@ class Worker {
         sem_t workerLock;
     public:
         Worker(std::uint64_t workerUID);
-        void markAttendance();
-        bool getAttendance();
+        void checkIn();
+        void checkOut();
+        bool getCheckInStatus();
         int queuePacket(OutPacket*);
         json getQueuedPacket();
         int getQueueSize();

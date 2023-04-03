@@ -8,13 +8,19 @@ Worker::Worker(std::uint64_t workerUID)
     sem_init(&workerLock, 0, 0);
 }
 
-void Worker::markAttendance()
+void Worker::checkIn()
 {
     DEBUG_MSG(__func__,"Worker-",workerUID, ": attendence marked");  
     attendance.setFlag();
 }
 
-bool Worker::getAttendance()
+void Worker::checkOut()
+{
+    DEBUG_MSG(__func__,"Worker-",workerUID, ": attendence marked");  
+    attendance.resetFlag();
+}
+
+bool Worker::getCheckInStatus()
 {
     return attendance.isFlagSet();
 }
