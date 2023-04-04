@@ -96,3 +96,8 @@ long long int OutDataRegistry::getWorkerUid(std::string tableName)
     DEBUG_ERR(__func__, "found no match for table name:", tableName, " get Worker UID");
     return -1;
 }
+
+std::list<OutDataState*> OutDataRegistry::getOutDataRegistryList()
+{
+    return outDataRegistryList;
+}

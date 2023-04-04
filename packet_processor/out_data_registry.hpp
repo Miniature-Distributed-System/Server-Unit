@@ -25,6 +25,7 @@ class OutDataRegistry {
         bool assignWorker(std::string tableName, Worker *worker);
         long long int getWorkerUid(std::string tableName);
         int updateTaskStatus(std::string tableName, UserTaskStatus status);
+        std::list<OutDataState*> getOutDataRegistryList();
 };
 
 extern OutDataRegistry globalOutDataRegistry;
