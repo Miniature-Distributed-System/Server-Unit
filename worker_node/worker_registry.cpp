@@ -32,7 +32,7 @@ int WorkerRegistry::generateWorkerUid()
         if(failed.isFlagSet())
             exit.setFlag();
     }
-
+    
     worker = new Worker(computeNodeId);
     currentWorkerList.push_front(worker);
     newWorker.setFlag();
@@ -41,13 +41,18 @@ int WorkerRegistry::generateWorkerUid()
     return computeNodeId;
 }
 
-void WorkerRegistry::deleteWorker(Worker *worker)
+std::list<OutPacket*> WorkerRegistry::deleteWorker(Worker *worker)
 {
+    std::list<OutPacket*> outPacket;
     std::uint64_t computeNodeId = worker->getWorkerUID();
+    
     currentWorkerList.remove(worker);
+    outPacket = worker->shutDown();
     delete worker;
     deadWorkerList.push_front(computeNodeId);
     DEBUG_MSG(__func__, "compute unit with ID", computeNodeId, " has been removed from active list");
+
+    return outPacket;
 }
 
 bool WorkerRegistry::getNewWorkersStatus()
