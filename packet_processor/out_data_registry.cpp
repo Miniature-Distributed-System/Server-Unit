@@ -63,6 +63,7 @@ int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus 
             outDataState->taskStatus = status;
             if(status == DATA_SENT || status == DATA_READY)
                 outDataState->worker->checkIn();
+            outDataState->packetUpdated.setFlag();
             return true;
         }
     }

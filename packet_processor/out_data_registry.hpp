@@ -10,9 +10,11 @@ struct OutDataState {
     std::string id;
     UserTaskStatus taskStatus;
     Worker *worker;
+    Flag packetUpdated;
     OutDataState(std::string id, UserTaskStatus taskStatus){
         this->id = id;
         this->taskStatus = taskStatus;
+        packetUpdated.initFlag();
     }
 };
 
