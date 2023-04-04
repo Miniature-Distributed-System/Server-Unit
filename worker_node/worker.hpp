@@ -36,5 +36,6 @@ class Worker {
         int getQueueSize();
         std::uint64_t getWorkerUID();
         bool matchAckablePacket(std::string id);
+        std::list<OutPacket*> shutDown();
 };
 #endif

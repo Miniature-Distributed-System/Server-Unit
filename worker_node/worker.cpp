@@ -85,3 +85,18 @@ bool Worker::matchAckablePacket(std::string id)
     DEBUG_ERR(__func__, "no such packet found");
     return false;
 }
+
+std::list<OutPacket*> Worker::shutDown()
+{
+    std::list<OutPacket*> outPacket;
+    for(auto i = ackPendingQueue.begin(); i != ackPendingQueue.end(); i++)
+    {
+        outPacket.push_back(*i);
+    }
+    for(auto i = senderQueue.begin(); i != senderQueue.end(); i++)
+    {
+        outPacket.push_back(*i);
+    }
+
+    return outPacket;
+}
