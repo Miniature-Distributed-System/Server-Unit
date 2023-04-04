@@ -61,7 +61,7 @@ int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus 
         if(outDataState->id == dataTableName){
             DEBUG_MSG(__func__, "updating status for table name: ", dataTableName, " with state: ", status);
             outDataState->taskStatus = status;
-            if(outDataState->worker)
+            if(status == DATA_SENT || status == DATA_READY)
                 outDataState->worker->checkIn();
             return true;
         }
