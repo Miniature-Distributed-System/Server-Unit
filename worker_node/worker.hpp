@@ -3,6 +3,7 @@
 #include <list>
 #include "../lib/nlohmann/json-schema.hpp"
 #include "../include/flag.h"
+#include "../packet_processor/out_data_registry.hpp"
 #include "../configs.h"
 #include <semaphore.h>
 
@@ -10,14 +11,18 @@ using json = nlohmann::json;
 
 //TO-DO: need to implement timeout register which needs to be updated for sent packets
 struct OutPacket {
-    json packet;
-    std::string id;
+    private:
+        OutDataState* outData;
     bool ackable;
-    OutPacket(json packet, std::string tableName, bool ackable){
-        this->packet = packet;
-        this->id = tableName;
-        this->ackable = ackable;
-    }
+        Flag status;
+    public:
+        json packet;
+        OutPacket(json packet, OutDataState* outData, bool ackable);
+        void checkIn();
+        void checkOut();
+        bool isCheckedIn();
+        bool isAckable();
+        OutDataState* getOutDataState();
 };
 
 class Worker {
