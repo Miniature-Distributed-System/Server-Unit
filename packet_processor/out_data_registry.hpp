@@ -27,6 +27,8 @@ class OutDataRegistry {
         bool assignWorker(std::string tableName, Worker *worker);
         long long int getWorkerUid(std::string tableName);
         int updateTaskStatus(std::string tableName, UserTaskStatus status);
+        bool packetCheckInStatus(std::string tableId);
+        void packetCheckOut(std::string tableId);
         std::list<OutDataState*> getOutDataRegistryList();
 };
 

@@ -98,6 +98,30 @@ long long int OutDataRegistry::getWorkerUid(std::string tableName)
     return -1;
 }
 
+bool OutDataRegistry::packetCheckInStatus(std::string tableName)
+{
+    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
+        if((*i)->id == tableName){
+            return (*i)->packetUpdated.isFlagSet();
+        }
+    }
+
+    DEBUG_ERR(__func__, "found no match for table name:", tableName, " get Worker UID");
+    return false;
+}
+
+void OutDataRegistry::packetCheckOut(std::string tableName)
+{
+    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
+        if((*i)->id == tableName){
+            (*i)->packetUpdated.resetFlag();
+            return;
+        }
+    }
+
+    DEBUG_ERR(__func__, "found no match for table name:", tableName, " get Worker UID");
+}
+
 std::list<OutDataState*> OutDataRegistry::getOutDataRegistryList()
 {
     return outDataRegistryList;
