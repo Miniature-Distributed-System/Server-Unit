@@ -53,7 +53,7 @@ void Worker::checkOut()
     attendance.resetFlag();
 }
 
-bool Worker::getCheckInStatus()
+bool Worker::isCheckedIn()
 {
     return attendance.isFlagSet();
 }

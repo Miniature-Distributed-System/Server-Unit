@@ -13,7 +13,7 @@ using json = nlohmann::json;
 struct OutPacket {
     private:
         OutDataState* outData;
-    bool ackable;
+        bool ackable;
         Flag status;
     public:
         json packet;
@@ -35,7 +35,7 @@ class Worker {
         Worker(std::uint64_t workerUID);
         void checkIn();
         void checkOut();
-        bool getCheckInStatus();
+        bool isCheckedIn();
         int queuePacket(OutPacket*);
         json getQueuedPacket();
         int getQueueSize();
