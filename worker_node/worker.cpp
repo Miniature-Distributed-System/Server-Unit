@@ -78,7 +78,7 @@ int Worker::queuePacket(OutPacket* packet)
 
 json Worker::getQueuedPacket()
 {
-    OutPacket* outPacket = senderQueue.front();
+    sem_wait(&workerLock);
     if(outPacket->isAckable()){
         if(ackPendingQueue.size() > WORKER_QUEUE_SIZE / 2){
             //TO-DO: need to add timeout indicating resend packet and wait
@@ -96,6 +96,7 @@ json Worker::getQueuedPacket()
         }
     }
     senderQueue.pop_front();
+    sem_post(&workerLock);
     return outPacket->packet;
 }
 
@@ -106,6 +107,7 @@ int Worker::getQueueSize()
 
 bool Worker::matchAckablePacket(std::string id)
 {
+    sem_wait(&workerLock);
     for(auto i = ackPendingQueue.begin(); i != ackPendingQueue.end(); i++){
         if((*i)->getOutDataState()->id == id){
             delete (*i);
@@ -115,13 +117,14 @@ bool Worker::matchAckablePacket(std::string id)
         }
     }
 
-    DEBUG_ERR(__func__, "no such packet found");
+    sem_post(&workerLock);
     return false;
 }
 
 std::list<OutPacket*> Worker::shutDown()
 {
     std::list<OutPacket*> outPacket;
+    sem_wait(&workerLock);
     for(auto i = ackPendingQueue.begin(); i != ackPendingQueue.end(); i++)
     {
         outPacket.push_back(*i);
@@ -131,5 +134,7 @@ std::list<OutPacket*> Worker::shutDown()
         outPacket.push_back(*i);
     }
 
+    sem_post(&workerLock);
+    sem_destroy(&workerLock);
     return outPacket;
 }
