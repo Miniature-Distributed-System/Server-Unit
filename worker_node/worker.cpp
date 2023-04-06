@@ -113,7 +113,7 @@ bool Worker::matchAckablePacket(std::string id)
         if((*i)->getOutDataState()->id == id){
             delete (*i);
             ackPendingQueue.erase(i);
-            DEBUG_MSG(__func__, "packet acked");
+            sem_post(&workerLock);
             return true;
         }
     }
