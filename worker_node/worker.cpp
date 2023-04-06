@@ -1,4 +1,5 @@
 #include "../include/debug_rp.hpp"
+#include "../sched/timeout.hpp"
 #include "worker.hpp"
 
 OutPacket:: OutPacket(json packet, OutDataState* outData, bool ackable){
@@ -79,23 +80,36 @@ int Worker::queuePacket(OutPacket* packet)
 
 json Worker::getQueuedPacket()
 {
+    OutPacket* outPacket = NULL;
+
     sem_wait(&workerLock);
+    if(ackPacketPop.isFlagSet()){
+        DEBUG_MSG(__func__,"worker-", workerUID,": re-sending non-acked packet to worker");
+        ackPacketPop.resetFlag();
+        return ackPendingQueue.front()->packet;
+    }
+
+    if(senderQueue.size() > 0){
+        outPacket = senderQueue.front();
     if(outPacket->isAckable()){
         if(ackPendingQueue.size() > WORKER_QUEUE_SIZE / 2){
-            //TO-DO: need to add timeout indicating resend packet and wait
-            while(1){
+                // Only send non ackable packets
                 for(auto i = senderQueue.begin(); i != senderQueue.end(); i++){
                     if(!(*i)->isAckable()){
                         outPacket = (*i);
                         senderQueue.erase(i);
+                        DEBUG_MSG(__func__,"worker-", workerUID,": sending non-ackable packet to worker");
                         return (*i)->packet;
                     }
                 }
-            }
         } else {
+                //Add packet into timeout counter
+                packetTimeout->addPacket(outPacket);
             ackPendingQueue.push_back(outPacket);
         }
     }
+    } 
+    
     senderQueue.pop_front();
     sem_post(&workerLock);
     return outPacket->packet;
