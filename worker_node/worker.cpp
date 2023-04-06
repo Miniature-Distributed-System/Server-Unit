@@ -68,7 +68,7 @@ std::uint64_t Worker::getWorkerUID()
 int Worker::queuePacket(OutPacket* packet)
 {
     if(senderQueue.size() > WORKER_QUEUE_SIZE){
-        DEBUG_MSG(__func__, "max limit reached");
+        DEBUG_MSG(__func__,"worker-", workerUID,": max limit reached");
         return 1;
     }
     sem_wait(&workerLock);
@@ -91,8 +91,8 @@ json Worker::getQueuedPacket()
 
     if(senderQueue.size() > 0){
         outPacket = senderQueue.front();
-    if(outPacket->isAckable()){
-        if(ackPendingQueue.size() > WORKER_QUEUE_SIZE / 2){
+        if(outPacket->isAckable()){
+            if(ackPendingQueue.size() > WORKER_QUEUE_SIZE / 2){
                 // Only send non ackable packets
                 for(auto i = senderQueue.begin(); i != senderQueue.end(); i++){
                     if(!(*i)->isAckable()){
@@ -102,12 +102,12 @@ json Worker::getQueuedPacket()
                         return (*i)->packet;
                     }
                 }
-        } else {
+            } else {
                 //Add packet into timeout counter
                 packetTimeout->addPacket(outPacket);
-            ackPendingQueue.push_back(outPacket);
+                ackPendingQueue.push_back(outPacket);
+            }
         }
-    }
     } 
     
     senderQueue.pop_front();
@@ -127,12 +127,14 @@ bool Worker::matchAckablePacket(std::string id)
         if((*i)->getOutDataState()->id == id){
             delete (*i);
             ackPendingQueue.erase(i);
+            DEBUG_MSG(__func__,"worker-", workerUID,": packet acked");
             sem_post(&workerLock);
             return true;
         }
     }
 
     sem_post(&workerLock);
+    DEBUG_ERR(__func__,"worker-", workerUID,": no such packet found!");
     return false;
 }
 
@@ -149,10 +151,12 @@ std::list<OutPacket*> Worker::shutDown()
         outPacket.push_back(*i);
     }
 
+    DEBUG_MSG(__func__,"worker-",workerUID, ": shut down complete");
     sem_post(&workerLock);
     sem_destroy(&workerLock);
     return outPacket;
 }
+
 void Worker::pushToFront(OutPacket* outPacket)
 {
     sem_wait(&workerLock);
