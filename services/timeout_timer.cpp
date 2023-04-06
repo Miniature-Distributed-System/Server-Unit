@@ -2,6 +2,7 @@
 #include "../sched/timeout.hpp"
 #include "timeout_timer.hpp"
 #include "../include/debug_rp.hpp"
+#include "monitor.hpp"
 
 struct Timer {
     std::uint64_t sleepMs;
@@ -15,11 +16,12 @@ void *start_timer(void *data)
     struct Timer* timer = (struct Timer*)data;
     struct timespec tim;
 
-    tim.tv_sec = timer->sleepMs;
-    nanosleep(&tim, NULL);
+    while(!monitorStop.isFlagSet()){
+        tim.tv_sec = timer->sleepMs;
+        nanosleep(&tim, NULL);
+        packetTimeout->execute();
+    }
 
-    packetTimeout->execute();
-    
     return 0;
 }
 
