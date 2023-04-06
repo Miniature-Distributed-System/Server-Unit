@@ -38,6 +38,7 @@ Worker::Worker(std::uint64_t workerUID)
 {
     this->workerUID = workerUID;
     attendance.initFlag(true);
+    ackPacketPop.initFlag();
     sem_init(&workerLock, 0, 0);
 }
 
@@ -137,4 +138,13 @@ std::list<OutPacket*> Worker::shutDown()
     sem_post(&workerLock);
     sem_destroy(&workerLock);
     return outPacket;
+}
+void Worker::pushToFront(OutPacket* outPacket)
+{
+    sem_wait(&workerLock);
+    auto removed = std::remove(ackPendingQueue.begin(), ackPendingQueue.end(), outPacket);
+    ackPendingQueue.erase(removed, ackPendingQueue.end());
+    ackPendingQueue.push_front(outPacket);
+    ackPacketPop.setFlag();
+    sem_post(&workerLock);
 }

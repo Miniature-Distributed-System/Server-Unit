@@ -30,6 +30,7 @@ class Worker {
         std::list<OutPacket*> senderQueue;
         std::list<OutPacket*> ackPendingQueue;
         Flag attendance;
+        Flag ackPacketPop;
         sem_t workerLock;
     public:
         Worker(std::uint64_t workerUID);
@@ -41,6 +42,7 @@ class Worker {
         int getQueueSize();
         std::uint64_t getWorkerUID();
         bool matchAckablePacket(std::string id);
+        void pushToFront(OutPacket *outPacket);
         std::list<OutPacket*> shutDown();
 };
 #endif
