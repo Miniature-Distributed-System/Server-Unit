@@ -8,21 +8,23 @@ using json = nlohmann::json;
 
 class ProcessDataPacket{
         std::uint8_t pDataType;
+        std::string tableId;
+        std::string data;
+        std::uint64_t workerUid;
+        int packetStausCode;
         enum packetDataType {
             INTERMEDIATE_RESULT,
             FINAL_RESULT,
             ERROR_DATA
         };
-        json packet;
     public:
-        ProcessDataPacket(json packet){
-            this->packet = packet;
-        };
+        ProcessDataPacket(json packet);
         std::string getExtension();
         void execute();
         void detectDataType();
         int createCsvFromData();
         int pushCsvToDb();
+        void cleanUp();
 };
 
 class ProcessStatusPacket{
