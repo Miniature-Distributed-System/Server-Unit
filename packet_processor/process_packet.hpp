@@ -1,10 +1,13 @@
 #ifndef PROCESS_PKT_H
 #define PROCESS_PKT_H
+
+#include "../include/packet.hpp"
+
+#ifndef JSON_H
+#define JSON_H
 #include "../lib/nlohmann/json-schema.hpp"
-
-using nlohmann::json_schema::json_validator;
 using json = nlohmann::json;
-
+#endif
 
 class ProcessDataPacket{
         std::uint8_t pDataType;
