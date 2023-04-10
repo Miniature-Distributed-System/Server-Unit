@@ -28,11 +28,12 @@ class ProcessDataPacket{
 };
 
 class ProcessStatusPacket{
-        json packet;
+        int statusCode;
+        std::string tableId;
+        std::uint64_t workerUid;
     public:
-        ProcessStatusPacket(json packet){
-            this->packet = packet;
-        };
+        ProcessStatusPacket(json packet);
+        ServerPacketCodes getPacketStatusCode();
         void execute();
 };
 
