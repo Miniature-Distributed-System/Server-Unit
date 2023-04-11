@@ -1,5 +1,6 @@
 #include "../include/debug_rp.hpp"
 #include "../sched/timeout.hpp"
+#include "../packet_processor/out_data_registry.hpp"
 #include "worker.hpp"
 
 OutPacket:: OutPacket(json packet, OutDataState* outData, bool ackable){
@@ -27,7 +28,7 @@ bool OutPacket::isCheckedIn()
 
 bool OutPacket::isAckable()
 {
-    return isAckable;
+    return ackable;
 }
 
 OutDataState* OutPacket::getOutDataState()
