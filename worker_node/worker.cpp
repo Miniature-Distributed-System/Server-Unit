@@ -36,6 +36,8 @@ OutDataState* OutPacket::getOutDataState()
     return outData;
 }
 
+Worker::Worker(){}
+
 Worker::Worker(std::uint64_t workerUID)
 {
     this->workerUID = workerUID;

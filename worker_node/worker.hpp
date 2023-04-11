@@ -37,6 +37,7 @@ class Worker {
         Flag quickSendMode;
         sem_t workerLock;
     public:
+        Worker();
         Worker(std::uint64_t workerUID);
         void checkIn();
         void checkOut();
