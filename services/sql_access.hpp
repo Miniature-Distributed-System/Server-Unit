@@ -29,6 +29,7 @@ class SqlAccess{
 
         Flag inited;
     public:
+        SqlAccess();
         SqlAccess(std::string url, std::string username, std::string password, std::string database, 
             std::string dataTable);
         int sqlQueryDbGetInt(std::string, std::string columnName = "");
