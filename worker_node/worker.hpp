@@ -1,13 +1,15 @@
 #ifndef WORKER_H
 #define WORKER_H
 #include <list>
-#include "../lib/nlohmann/json-schema.hpp"
 #include "../include/flag.h"
-#include "../packet_processor/out_data_registry.hpp"
 #include "../configs.h"
 #include <semaphore.h>
 
+#ifndef JSON_H
+#define JSON_H
+#include "../lib/nlohmann/json-schema.hpp"
 using json = nlohmann::json;
+#endif
 
 //TO-DO: need to implement timeout register which needs to be updated for sent packets
 struct OutPacket {
