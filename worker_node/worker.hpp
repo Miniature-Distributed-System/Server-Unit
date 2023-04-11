@@ -11,7 +11,8 @@
 using json = nlohmann::json;
 #endif
 
-//TO-DO: need to implement timeout register which needs to be updated for sent packets
+class OutDataState;
+
 struct OutPacket {
     private:
         OutDataState* outData;
