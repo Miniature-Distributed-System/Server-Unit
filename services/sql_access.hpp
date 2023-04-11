@@ -30,9 +30,7 @@ class SqlAccess{
         Flag inited;
     public:
         SqlAccess(std::string url, std::string username, std::string password, std::string database, 
-        std::string dataTable) : url{url}, password{password}, database{database}, dataTable{dataTable};
-        void initlize();
-        std::string* sqlQueryDb(std::string queryString, std::string columnName = "");
+            std::string dataTable);
         int sqlQueryDbGetInt(std::string, std::string columnName = "");
         int sqlWriteBlob(std::string fileLoc, std::string tableID, std::string columnName);
         std::list<std::string> sqlReadList(std::string tableID, std::string columnName);

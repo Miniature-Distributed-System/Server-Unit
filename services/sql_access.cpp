@@ -1,6 +1,15 @@
 #include "../include/debug_rp.hpp"
 #include "sql_access.hpp"
 
+SqlAccess::SqlAccess(std::string url, std::string username, std::string password, std::string database, 
+        std::string dataTable) 
+{
+    this->url = url;
+    this->username = username;
+    this->password = password;
+    this->database = database;
+    this->dataTable = dataTable;
+}
 void SqlAccess::initialize()
 {
     try{
