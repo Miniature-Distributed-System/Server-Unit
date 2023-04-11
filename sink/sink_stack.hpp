@@ -41,7 +41,7 @@ class Sink
         ExportSinkItem popObject();
 };
 
-extern Sink globalReceiverSink;
+extern Sink *globalReceiverSink;
 extern Sink globalSenderSink;
 
 #endif
