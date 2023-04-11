@@ -11,5 +11,6 @@ class JsonPrevalidator {
         JsonPrevalidator(std::string);
         bool validateJson();
         bool checkQuickSendBit();
+        json getJson();
 };
 #endif

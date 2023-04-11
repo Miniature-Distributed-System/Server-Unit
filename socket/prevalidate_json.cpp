@@ -54,3 +54,8 @@ bool JsonPrevalidator::checkQuickSendBit()
         return false;
     return true;
 }
+
+json JsonPrevalidator::getJson()
+{
+    return packet;
+}
