@@ -110,7 +110,9 @@ json Worker::getQueuedPacket()
                 ackPendingQueue.push_back(outPacket);
             }
         }
-    } 
+    } else {
+        return json({});
+    }
     
     senderQueue.pop_front();
     sem_post(&workerLock);
@@ -168,6 +170,7 @@ void Worker::pushToFront(OutPacket* outPacket)
     ackPacketPop.setFlag();
     sem_post(&workerLock);
 }
+
 void Worker::setQuickSendMode()
 {
     quickSendMode.setFlag();
