@@ -2,6 +2,8 @@
 #include "../include/debug_rp.hpp"
 #include "worker_registry.hpp"
 
+WorkerRegistry::WorkerRegistry(){}
+
 int WorkerRegistry::generateWorkerUid()
 {
     Flag exit, failed;
