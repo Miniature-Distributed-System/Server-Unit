@@ -1,6 +1,6 @@
 #ifndef SINK_STACK_H
 #define SINK_STACK_H
-#include "prevalidate_json.hpp"
+#include "../socket/prevalidate_json.hpp"
 #include <semaphore.h>
 #include "../include/flag.h"
 #include "../include/task.hpp"
@@ -34,6 +34,7 @@ class Sink
         std::uint64_t sinkLimit;
         std::string debugPrefix;
     public:
+        Sink();
         Sink(std::uint64_t maxSize, std::string debugPrefix);
         int pushObject(void *object, TaskPriority priority);
         int getCurrentSinkSpace();

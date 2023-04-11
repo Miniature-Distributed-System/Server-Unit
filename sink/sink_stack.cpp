@@ -20,6 +20,8 @@ int calculateStarveCounter(TaskPriority priority)
     }
 }
 
+Sink::Sink(){}
+
 Sink::Sink(std::uint64_t maxSinkSize, std::string debugPrefix){
     sinkHead = new SinkItem(NULL, 0);
     sinkItemCount = 0;
