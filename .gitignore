@@ -1,0 +1,12 @@
+# Ignore compile output directories
+bin/
+obj/
+# Ignore all
+*
+# Unignore all with extensions
+!*.*
+# Unignore all dirs
+!*/
+### Above cobination will ignore all files without extension ###
+*.o
+*.db
