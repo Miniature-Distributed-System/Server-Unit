@@ -99,7 +99,7 @@ void pushUserDataToWorkerQueue()
         return;
     }
 
-    sinkItem = globalSenderSink.popObject();
+    sinkItem = globalSenderSink->popObject();
     userData = (UserDataTable*)sinkItem.dataObject;
     packet = userData->toJson();
     worker->queuePacket(

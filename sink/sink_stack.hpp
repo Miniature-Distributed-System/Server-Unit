@@ -42,6 +42,6 @@ class Sink
 };
 
 extern Sink *globalReceiverSink;
-extern Sink globalSenderSink;
+extern Sink *globalSenderSink;
 
 #endif

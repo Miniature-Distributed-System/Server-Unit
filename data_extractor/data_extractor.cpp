@@ -85,7 +85,7 @@ int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNam
 
         fileData = getFileData(curUserTableName, false);
         userTable = new UserDataTable(userTableName, getTaskPriority(userTablePriority), userTableAlgo, fileData);
-        globalSenderSink.pushObject(userTable, getTaskPriority(userTablePriority));
+        globalSenderSink->pushObject(userTable, getTaskPriority(userTablePriority));
     }
     DEBUG_MSG(__func__, "pushed user tables from DB to sender stack");
     return 0;

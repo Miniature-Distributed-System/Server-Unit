@@ -18,7 +18,7 @@ void *monitorUserTable(void *data)
 
     while(monitorStop.isFlagSet())
     {
-        if(!globalSenderSink.isSinkFull() || !globalReceiverSink->isSinkFull())
+        if(!globalSenderSink->isSinkFull() || !globalReceiverSink->isSinkFull())
         {
             currentTimeStamp = globalSqlAccess.sqlQueryDb(queryTimeStamp, columnName);
             if(!currentTimeStamp.compare(latestTimeStamp))
