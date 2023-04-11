@@ -31,6 +31,7 @@ class Worker {
         std::list<OutPacket*> ackPendingQueue;
         Flag attendance;
         Flag ackPacketPop;
+        Flag quickSendMode;
         sem_t workerLock;
     public:
         Worker(std::uint64_t workerUID);
@@ -44,5 +45,8 @@ class Worker {
         bool matchAckablePacket(std::string id);
         void pushToFront(OutPacket *outPacket);
         std::list<OutPacket*> shutDown();
+        void setQuickSendMode();
+        void resetQuickSendMode();
+        bool isQuickSendMode();
 };
 #endif

@@ -40,6 +40,7 @@ Worker::Worker(std::uint64_t workerUID)
     this->workerUID = workerUID;
     attendance.initFlag(true);
     ackPacketPop.initFlag();
+    quickSendMode.initFlag();
     sem_init(&workerLock, 0, 0);
 }
 
@@ -165,4 +166,18 @@ void Worker::pushToFront(OutPacket* outPacket)
     ackPendingQueue.push_front(outPacket);
     ackPacketPop.setFlag();
     sem_post(&workerLock);
+}
+void Worker::setQuickSendMode()
+{
+    quickSendMode.setFlag();
+}
+
+void Worker::resetQuickSendMode()
+{
+    quickSendMode.resetFlag();
+}
+
+bool Worker::isQuickSendMode()
+{
+    return quickSendMode.isFlagSet();
 }
