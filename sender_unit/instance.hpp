@@ -3,10 +3,12 @@
 #include <string>
 #include <list>
 #include <semaphore.h>
-#include "../lib/nlohmann/json-schema.hpp"
 
-using nlohmann::json_schema::json_validator;
+#ifndef JSON_H
+#define JSON_H
+#include "../lib/nlohmann/json-schema.hpp"
 using json = nlohmann::json;
+#endif
 
 struct InstanceStruct {
     std::string instanceName;
