@@ -2,11 +2,14 @@
 #define USER_DATA_H
 
 #include <string>
-#include "../lib/nlohmann/json-schema.hpp"
 #include "../include/task.hpp"
 
-using nlohmann::json_schema::json_validator;
+#ifndef JSON_H
+#define JSON_H
+#include "../lib/nlohmann/json-schema.hpp"
 using json = nlohmann::json;
+#endif
+
 
 struct UserDataTable {
     std::string userTable;
