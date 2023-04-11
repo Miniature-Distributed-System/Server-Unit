@@ -20,7 +20,7 @@ void *monitorUserTable(void *data)
     {
         if(!globalSenderSink->isSinkFull() || !globalReceiverSink->isSinkFull())
         {
-            currentTimeStamp = globalSqlAccess.sqlQueryDb(queryTimeStamp, columnName);
+            currentTimeStamp = globalSqlAccess->sqlQueryDb(queryTimeStamp, columnName);
             if(!currentTimeStamp.compare(latestTimeStamp))
             {
                 
@@ -28,7 +28,7 @@ void *monitorUserTable(void *data)
                 std::string queryTableName = "SELECT " +  USERDAT_DAT_COL_ID + " FROM " + USERDAT_TABLE_NAME + 
                                 " WHERE timestamp BETWEEN '" + latestTimeStamp + "' AND '" + currentTimeStamp + "';"; 
                 latestTimeStamp = currentTimeStamp;
-                std::list<std::string> fileNames = globalSqlAccess.sqlQueryDbList(queryTableName);
+                std::list<std::string> fileNames = globalSqlAccess->sqlQueryDbList(queryTableName);
                 for(auto i = fileNames.begin(); i != fileNames.end(); i++){
                     globalOutDataRegistry.addTable(*i);
                 }

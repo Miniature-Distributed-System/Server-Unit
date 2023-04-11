@@ -51,7 +51,7 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, TaskP
         }
         std::string algoTypeQuery = "SELECT " + INSTANCE_PRIO_COL_ID + " FROM " + INSTANCE_TABLE_NAME + " WHERE "
                         + INSTANCE_DAT_COL_ID + "="+ curInstanceName +";";
-        std::uint8_t algoType = globalSqlAccess.sqlQueryDbGetInt(algoTypeQuery, INSTANCE_PRIO_COL_ID);
+        std::uint8_t algoType = globalSqlAccess->sqlQueryDbGetInt(algoTypeQuery, INSTANCE_PRIO_COL_ID);
         instanceStruct = new InstanceStruct(curInstanceName, algoType, resultData);
         instanceList.push_back(instanceStruct);
     }
@@ -80,8 +80,8 @@ int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNam
         tableAlgoIdQuery = "SELECT " + USERDAT_ALGO_COL_ID + " FROM " + USERDAT_TABLE_NAME + " WHERE " 
         + USERDAT_DAT_COL_ID + " '" + userTableName + "';";
         
-        userTablePriority = globalSqlAccess.sqlQueryDbGetInt(tablePriorityQuery);
-        userTableAlgo = globalSqlAccess.sqlQueryDb(tablePriorityQuery);
+        userTablePriority = globalSqlAccess->sqlQueryDbGetInt(tablePriorityQuery);
+        userTableAlgo = globalSqlAccess->sqlQueryDb(tablePriorityQuery);
 
         fileData = getFileData(curUserTableName, false);
         userTable = new UserDataTable(userTableName, getTaskPriority(userTablePriority), userTableAlgo, fileData);

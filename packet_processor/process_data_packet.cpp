@@ -56,7 +56,7 @@ int ProcessDataPacket::createCsvFromData()
 int ProcessDataPacket::pushCsvToDb()
 {
     DEBUG_MSG(__func__, "pushing ", tableId, " results into database");
-    globalSqlAccess.sqlWriteBlob(HOME_DIR + "temp/" + tableId + getExtension() + ".csv", USERDAT_DAT_COL_ID, tableId);
+    globalSqlAccess->sqlWriteBlob(HOME_DIR + "temp/" + tableId + getExtension() + ".csv", USERDAT_DAT_COL_ID, tableId);
     return 0;
 }
 

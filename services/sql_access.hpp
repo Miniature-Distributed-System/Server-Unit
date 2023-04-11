@@ -37,6 +37,6 @@ class SqlAccess{
         std::list<std::string> sqlReadList(std::string tableID, std::string columnName);
 };
 
-SqlAccess globalSqlAccess; 
+extern SqlAccess *globalSqlAccess; 
 
 #endif
