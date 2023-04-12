@@ -39,7 +39,25 @@ std::string* SqlAccess::sqlQueryDb(std::string queryStatement, std::string colum
     return result;
 }
 
-int SqlAccess::sqlQueryDbGetInt(std::string queryStatement, std::string columnName = "")
+std::list<std::string> SqlAccess::sqlQueryDbList(std::string queryStatement, std::string columnName)
+{
+    std::list<std::string> result;
+    
+    try{
+        sqlExecutor = conn->prepareStatement(queryStatement);
+        sqlExecutor->executeQuery();
+        while(res->next()){
+            if(columnName.empty())
+                result.push_back(res->getString(1));
+            else
+                result.push_back(res->getString(columnName));
+        }
+    }catch(sql::SQLException &e){
+        DEBUG_ERR(__func__, "sql error: ", e.what());
+    }
+
+    return result;
+}
 {
     int result;
     sqlExecutor = conn->prepareStatement(queryStatement);
