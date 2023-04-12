@@ -5,7 +5,7 @@
 static json packetSchema = R"(
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "A person",
+    "title": "packet prevalidator",
     "properties": {
       "head": {
           "description": "packet status",
@@ -14,7 +14,7 @@ static json packetSchema = R"(
       "id": {
           "description": "CU identification number",
           "type": "string"
-      },
+      }
     },
     "required": [
                  "head",
