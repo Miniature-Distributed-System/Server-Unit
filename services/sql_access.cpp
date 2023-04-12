@@ -1,6 +1,8 @@
 #include "../include/debug_rp.hpp"
 #include "sql_access.hpp"
 
+using namespace sql;
+
 SqlAccess::SqlAccess(){}
 
 SqlAccess::SqlAccess(std::string url, std::string username, std::string password, std::string database, 
