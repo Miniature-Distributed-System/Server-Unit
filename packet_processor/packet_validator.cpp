@@ -8,7 +8,7 @@
 static json packetSchema = R"(
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "A person",
+    "title": "packet validator",
     "properties": {
       "id": {
           "description": "table ID",
@@ -28,7 +28,7 @@ static json packetSchema = R"(
     "required": [
                  "id",
                  "priority",
-                 "body"
+                 "data"
                  ],
     "type": "object"
 }
