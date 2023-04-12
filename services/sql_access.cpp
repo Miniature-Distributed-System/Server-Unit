@@ -14,6 +14,7 @@ SqlAccess::SqlAccess(std::string url, std::string username, std::string password
     this->database = database;
     this->dataTable = dataTable;
 }
+
 void SqlAccess::initialize()
 {
     try{
@@ -29,12 +30,13 @@ void SqlAccess::initialize()
     }
 }
 
-std::string* SqlAccess::sqlQueryDb(std::string queryStatement, std::string columnName = "")
+std::string SqlAccess::sqlQueryDb(std::string queryStatement, std::string columnName)
 {
     std::string result;
+    
     try{
-    sqlExecutor = conn->prepareStatement(queryStatement);
-    sqlExecutor->executeQuery();
+        sqlExecutor = conn->prepareStatement(queryStatement);
+        sqlExecutor->executeQuery();
         while(res->next()){
             if(columnName.empty())
                 result = result + res->getString(1);
@@ -68,11 +70,14 @@ std::list<std::string> SqlAccess::sqlQueryDbList(std::string queryStatement, std
 
     return result;
 }
+
+int SqlAccess::sqlQueryDbGetInt(std::string queryStatement, std::string columnName)
 {
     int result;
+
     try{
-    sqlExecutor = conn->prepareStatement(queryStatement);
-    sqlExecutor->executeQuery();
+        sqlExecutor = conn->prepareStatement(queryStatement);
+        sqlExecutor->executeQuery();
         while(res->next()){
             if(columnName.empty())
                 result = res->getInt(1);
@@ -83,16 +88,17 @@ std::list<std::string> SqlAccess::sqlQueryDbList(std::string queryStatement, std
         DEBUG_ERR(__func__, "sql error: ", e.what());
         return -1;
     }
+    
     return result;
 }
 
 int SqlAccess::sqlWriteBlob(std::string fileLoc, std::string columnName, std::string tableID)
 {
     try{
-    std::string query = "UPDATE " + dataTable + " SET " + columnName + " = LOAD_FILE('" + fileLoc +"') WHERE tableID="
-                    + tableID + ";";
+        std::string query = "UPDATE " + dataTable + " SET " + columnName + " = LOAD_FILE('" + fileLoc +"') WHERE tableID="
+                        + tableID + ";";
         sqlExecutor = conn->prepareStatement(query);
-    sqlExecutor->executeQuery();
+        sqlExecutor->executeQuery();
     }catch(sql::SQLException &e){
         DEBUG_ERR(__func__, "sql error: ", e.what());
         return -1;
@@ -106,11 +112,11 @@ std::list<std::string> SqlAccess::sqlReadList(std::string tableID, std::string c
     std::list<std::string> resultList;
 
     try{
-    std::string query = "SELECT " + columnName + " FROM " + tableID +";";
+        std::string query = "SELECT " + columnName + " FROM " + tableID +";";
         sqlExecutor = conn->prepareStatement(query);
-    sqlExecutor->executeQuery();
-    while(res->next()){
-        resultList.push_back(res->getString(columnName));
+        sqlExecutor->executeQuery();
+        while(res->next()){
+            resultList.push_back(res->getString(columnName));
         }
     }catch(sql::SQLException &e){
         DEBUG_ERR(__func__, "sql error: ", e.what());
