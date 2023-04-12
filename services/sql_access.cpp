@@ -18,8 +18,8 @@ void SqlAccess::initialize()
 {
     try{
         driver = get_driver_instance();
-        con = driver->connect(host, username, password);
-        con->setSchema(database);
+        conn = driver->connect(url, username, password);
+        conn->setSchema(database);
         DEBUG_MSG(__func__, "sql initillized successfully");
         inited.setFlag();
     }catch(sql::SQLException &e){
