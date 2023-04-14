@@ -53,6 +53,22 @@ bool OutDataRegistry::findMatchInList(std::string dataTableName)
     return false;
 }
 
+bool OutDataRegistry::assignWorker(std::string id, Worker *worker)
+{
+    OutDataState *outDataState;
+    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
+        outDataState = *i;
+        if(outDataState->id == id){
+            DEBUG_MSG(__func__, "updating status for table name: ", id);
+            outDataState->worker = worker;
+            return true;
+        }
+    }
+
+    DEBUG_ERR(__func__, "found no match for table name:", id, " failed to update status");
+    return false;
+}
+
 int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus status)
 {
     OutDataState *outDataState;
@@ -61,9 +77,6 @@ int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus 
         if(outDataState->id == dataTableName){
             DEBUG_MSG(__func__, "updating status for table name: ", dataTableName, " with state: ", status);
             outDataState->taskStatus = status;
-            if(status == DATA_SENT || status == DATA_READY)
-                outDataState->worker->checkIn();
-            outDataState->packetUpdated.setFlag();
             return true;
         }
     }
@@ -72,57 +85,21 @@ int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus 
     return false;
 }
 
-bool OutDataRegistry::assignWorker(std::string tableName, Worker *worker)
-{
-    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
-        if((*i)->id == tableName){
-            (*i)->worker = worker;
-            DEBUG_MSG(__func__, "assigned worker", worker->getWorkerUID(), " with tableId", tableName);
-            return true;
-        }
-    }
-
-    DEBUG_ERR(__func__, "found no match for table name:", tableName);
-    return false;
-}
-
-long long int OutDataRegistry::getWorkerUid(std::string tableName)
-{
-    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
-        if((*i)->id == tableName){
-            return (*i)->worker->getWorkerUID();
-        }
-    }
-
-    DEBUG_ERR(__func__, "found no match for table name:", tableName, " get Worker UID");
-    return -1;
-}
-
-bool OutDataRegistry::packetCheckInStatus(std::string tableName)
-{
-    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
-        if((*i)->id == tableName){
-            return (*i)->packetUpdated.isFlagSet();
-        }
-    }
-
-    DEBUG_ERR(__func__, "found no match for table name:", tableName, " get Worker UID");
-    return false;
-}
-
-void OutDataRegistry::packetCheckOut(std::string tableName)
-{
-    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
-        if((*i)->id == tableName){
-            (*i)->packetUpdated.resetFlag();
-            return;
-        }
-    }
-
-    DEBUG_ERR(__func__, "found no match for table name:", tableName, " get Worker UID");
-}
-
 std::list<OutDataState*> OutDataRegistry::getOutDataRegistryList()
 {
     return outDataRegistryList;
+}
+
+OutDataState* OutDataRegistry::getOutDataRegistryFromId(std::string id)
+{
+    OutDataState *outDataState;
+    for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
+        outDataState = *i;
+        if(outDataState->id == id){
+            return *i;
+        }
+    }
+
+    DEBUG_ERR(__func__, "found no match for table name:", id, " failed to update status");
+    return NULL;    
 }

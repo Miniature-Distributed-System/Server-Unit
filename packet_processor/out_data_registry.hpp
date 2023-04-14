@@ -10,11 +10,9 @@ struct OutDataState {
     std::string id;
     UserTaskStatus taskStatus;
     Worker *worker;
-    Flag packetUpdated;
     OutDataState(std::string id, UserTaskStatus taskStatus){
         this->id = id;
         this->taskStatus = taskStatus;
-        packetUpdated.initFlag();
     }
 };
 
@@ -25,11 +23,9 @@ class OutDataRegistry {
         int deleteTable(std::string tableName);
         bool findMatchInList(std::string tableName);
         bool assignWorker(std::string tableName, Worker *worker);
-        long long int getWorkerUid(std::string tableName);
         int updateTaskStatus(std::string tableName, UserTaskStatus status);
-        bool packetCheckInStatus(std::string tableId);
-        void packetCheckOut(std::string tableId);
         std::list<OutDataState*> getOutDataRegistryList();
+        OutDataState* getOutDataRegistryFromId(std::string id);
 };
 
 extern OutDataRegistry globalOutDataRegistry;
