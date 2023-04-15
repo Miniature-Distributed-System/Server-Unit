@@ -8,7 +8,7 @@
 
 struct ExportSinkItem {
     void *dataObject;
-    ExportSinkItem();
+    ExportSinkItem(){}
     ExportSinkItem(void *object){
         dataObject = object;
     }
