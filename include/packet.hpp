@@ -19,6 +19,6 @@ enum ServerPacketCodes {
     SP_FRES_ACK     = 1 << 3,   //Server received the result(includes res tableID)
     SP_ERR          = 1 << 4,   //Server received packet was corrupt 
     SP_IGNORE       = 1 << 5,   //Status is ignored
-}
+};
 
 #endif
