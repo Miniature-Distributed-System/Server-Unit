@@ -159,7 +159,7 @@ int pushPendingPackets(std::list<OutPacket*>* outPacketList)
     return 0;
 }
 
-int startSenderCore(void *data)
+JobStatus startSenderCore(void *data)
 {
     int rc = 0;
     SenderCoreData *senderData = (SenderCoreData*)data;
@@ -183,11 +183,11 @@ int startSenderCore(void *data)
 
     return JOB_PENDING;
 }
-int pauseSenderCore(void *data)
+JobStatus pauseSenderCore(void *data)
 {
     return JOB_PENDING;
 }
-int endSenderCore(void *data)
+JobStatus endSenderCore(void *data, JobStatus status)
 {
     DEBUG_MSG(__func__, "sender instance is shutting down");
     return JOB_DONE;

@@ -51,7 +51,7 @@ void PacketValidator::validatePacket()
 
 }
 
-int start_validator(void *data)
+JobStatus start_validator(void *data)
 {
     PacketValidator *packet = new PacketValidator(*(json*)globalReceiverSink.popObject());
     packet->validatePacket();
@@ -65,11 +65,11 @@ int start_validator(void *data)
     return JOB_PENDING;
 }
 
-int pause_valdiator(void *data){
+JobStatus pause_valdiator(void *data){
     return JOB_PENDING;
 }
 
-int end_valdidator(void *data){
+JobStatus end_valdidator(void *data, JobStatus status){
     return JOB_DONE;
 }
 
