@@ -36,14 +36,17 @@ int TaskPool::addTask(taskStruct *task, TaskPriority loadType)
                 taskPoolCount++;
                 sem_post(&taskPoolLock);
                 DEBUG_MSG(__func__, "New node added at tail: ", taskPoolCount);
+                pthread_cond_signal(&cond);
                 return 0;
             }
             node = node->next;
         }
     }
+
     sem_post(&taskPoolLock);
-    DEBUG_ERR(__func__,"could not add task to tail of task pool");
-    return -1;
+    DEBUG_MSG(__func__, "New node added at tail: ", taskPoolCount);
+    pthread_cond_signal(&cond);
+    return 0;
 }
 
 TaskNodeExport TaskPool::popTask()
