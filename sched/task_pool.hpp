@@ -15,15 +15,10 @@ struct taskPoolNode{
         next = NULL;
         taskType = DEFAULT_PRIORITY;
     }
-};
-
-//Use smart pointers to get rid of our memory leak
-class TaskNodeExport {
-        taskPoolNode *node;
-    public:
-        explicit TaskNodeExport(taskPoolNode *node = NULL) {this->node = node;}
-        ~TaskNodeExport(){ delete node;}
-        taskPoolNode& operator*(){ return *node;}
+    void copyObject(taskPoolNode* task){
+        this->taskItem = task->taskItem;
+        this->taskType = task->taskType;
+    }
 };
 
 class TaskPool
@@ -35,10 +30,7 @@ class TaskPool
     public:
         TaskPool();
         int addTask(taskStruct *, TaskPriority);
-        TaskNodeExport popTask();
-        ~TaskPool(){
-            sem_destroy(&taskPoolLock);
-        }
+        taskPoolNode popTask();
         int getTaskPoolSize(){
             return taskPoolCount;
         };

@@ -1,4 +1,5 @@
 #include "task_pool.hpp"
+#include "task_scheduler.hpp"
 #include "../include/debug_rp.hpp"
 
 TaskPool::TaskPool()
@@ -49,17 +50,21 @@ int TaskPool::addTask(taskStruct *task, TaskPriority loadType)
     return 0;
 }
 
-TaskNodeExport TaskPool::popTask()
+taskPoolNode TaskPool::popTask()
 {
-    taskPoolNode *task;
+    taskPoolNode task, *temp;
+
     if(taskPoolCount <= 0){
         DEBUG_MSG(__func__, "The task pool is empty");
-        return TaskNodeExport(NULL);
+        return taskPoolNode();
     }
     sem_wait(&taskPoolLock);
-    task = headNode;
-    headNode = task->next;
+    temp = headNode;
+    headNode = temp->next;
+    task.copyObject(temp);
+    delete temp;
+    taskPoolCount--;
     sem_post(&taskPoolLock);
     DEBUG_MSG(__func__, "Popped item, total remaining items in queue: ",taskPoolCount);
-    return TaskNodeExport(task);
+    return task;
 }

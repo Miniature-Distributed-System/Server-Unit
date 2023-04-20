@@ -112,11 +112,11 @@ struct thread_queue* get_quickest_queue(void)
     return list[threadID];
 }
 
-struct queue_job* init_job(struct TaskNodeExport task)
+struct queue_job* init_job(taskPoolNode task)
 {
-    struct queue_job *job = new queue_job((*task).taskItem->proc, (*task).taskItem->args);
+    struct queue_job *job = new queue_job(task.taskItem->proc, task.taskItem->args);
     job->jobStatus = JOB_PENDING;
-    job->cpuSliceMs = get_cpu_slice((*task).taskType);
+    job->cpuSliceMs = get_cpu_slice(task.taskType);
     DEBUG_MSG(__func__, "job inited with cts:",job->cpuSliceMs);
     return job;
 }
@@ -130,7 +130,6 @@ void dealloc_job(struct queue_job* job)
 void *sched_task(void *ptr)
 {
     struct thread_queue* queue;
-    struct TaskNodeExport taskNode;
     struct queue_job* job;
     int i, j, qSlots;
 
@@ -152,8 +151,7 @@ void *sched_task(void *ptr)
                         if(queue->queueHead[i] && queue->qSlotDone[i])
                             dealloc_job(queue->queueHead[i]);
                         
-                        taskNode = globalTaskPool.popTask();
-                        job = init_job(taskNode);
+                        job = init_job(globalTaskPool->popTask());
                         queue->queueHead[i] = job;
                         queue->qSlotDone[i] = 0;
                         queue->totalJobsInQueue++;
