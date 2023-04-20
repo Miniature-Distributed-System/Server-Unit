@@ -1,6 +1,14 @@
 #include "task_pool.hpp"
 #include "../include/debug_rp.hpp"
 
+TaskPool::TaskPool()
+{
+    sem_init(&taskPoolLock, 0, 1);
+    taskPoolCount = 0;
+    headNode = NULL;
+    DEBUG_MSG(__func__,"inited TaskPool!");
+}
+
 int TaskPool::addTask(taskStruct *task, TaskPriority loadType)
 {
     taskPoolNode *node, *tailNode;

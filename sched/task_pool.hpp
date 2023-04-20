@@ -33,10 +33,7 @@ class TaskPool
         taskPoolNode *headNode;
         std::uint64_t taskPoolCount;
     public:
-        TaskPool(){
-            sem_init(&taskPoolLock, 0, 0);
-            taskPoolCount = 0;
-        }
+        TaskPool();
         int addTask(taskStruct *, TaskPriority);
         TaskNodeExport popTask();
         ~TaskPool(){
