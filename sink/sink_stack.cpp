@@ -27,7 +27,7 @@ Sink::Sink(std::uint64_t maxSinkSize, std::string debugPrefix){
     sinkItemCount = 0;
     sinkLimit = maxSinkSize;
     this->debugPrefix = debugPrefix + ": ";
-    sem_init(&sinkLock, 0, 0);
+    sem_init(&sinkLock, 0, 1);
     DEBUG_MSG(__func__, debugPrefix, " sink initlilized");
 }
 
