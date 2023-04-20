@@ -13,15 +13,15 @@ void* monitorInstanceTable(void *data)
     std::string queryBuilder;
     std::string columnName = "timestamp";
     std::string latestTimeStamp, currentTimeStamp;
-    std::list<std::string> instnaceNameList;
+    std::list<std::string> instanceNameList;
 
     while(monitorStop.isFlagSet()){
         currentTimeStamp = globalSqlAccess->sqlQueryDb(queryTimeStamp, columnName);
         if(currentTimeStamp.compare(latestTimeStamp)){
             DEBUG_MSG(__func__, "current time stamp:", currentTimeStamp, " saved timestamp: ", latestTimeStamp);
             latestTimeStamp = currentTimeStamp;
-            instnaceNameList = globalSqlAccess->sqlReadList(INSTANCE_TABLE_NAME, INSTANCE_DAT_COL_ID);
-            DataExtractor().executeInstanceExtractor(instnaceNameList, HIGH_PRIORITY);
+            instanceNameList = globalSqlAccess->sqlReadList(INSTANCE_TABLE_NAME, INSTANCE_DAT_COL_ID);
+            DataExtractor().executeInstanceExtractor(instanceNameList, HIGH_PRIORITY);
         }
         sleep(DB_POLL_THREAD_SLEEP_TIMER);
     }
