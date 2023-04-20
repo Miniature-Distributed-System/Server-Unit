@@ -12,16 +12,19 @@ TaskPool::TaskPool()
 int TaskPool::addTask(taskStruct *task, TaskPriority loadType)
 {
     taskPoolNode *node, *tailNode;
+    
     if(taskPoolCount >= MAX_TASK_POOL_SIZE)
     {
         DEBUG_MSG(__func__,"Task Queue is full");
         return -1;
     }
+    
     sem_wait(&taskPoolLock);
-    if(headNode == NULL){
+    if(!headNode){
         headNode = new taskPoolNode();
         headNode->taskItem = task;
         headNode->taskType = loadType;
+        taskPoolCount++;
     } else {
         node = headNode;
         while(node){
