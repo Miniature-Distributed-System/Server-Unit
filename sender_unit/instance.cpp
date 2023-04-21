@@ -4,6 +4,7 @@
 Instance::Instance()
 {
     sem_init(&instanceListLock, 0, 0);
+    dataUpdated.initFlag();
 }
 
 int Instance::update(std::list<InstanceStruct*> instance)
@@ -22,6 +23,7 @@ int Instance::update(std::list<InstanceStruct*> instance)
     for(auto i = instance.begin(); i != instance.end(); i++){
         instanceList.push_back(*i);
     }
+    dataUpdated.setFlag();
     sem_post(&instanceListLock);
 
     DEBUG_MSG(__func__, "successfully updated list");
@@ -50,4 +52,14 @@ std::list<json>* Instance::toJson()
     }
 
     return instancePacket;
+}
+
+void Instance::resetFlag()
+{
+    dataUpdated.resetFlag();
+}
+
+bool Instance::getUpdateStatus()
+{
+    return dataUpdated.isFlagSet();
 }

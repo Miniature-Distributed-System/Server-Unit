@@ -3,6 +3,7 @@
 #include <string>
 #include <list>
 #include <semaphore.h>
+#include "../include/flag.h"
 
 #ifndef JSON_H
 #define JSON_H
@@ -24,11 +25,14 @@ struct InstanceStruct {
 class Instance {
         std::list<InstanceStruct*> instanceList;
         sem_t instanceListLock;
+        Flag dataUpdated;
     public:
         Instance();
         int update(std::list<InstanceStruct*> instance);
         std::list<InstanceStruct*> getInstance();
         std::list<json>* toJson();
+        void resetFlag();
+        bool getUpdateStatus();
 };
 
 extern Instance globalInstanceRegistery;
