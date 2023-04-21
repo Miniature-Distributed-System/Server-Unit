@@ -129,16 +129,10 @@ void dealloc_job(struct queue_job* job)
 
 void *sched_task(void *ptr)
 {
-    struct thread_pool* threadPoolHead = (struct thread_pool*)ptr;
     struct thread_queue* queue;
     struct TaskNodeExport taskNode;
     struct queue_job* job;
     int i, j, qSlots;
-
-    if(threadPoolHead == NULL){
-        DEBUG_ERR(__func__, "thread head is uninited cant procced any further!");
-        return 0;
-    }
 
     while(!sched_should_stop)
     {
