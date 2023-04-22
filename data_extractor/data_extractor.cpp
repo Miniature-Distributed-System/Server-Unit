@@ -43,15 +43,27 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, TaskP
     InstanceStruct *instanceStruct = NULL;
     std::list<InstanceStruct*> instanceList;
     int j = 0;
-    for(auto i = idList.begin(); i != idList.end(); i++,j++){
+
+    for(auto i = idList.begin(); i != idList.end(); i++,j++)
+    {
         std::string curInstanceName = *i, *resultData;
         if(!curInstanceName.empty()) {
             DEBUG_MSG(__func__, "instance id: ", j, " is empty");
             continue;
         }
-        std::string algoTypeQuery = "SELECT " + INSTANCE_PRIO_COL_ID + " FROM " + INSTANCE_TABLE_NAME + " WHERE "
-                        + INSTANCE_DAT_COL_ID + "="+ curInstanceName +";";
-        std::uint8_t algoType = globalSqlAccess->sqlQueryDbGetInt(algoTypeQuery, INSTANCE_PRIO_COL_ID);
+        
+        std::string csvFileNameQuery = "SELECT " + INSTANCE_FILE_COL_ID + " FROM " + INSTANCE_TABLE_NAME + " WHERE "
+                        + INSTANCE_NAME_COL_ID + "="+ curInstanceName +";";
+        std::string csvFileName = globalSqlAccess->sqlQueryDb(csvFileNameQuery, INSTANCE_FILE_COL_ID);
+        resultData = getFileData(csvFileName, true);
+        if(!resultData){
+            DEBUG_ERR(__func__, "fetching ", csvFileName, " failed for ", curInstanceName, " in ", INSTANCE_TABLE_NAME);
+            continue;
+        }
+
+        std::string algoTypeQuery = "SELECT " + INSTANCE_ALGO_COL_ID + " FROM " + INSTANCE_TABLE_NAME + " WHERE "
+                        + INSTANCE_NAME_COL_ID + "="+ curInstanceName +";";
+        std::uint8_t algoType = globalSqlAccess->sqlQueryDbGetInt(algoTypeQuery, INSTANCE_ALGO_COL_ID);
         instanceStruct = new InstanceStruct(curInstanceName, algoType, resultData);
         instanceList.push_back(instanceStruct);
     }
