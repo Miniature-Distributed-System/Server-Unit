@@ -89,9 +89,9 @@ int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNam
         }
         
         tablePriorityQuery = "SELECT " + USERDAT_DAT_PRIORITY_COL_ID + " FROM " + USERDAT_TABLE_NAME + " WHERE " 
-        + USERDAT_DAT_COL_ID + " '" + userTableName + "';";
+        + USERDAT_DAT_COL_ID + "='" + userTableName + "';";
         tableAlgoIdQuery = "SELECT " + USERDAT_ALGO_COL_ID + " FROM " + USERDAT_TABLE_NAME + " WHERE " 
-        + USERDAT_DAT_COL_ID + " '" + userTableName + "';";
+        + USERDAT_DAT_COL_ID + "='" + userTableName + "';";
         
         userTablePriority = globalSqlAccess->sqlQueryDbGetInt(tablePriorityQuery);
         userTableAlgo = globalSqlAccess->sqlQueryDb(tablePriorityQuery);
