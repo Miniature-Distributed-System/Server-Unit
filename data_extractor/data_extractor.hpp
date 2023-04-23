@@ -7,7 +7,7 @@
 class DataExtractor { 
     public:
         static std::string* getFileData(std::string fileName, bool isInstance);
-        static int executeInstanceExtractor(std::list<std::string> instanceNameList, TaskPriority priority);
+        static int executeInstanceExtractor(std::list<std::string> instanceNameList);
         static int executeUserTableExtractor(std::list<std::string> userTableName);
 };
 

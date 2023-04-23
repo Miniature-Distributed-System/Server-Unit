@@ -38,7 +38,7 @@ std::string* DataExtractor::getFileData(std::string fileName, bool isInstance)
     return NULL;
 }
 
-int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, TaskPriority priority)
+int DataExtractor::executeInstanceExtractor(std::list<std::string> idList)
 {
     InstanceStruct *instanceStruct = NULL;
     std::list<InstanceStruct*> instanceList;

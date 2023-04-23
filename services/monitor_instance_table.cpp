@@ -21,7 +21,7 @@ void* monitorInstanceTable(void *data)
             DEBUG_MSG(__func__, "current time stamp:", currentTimeStamp, " saved timestamp: ", latestTimeStamp);
             latestTimeStamp = currentTimeStamp;
             instanceNameList = globalSqlAccess->sqlReadList(INSTANCE_TABLE_NAME, INSTANCE_DAT_COL_ID);
-            DataExtractor().executeInstanceExtractor(instanceNameList, HIGH_PRIORITY);
+            DataExtractor().executeInstanceExtractor(instanceNameList);
         }
         sleep(DB_POLL_THREAD_SLEEP_TIMER);
     }
