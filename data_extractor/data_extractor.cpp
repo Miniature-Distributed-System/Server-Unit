@@ -5,6 +5,7 @@
 #include "../services/sql_access.hpp"
 #include "../sender_unit/instance.hpp"
 #include "../sender_unit/user_data.hpp"
+#include "../packet_processor/out_data_registry.hpp"
 #include "../configs.h"
 #include "data_extractor.hpp"
 
@@ -98,6 +99,7 @@ int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNam
         fileData = getFileData(curUserTableName, false);
         userTable = new UserDataTable(userTableName, getTaskPriority(userTablePriority), userTableAlgo, fileData);
         globalSenderSink->pushObject(userTable, getTaskPriority(userTablePriority));
+        globalOutDataRegistry.addTable(userTableName);
     }
     DEBUG_MSG(__func__, "pushed user tables from DB to sender stack");
     return 0;
