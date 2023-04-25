@@ -160,6 +160,9 @@ void *sched_task(void *ptr)
                         break;
                     }
                 }
+            } else {
+                DEBUG_MSG(__func__, "no jobs to schedule! going to sleep...");
+                break;
             }
         }
         pthread_cond_wait(&cond, &mutex);
