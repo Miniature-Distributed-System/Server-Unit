@@ -5,7 +5,7 @@ CFLAGS = -lsqlite3 -pthread -std=gnu++17 -g
 
 OUTDIR = ./bin
 DATADIR = ./data
-SUBDIR = socket lib lib/nlohmann
+SUBDIR = data_extractor lib packet_processor sched sender_unit services sink socket worker_node
 DIR_OBJ = ./obj
 include_dir = -I /usr/include/boost -lsqlite3 -pthread
 
