@@ -7,7 +7,7 @@ OUTDIR = ./bin
 DATADIR = ./data
 SUBDIR = data_extractor lib packet_processor sched sender_unit services sink socket worker_node
 DIR_OBJ = ./obj
-include_dir = -I /usr/include/boost -lsqlite3 -pthread
+include_dir = -I/usr/include/boost -I/usr/include/cppconn -L/usr/lib -pthread -lmysqlcppconn
 
 INCS = $(wildcard *.hpp $(foreach fd, $(SUBDIR), $(fd)/*.hpp))
 SRCS = $(wildcard *.cpp $(foreach fd, $(SUBDIR), $(fd)/*.cpp))
