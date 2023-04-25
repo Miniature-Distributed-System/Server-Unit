@@ -1,7 +1,7 @@
 TARGET = server
 
 CC = g++
-CFLAGS = -lsqlite3 -pthread -std=gnu++17 -g
+CFLAGS = -std=gnu++17 -g
 
 OUTDIR = ./bin
 DATADIR = ./data
