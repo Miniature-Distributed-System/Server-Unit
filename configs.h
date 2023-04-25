@@ -1,24 +1,31 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define HOME_DIR ""
-#define MAX_THREADS
-#define DATABASE_NAME
-
-#define INSTANCE_FILE_DATA_DIR
-#define USER_FILE_DATA_DIR
-
-#define USERDAT_TABLE_NAME
-#define USERDAT_DAT_COL_ID
-#define USERDAT_ALGO_COL_ID
-#define USERDAT_DAT_PRIORITY_COL_ID
-#define USERDAT_DATA_DIR_PATH
-
-#define INSTANCE_TABLE_NAME
-#define INSTANCE_DAT_COL_ID
-#define INSTANCE_PRIO_COL_ID
-
+#include <string>
+#define MAX_THREADS 2
 #define DB_POLL_THREAD_SLEEP_TIMER 2
+#define WORKER_QUEUE_SIZE 20
 
-#define WORKER_QUEUE_SIZE
+extern std::string HOME_DIR;
+extern std::string DATABASE_NAME;
+
+extern std::string DATABASE_URL;
+extern std::string DATABASE_USERNAME;
+extern std::string DATABASE_PASSWORD;
+
+extern std::string INSTANCE_FILE_DATA_DIR;
+extern std::string USER_FILE_DATA_DIR;
+
+extern std::string USERDAT_TABLE_NAME;
+extern std::string USERDAT_DAT_COL_ID;
+extern std::string USERDAT_RES_COL_ID;
+extern std::string USERDAT_INTER_COL_ID;
+extern std::string USERDAT_ALGO_COL_ID;
+extern std::string USERDAT_DAT_PRIORITY_COL_ID;
+
+extern std::string INSTANCE_TABLE_NAME;
+extern std::string INSTANCE_NAME_COL_ID;
+extern std::string INSTANCE_ALGO_COL_ID;
+extern std::string INSTANCE_FILE_COL_ID;
+
 #endif
