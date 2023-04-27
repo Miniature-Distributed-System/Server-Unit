@@ -3,18 +3,18 @@
 
 Instance::Instance()
 {
-    sem_init(&instanceListLock, 0, 0);
+    sem_init(&instanceListLock, 0, 1);
     dataUpdated.initFlag();
 }
 
 int Instance::update(std::list<InstanceStruct*> instance)
 {
     InstanceStruct *instanceStruct;
+
     if(instance.size() == 0){
         DEBUG_ERR(__func__, "instance list has 0 items");
         return 1;
     }
-
     sem_wait(&instanceListLock);
     for(auto i = instanceList.begin(); i != instanceList.end(); i++){
         instanceStruct = *i;
