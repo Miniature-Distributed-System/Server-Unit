@@ -13,7 +13,7 @@ class ProcessDataPacket{
         std::uint8_t pDataType;
         std::string tableId;
         std::string data;
-        std::uint64_t workerUid;
+        std::string workerUid;
         int packetStausCode;
         enum packetDataType {
             INTERMEDIATE_RESULT,
@@ -33,7 +33,7 @@ class ProcessDataPacket{
 class ProcessStatusPacket{
         int statusCode;
         std::string tableId;
-        std::uint64_t workerUid;
+        std::string workerUid;
     public:
         ProcessStatusPacket(json packet);
         ServerPacketCodes getPacketStatusCode();

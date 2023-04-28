@@ -29,7 +29,7 @@ struct OutPacket {
 };
 
 class Worker {
-        std::uint64_t workerUID;
+        std::string workerUID;
         std::list<OutPacket*> senderQueue;
         std::list<OutPacket*> ackPendingQueue;
         Flag attendance;
@@ -38,14 +38,14 @@ class Worker {
         sem_t workerLock;
     public:
         Worker();
-        Worker(std::uint64_t workerUID);
+        Worker(std::string workerUID);
         void checkIn();
         void checkOut();
         bool isCheckedIn();
         int queuePacket(OutPacket*);
         json getQueuedPacket();
         int getQueueSize();
-        std::uint64_t getWorkerUID();
+        std::string getWorkerUID();
         bool matchAckablePacket(std::string id);
         void pushToFront(OutPacket *outPacket);
         std::list<OutPacket*> shutDown();

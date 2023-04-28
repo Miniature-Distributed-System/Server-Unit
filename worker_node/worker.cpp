@@ -38,7 +38,7 @@ OutDataState* OutPacket::getOutDataState()
 
 Worker::Worker(){}
 
-Worker::Worker(std::uint64_t workerUID)
+Worker::Worker(std::string workerUID)
 {
     this->workerUID = workerUID;
     attendance.initFlag(true);
@@ -64,7 +64,7 @@ bool Worker::isCheckedIn()
     return attendance.isFlagSet();
 }
 
-std::uint64_t Worker::getWorkerUID()
+std::string Worker::getWorkerUID()
 {  
     return workerUID;
 }

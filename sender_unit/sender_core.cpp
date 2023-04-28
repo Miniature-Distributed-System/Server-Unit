@@ -17,12 +17,12 @@ using json = nlohmann::json;
 
 SenderCoreData::SenderCoreData()
 {
-    newWorkerList = new std::list<std::uint64_t>;
+    newWorkerList = new std::list<std::string>;
     pendingPacketsList = new std::list<OutPacket*>;
     DEBUG_MSG(__func__, "inited sender core data");
 }
 
-void SenderCoreData::addWorker(std::uint64_t workerUid)
+void SenderCoreData::addWorker(std::string workerUid)
 {
     newWorkerList->push_back(workerUid);
 }
@@ -46,7 +46,7 @@ bool SenderCoreData::isPendingPacketsListEmpty()
     return true;
 }
 
-std::list<std::uint64_t>* SenderCoreData::getWorkerList()
+std::list<std::string>* SenderCoreData::getWorkerList()
 {
     return newWorkerList;
 }
@@ -61,7 +61,7 @@ Worker* findIdealWorker()
     std::list<Worker*> workerList = globalWorkerRegistry.getWorkerList();
     Worker *worker, *resWorker;
     int hSize = 0;
-    std::uint64_t hWorkerUid = 0;
+    std::string hWorkerUid = 0;
 
     for(auto i = workerList.begin(); i != workerList.end(); i++)
     {
@@ -76,8 +76,8 @@ Worker* findIdealWorker()
         }
     }
 
-    if(!hWorkerUid){
-        DEBUG_ERR(__func__, "all workers are full");
+    if(hWorkerUid.empty()){
+        //DEBUG_ERR(__func__, "all workers are full");
         return NULL;
     }
 
@@ -112,9 +112,9 @@ void pushUserDataToWorkerQueue()
     DEBUG_MSG(__func__, "sender sink packet pushed to worker:", worker->getWorkerUID());
 }
 
-void pushInstanceToWorkerQueue(std::list<std::uint64_t> *workerList)
+void pushInstanceToWorkerQueue(std::list<std::string> *workerList)
 {
-    std::uint64_t workerUID;
+    std::string workerUID;
     Worker* worker;
     std::string tableId;
     std::list<json>* instanceJson = globalInstanceRegistery.toJson();

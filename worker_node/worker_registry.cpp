@@ -4,10 +4,11 @@
 
 WorkerRegistry::WorkerRegistry(){}
 
-int WorkerRegistry::generateWorkerUid()
+std::string WorkerRegistry::generateWorkerUid()
 {
     Flag exit, failed;
     std::uint64_t computeNodeId;
+    std::string finalComputeNodeId;
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distr(1000, 9999);
@@ -18,15 +19,16 @@ int WorkerRegistry::generateWorkerUid()
 
     while(!exit.isFlagSet()){
         computeNodeId = distr(gen);
+        finalComputeNodeId = std::to_string(computeNodeId);
         //Both dead and current worker list should not have this unique value regustered in them
         for(auto iter = currentWorkerList.begin(); iter != currentWorkerList.end(); iter++){
-            if((*iter)->getWorkerUID() == computeNodeId){
+            if((*iter)->getWorkerUID() == finalComputeNodeId){
                 failed.resetFlag();
                 break;
             }
         }
         for(auto iter = deadWorkerList.begin(); iter != deadWorkerList.end(); iter++){
-            if(*iter == computeNodeId){
+            if(*iter == finalComputeNodeId){
                 failed.resetFlag();
                 break;
             }
@@ -35,18 +37,18 @@ int WorkerRegistry::generateWorkerUid()
             exit.setFlag();
     }
     
-    worker = new Worker(computeNodeId);
+    worker = new Worker(finalComputeNodeId);
     currentWorkerList.push_front(worker);
     newWorker.setFlag();
 
-    DEBUG_MSG(__func__, "compute unit assigned ID: ", computeNodeId);
-    return computeNodeId;
+    DEBUG_MSG(__func__, "compute unit assigned ID: ", finalComputeNodeId);
+    return finalComputeNodeId;
 }
 
 std::list<OutPacket*> WorkerRegistry::deleteWorker(Worker *worker)
 {
     std::list<OutPacket*> outPacket;
-    std::uint64_t computeNodeId = worker->getWorkerUID();
+    std::string computeNodeId = worker->getWorkerUID();
     
     currentWorkerList.remove(worker);
     outPacket = worker->shutDown();
@@ -69,7 +71,7 @@ std::list<Worker*> WorkerRegistry::getWorkerList()
     return currentWorkerList;
 }
 
-Worker* WorkerRegistry::getWorkerFromUid(std::uint64_t workerUid)
+Worker* WorkerRegistry::getWorkerFromUid(std::string workerUid)
 {
     Worker* worker;
     for(auto i = currentWorkerList.begin(); i != currentWorkerList.end(); i++)
@@ -80,6 +82,6 @@ Worker* WorkerRegistry::getWorkerFromUid(std::uint64_t workerUid)
                 return worker;
         } 
     }
-    DEBUG_ERR(__func__, "could not find worker with UID: ", workerUid + 0);
+    DEBUG_ERR(__func__, "could not find worker with UID: ", workerUid);
     return NULL;
 }
