@@ -25,7 +25,14 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include "../include/debug_rp.hpp"
+#include "../include/packet.hpp"
+#include "../sink/sink_stack.hpp"
+#include "../packet_processor/packet_validator.hpp"
+#include "../worker_node/worker_registry.hpp"
+#include "../packet_processor/packet_constructor.hpp"
 #include "prevalidate_json.hpp"
+#include "socket.hpp"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -99,7 +106,7 @@ public:
             return fail(ec, "accept");
 
         // Read a message
-        std::cout << "Accepted Connection\n";
+        DEBUG_MSG(__func__, "Accepted connection");
         do_read();
     }
 
@@ -118,6 +125,9 @@ public:
         beast::error_code ec,
         std::size_t bytes_transferred)
     {
+        std::string workerUid;
+        Flag isNewWorker;
+        Worker *worker = NULL;
         boost::ignore_unused(bytes_transferred);
 
         // This indicates that the session was closed
@@ -128,42 +138,54 @@ public:
             return fail(ec, "read");
 
         // Echo the message
-        std::cout << "Read message from client:-" << beast::make_printable(buffer_.data()) << std::endl;
-
         std::string out(boost::asio::buffer_cast<const char *>(buffer_.data()),
                         buffer_.size());
-        JsonPrevalidator jsonPrevalidator = new JsonPrevalidator(out);
-        if (jsonPrevalidator.validatePacket())
+        DEBUG_MSG(__func__,"Read message from client:-", out);
+        JsonPrevalidator jsonPrevalidator(out);
+        isNewWorker.initFlag(false);
+        if (jsonPrevalidator.validateJson())
         {
-            if (jsonPrevalidator.checkQuickSendBit())
-            {
-                std::cout << "QuickSendbit set" << std::endl;
-            }
+            json packet = jsonPrevalidator.getJson();
+            if(packet["id"].empty()){
+                DEBUG_MSG(__func__, " id feild empty");
+                workerUid = globalWorkerRegistry.generateWorkerUid();
+                isNewWorker.setFlag();
+            } else {
+                worker = globalWorkerRegistry.getWorkerFromUid(packet["id"]);
+                if(worker == NULL){
+                    DEBUG_MSG(__func__, "could not find the worker:", packet["id"], " in worker list");
+                    workerUid = globalWorkerRegistry.generateWorkerUid();
+                    isNewWorker.setFlag();
+                } else {
+                    DEBUG_MSG(__func__, "worker:", packet["id"], " successfully identified");
+                    if(jsonPrevalidator.checkQuickSendBit()) 
+                        worker->setQuickSendMode();
+                    else worker->resetQuickSendMode();
+                    globalReceiverSink->pushObject(&packet, DEFAULT_PRIORITY);
+                }
+            }     
+        } else {
+            isNewWorker.setFlag();
         }
-        if (out.compare("hello") == 0)
-        {
-            ws_.async_write(
-                buffer_.data(),
-                beast::bind_front_handler(
-                    &session::on_write,
-                    shared_from_this()));
+        buffer_.consume(buffer_.size());
+        json outPacket;
+        if(isNewWorker.isFlagSet()){
+            DEBUG_MSG(__func__, "cosntruct packet");
+            outPacket = PacketConstructor().create(SP_HANDSHAKE, workerUid);
+        } else {
+            DEBUG_MSG(__func__, "wait for packet");
+            while(!worker->isQuickSendMode() || outPacket.empty())
+                outPacket = worker->getQueuedPacket();
+            DEBUG_MSG(__func__, "Worker: ", worker->getWorkerUID(), " :has packet scheduled");
         }
-        else
-        {
-            buffer_.consume(buffer_.size());
-            // Read a message into our buffer
-            std::string str = "hello";
-            std::cout << "Write Message:";
-            std::getline(std::cin, str);
-            std::cout << std::endl;
-            ws_.text(ws_.got_text());
-            ws_.write(net::buffer(std::string(str)));
-            ws_.async_write(
-                net::buffer(str),
-                beast::bind_front_handler(
-                    &session::on_write,
-                    shared_from_this()));
-        }
+        DEBUG_MSG(__func__, "packet out");
+        ws_.text(ws_.got_text());
+        ws_.write(net::buffer(std::string(outPacket.dump())));
+        ws_.async_write(
+            net::buffer(outPacket.dump()),
+            beast::bind_front_handler(
+                &session::on_write,
+                shared_from_this()));
     }
 
     void
@@ -273,19 +295,11 @@ private:
 
 //------------------------------------------------------------------------------
 
-int main(int argc, char *argv[])
+int startSocket(std::string inputAddress, int portNumber, int totalThreads)
 {
-    // Check command line arguments.
-    if (argc != 4)
-    {
-        std::cerr << "Usage: websocket-server-async <address> <port> <threads>\n"
-                  << "Example:\n"
-                  << "    websocket-server-async 0.0.0.0 8080 1\n";
-        return EXIT_FAILURE;
-    }
-    auto const address = net::ip::make_address(argv[1]);
-    auto const port = static_cast<unsigned short>(std::atoi(argv[2]));
-    auto const threads = std::max<int>(1, std::atoi(argv[3]));
+    auto const address = net::ip::make_address(inputAddress);
+    auto const port = static_cast<unsigned short>(portNumber);
+    auto const threads = std::max<int>(1, totalThreads);
 
     // The io_context is required for all I/O
     net::io_context ioc{threads};
