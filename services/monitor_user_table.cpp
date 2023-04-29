@@ -20,7 +20,7 @@ void *monitorUserTable(void *data)
                     USERDAT_TABLE_NAME);
     sqlAccess->initialize();
 
-    while(monitorStop.isFlagSet())
+    while(!monitorStop.isFlagSet())
     {
         if(!globalSenderSink->isSinkFull() || !globalReceiverSink->isSinkFull())
         {

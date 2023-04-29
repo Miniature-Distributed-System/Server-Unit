@@ -19,7 +19,7 @@ void* monitorInstanceTable(void *data)
                     USERDAT_TABLE_NAME);
     sqlAccess->initialize();
     
-    while(monitorStop.isFlagSet()){
+    while(!monitorStop.isFlagSet()){
         currentTimeStamp = sqlAccess->sqlQueryDb(queryTimeStamp, columnName);
         if(currentTimeStamp.compare(latestTimeStamp)){
             DEBUG_MSG(__func__, "current time stamp:", currentTimeStamp, " saved timestamp: ", latestTimeStamp);
