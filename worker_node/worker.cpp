@@ -91,6 +91,7 @@ json Worker::getQueuedPacket()
     if(ackPacketPop.isFlagSet()){
         DEBUG_MSG(__func__,"worker-", workerUID,": re-sending non-acked packet to worker");
         ackPacketPop.resetFlag();
+        sem_post(&workerLock);
         return ackPendingQueue.front()->packet;
     }
 
@@ -104,6 +105,7 @@ json Worker::getQueuedPacket()
                         outPacket = (*i);
                         senderQueue.erase(i);
                         DEBUG_MSG(__func__,"worker-", workerUID,": sending non-ackable packet to worker");
+                        sem_post(&workerLock);
                         return (*i)->packet;
                     }
                 }
@@ -114,9 +116,11 @@ json Worker::getQueuedPacket()
             }
         }
     } else {
+        DEBUG_MSG(__func__, "nothing to send to:", workerUID);
+        sem_post(&workerLock);
         return json({});
     }
-    
+    DEBUG_MSG(__func__, "popped from queue");
     senderQueue.pop_front();
     sem_post(&workerLock);
     return outPacket->packet;
