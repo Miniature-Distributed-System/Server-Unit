@@ -35,7 +35,9 @@ class Worker {
         Flag attendance;
         Flag ackPacketPop;
         Flag quickSendMode;
+        Flag workerReady;
         sem_t workerLock;
+
     public:
         Worker();
         Worker(std::string workerUID);
@@ -52,5 +54,7 @@ class Worker {
         void setQuickSendMode();
         void resetQuickSendMode();
         bool isQuickSendMode();
+        void setWorkerReady();
+        bool isWorkerReady();
 };
 #endif

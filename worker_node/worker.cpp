@@ -44,6 +44,7 @@ Worker::Worker(std::string workerUID)
     attendance.initFlag(true);
     ackPacketPop.initFlag();
     quickSendMode.initFlag();
+    workerReady.initFlag();
     sem_init(&workerLock, 0, 0);
 }
 
@@ -186,4 +187,14 @@ void Worker::resetQuickSendMode()
 bool Worker::isQuickSendMode()
 {
     return quickSendMode.isFlagSet();
+}
+
+void Worker::setWorkerReady()
+{
+    workerReady.setFlag();
+}
+
+bool Worker::isWorkerReady()
+{
+    return workerReady.isFlagSet();
 }
