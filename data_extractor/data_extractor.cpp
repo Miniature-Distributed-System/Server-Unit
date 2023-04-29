@@ -39,7 +39,7 @@ std::string* DataExtractor::getFileData(std::string fileName, bool isInstance)
     return NULL;
 }
 
-int DataExtractor::executeInstanceExtractor(std::list<std::string> idList)
+int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAccess *sqlAccess)
 {
     InstanceStruct *instanceStruct = NULL;
     std::list<InstanceStruct*> instanceList;
@@ -55,7 +55,7 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList)
         
         std::string csvFileNameQuery = "SELECT " + INSTANCE_FILE_COL_ID + " FROM " + INSTANCE_TABLE_NAME + " WHERE "
                         + INSTANCE_NAME_COL_ID + "="+ curInstanceName +";";
-        std::string csvFileName = globalSqlAccess->sqlQueryDb(csvFileNameQuery, INSTANCE_FILE_COL_ID);
+        std::string csvFileName = sqlAccess->sqlQueryDb(csvFileNameQuery, INSTANCE_FILE_COL_ID);
         resultData = getFileData(csvFileName, true);
         if(!resultData){
             DEBUG_ERR(__func__, "fetching ", csvFileName, " failed for ", curInstanceName, " in ", INSTANCE_TABLE_NAME);
@@ -64,7 +64,7 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList)
 
         std::string algoTypeQuery = "SELECT " + INSTANCE_ALGO_COL_ID + " FROM " + INSTANCE_TABLE_NAME + " WHERE "
                         + INSTANCE_NAME_COL_ID + "="+ curInstanceName +";";
-        std::uint8_t algoType = globalSqlAccess->sqlQueryDbGetInt(algoTypeQuery, INSTANCE_ALGO_COL_ID);
+        std::uint8_t algoType = sqlAccess->sqlQueryDbGetInt(algoTypeQuery, INSTANCE_ALGO_COL_ID);
         instanceStruct = new InstanceStruct(curInstanceName, algoType, resultData);
         instanceList.push_back(instanceStruct);
     }
@@ -72,7 +72,7 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList)
     return globalInstanceRegistery.update(instanceList);
 }
 
-int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNameList)
+int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNameList, SqlAccess *sqlAccess)
 {
     UserDataTable *userTable = NULL;
     std::string curUserTableName;
@@ -93,8 +93,8 @@ int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNam
         tableAlgoIdQuery = "SELECT " + USERDAT_ALGO_COL_ID + " FROM " + USERDAT_TABLE_NAME + " WHERE " 
         + USERDAT_DAT_COL_ID + "='" + userTableName + "';";
         
-        userTablePriority = globalSqlAccess->sqlQueryDbGetInt(tablePriorityQuery);
-        userTableAlgo = globalSqlAccess->sqlQueryDb(tablePriorityQuery);
+        userTablePriority = sqlAccess->sqlQueryDbGetInt(tablePriorityQuery);
+        userTableAlgo = sqlAccess->sqlQueryDb(tablePriorityQuery);
 
         fileData = getFileData(curUserTableName, false);
         userTable = new UserDataTable(userTableName, getTaskPriority(userTablePriority), userTableAlgo, fileData);

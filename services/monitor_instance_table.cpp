@@ -14,18 +14,23 @@ void* monitorInstanceTable(void *data)
     std::string columnName = "timestamp";
     std::string latestTimeStamp, currentTimeStamp;
     std::list<std::string> instanceNameList;
-
+    DEBUG_MSG(__func__, "started monitoring instance table...");
+    SqlAccess *sqlAccess = new SqlAccess(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, 
+                    USERDAT_TABLE_NAME);
+    sqlAccess->initialize();
+    
     while(monitorStop.isFlagSet()){
-        currentTimeStamp = globalSqlAccess->sqlQueryDb(queryTimeStamp, columnName);
+        currentTimeStamp = sqlAccess->sqlQueryDb(queryTimeStamp, columnName);
         if(currentTimeStamp.compare(latestTimeStamp)){
             DEBUG_MSG(__func__, "current time stamp:", currentTimeStamp, " saved timestamp: ", latestTimeStamp);
             latestTimeStamp = currentTimeStamp;
-            instanceNameList = globalSqlAccess->sqlReadList(INSTANCE_TABLE_NAME, INSTANCE_DAT_COL_ID);
-            DataExtractor().executeInstanceExtractor(instanceNameList);
+            instanceNameList = sqlAccess->sqlReadList(INSTANCE_TABLE_NAME, INSTANCE_NAME_COL_ID);
+            DataExtractor().executeInstanceExtractor(instanceNameList, sqlAccess);
         }
         sleep(DB_POLL_THREAD_SLEEP_TIMER);
     }
 
+    delete sqlAccess;
     return 0;
 }
 
