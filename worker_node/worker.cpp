@@ -45,7 +45,7 @@ Worker::Worker(std::string workerUID)
     ackPacketPop.initFlag();
     quickSendMode.initFlag();
     workerReady.initFlag();
-    sem_init(&workerLock, 0, 0);
+    sem_init(&workerLock, 0, 1);
 }
 
 void Worker::checkIn()
