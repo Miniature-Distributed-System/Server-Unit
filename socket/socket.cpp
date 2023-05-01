@@ -161,7 +161,8 @@ public:
                     if(jsonPrevalidator.checkQuickSendBit()) 
                         worker->setQuickSendMode();
                     else worker->resetQuickSendMode();
-                    globalReceiverSink->pushObject(&packet, DEFAULT_PRIORITY);
+                    JsonExport *jsonExportObject = new JsonExport(packet);
+                    globalReceiverSink->pushObject(jsonExportObject, DEFAULT_PRIORITY);
                 }
             }     
         } else {

@@ -53,8 +53,11 @@ void PacketValidator::validatePacket()
 
 JobStatus start_validator(void *data)
 {
-    PacketValidator *packet = new PacketValidator(*(json*)globalReceiverSink.popObject());
+    JsonExport *jsonExportObject = (JsonExport*)globalReceiverSink->popObject().dataObject;
+    PacketValidator *packet = new PacketValidator(jsonExportObject->packet);
+    jsonExportObject->destruct();
     packet->validatePacket();
+
     if(packet->isDataPacket()){
         ProcessDataPacket processData(packet->getPacket());
         processData.execute();

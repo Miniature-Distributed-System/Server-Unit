@@ -17,4 +17,13 @@ class PacketValidator{
             return packet;
         }
 };
+struct JsonExport {
+    json packet;
+    JsonExport(json packet){
+        this->packet = packet;
+    }
+    void destruct(){
+        delete this;
+    }
+};
 #endif
