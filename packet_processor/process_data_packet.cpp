@@ -48,7 +48,7 @@ int ProcessDataPacket::createCsvFromData()
         return -1;
     }
 
-    outFile.open("temp/" + tableId + getExtension() +".csv", std::ios::out | std::ios::trunc);
+    outFile.open(HOME_DIR + "/temp_files/" + tableId + "_INTER.csv", std::ios::out | std::ios::trunc);
     outFile << data;
     outFile.close();
 
@@ -66,7 +66,7 @@ int ProcessDataPacket::pushCsvToDb()
 
 void ProcessDataPacket::cleanUp()
 {
-    std::filesystem::remove("temp/"+ tableId + getExtension() + ".csv");
+    std::filesystem::remove(HOME_DIR + "/temp_files/"+ tableId + "_INTER.csv");
 }
 
 void ProcessDataPacket::execute()
