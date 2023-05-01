@@ -1,5 +1,4 @@
 #include <fstream>
-#include "../services/sql_access.hpp"
 #include "../include/debug_rp.hpp"
 #include "../worker_node/worker_registry.hpp"
 #include "../configs.h"
@@ -69,6 +68,12 @@ void ProcessDataPacket::cleanUp()
     std::filesystem::remove(HOME_DIR + "/temp_files/"+ tableId + "_INTER.csv");
 }
 
+void ProcessDataPacket::pushDataToDb()
+{
+    DEBUG_MSG(__func__, "pushing ", tableId, " results into database");
+    sqlAccess->sqlWriteString(data, USERDAT_RES_COL_ID, USERDAT_ALIASNAME_COL_ID, tableId);
+}
+
 void ProcessDataPacket::execute()
 {
     if(!globalOutDataRegistry.findMatchInList(tableId)){
@@ -77,10 +82,15 @@ void ProcessDataPacket::execute()
     } 
 
     detectDataType();
-    if(createCsvFromData()){
-        DEBUG_ERR(__func__, "Aborting packet data processing");
+    if(pDataType == INTERMEDIATE_RESULT){
+        if(createCsvFromData()){
+            DEBUG_ERR(__func__, "Aborting packet data processing");
+        } else {
+            pushCsvToDb();
+            cleanUp();
+        }
     } else {
-        pushCsvToDb();
-        cleanUp();
+        pushDataToDb();
     }
+    delete sqlAccess;
 }

@@ -30,6 +30,7 @@ class ProcessDataPacket{
         int createCsvFromData();
         int pushCsvToDb();
         void cleanUp();
+        void pushDataToDb();
 };
 
 class ProcessStatusPacket{
