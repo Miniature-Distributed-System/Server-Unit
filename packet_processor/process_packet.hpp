@@ -2,6 +2,7 @@
 #define PROCESS_PKT_H
 
 #include "../include/packet.hpp"
+#include "../services/sql_access.hpp"
 
 #ifndef JSON_H
 #define JSON_H
@@ -15,6 +16,7 @@ class ProcessDataPacket{
         std::string data;
         std::string workerUid;
         int packetStausCode;
+        SqlAccess *sqlAccess;
         enum packetDataType {
             INTERMEDIATE_RESULT,
             FINAL_RESULT,

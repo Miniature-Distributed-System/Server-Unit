@@ -11,6 +11,9 @@ ProcessDataPacket::ProcessDataPacket(json packet){
     data = packet["body"]["data"];
     packetStausCode = packet["head"];
     workerUid = packet["id"];
+    sqlAccess = new SqlAccess(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, 
+                    USERDAT_TABLE_NAME);
+    sqlAccess->initialize();
 }
 
 std::string ProcessDataPacket::getExtension()
