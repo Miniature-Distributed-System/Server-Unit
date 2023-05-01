@@ -171,15 +171,19 @@ public:
         buffer_.consume(buffer_.size());
         json outPacket;
         if(isNewWorker.isFlagSet()){
-            DEBUG_MSG(__func__, "cosntruct packet");
+            DEBUG_MSG(__func__, "construct packet");
             outPacket = PacketConstructor().create(SP_HANDSHAKE, workerUid);
         } else {
-            DEBUG_MSG(__func__, "wait for packet");
-            while(!worker->isQuickSendMode() || outPacket.empty())
+            DEBUG_MSG(__func__, "wait for packet qsend:", worker->isQuickSendMode());
+            while(outPacket.empty()){
                 outPacket = worker->getQueuedPacket();
+                if(outPacket.empty() && worker->isQuickSendMode()){
+                    outPacket = PacketConstructor().create(SP_HANDSHAKE, worker->getWorkerUID());
+                    break;
+                }
+            }
             DEBUG_MSG(__func__, "Worker: ", worker->getWorkerUID(), " :has packet scheduled");
         }
-        DEBUG_MSG(__func__, "packet out");
         ws_.text(ws_.got_text());
         ws_.write(net::buffer(std::string(outPacket.dump())));
         ws_.async_write(
