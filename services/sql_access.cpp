@@ -92,7 +92,21 @@ int SqlAccess::sqlQueryDbGetInt(std::string queryStatement, std::string columnNa
     return result;
 }
 
-int SqlAccess::sqlWriteBlob(std::string fileLoc, std::string columnName, std::string tableID)
+int SqlAccess::sqlWriteBlob(std::string fileLoc, std::string columnName, std::string rowIdentifierName, 
+                std::string rowIdentifierValue)
+{
+    try{
+        std::string query = "UPDATE " + dataTable + " SET " + columnName + " = LOAD_FILE('" + fileLoc +"') WHERE "+
+        rowIdentifierName + "='"+ rowIdentifierValue + "';";
+        sqlExecutor = conn->prepareStatement(query);
+        res = sqlExecutor->executeQuery();
+    }catch(sql::SQLException &e){
+        DEBUG_ERR(__func__, "sql error: ", e.what());
+        return -1;
+    }
+
+    return 0;
+}
 {
     try{
         std::string query = "UPDATE " + dataTable + " SET " + columnName + " = LOAD_FILE('" + fileLoc +"') WHERE tableID="
