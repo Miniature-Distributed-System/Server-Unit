@@ -81,11 +81,6 @@ void ProcessDataPacket::execute()
         DEBUG_ERR(__func__, "Aborting packet data processing");
     } else {
         pushCsvToDb();
-        Worker *worker = globalWorkerRegistry.getWorkerFromUid(workerUid);
-        if(!worker){
-            DEBUG_ERR(__func__, "worker with wokerUid:", workerUid + 0, " not found");
-            return;
-        }
         cleanUp();
     }
 }
