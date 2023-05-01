@@ -17,6 +17,7 @@ class PacketValidator{
             return packet;
         }
 };
+
 struct JsonExport {
     json packet;
     JsonExport(json packet){
@@ -26,4 +27,6 @@ struct JsonExport {
         delete this;
     }
 };
+
+int init_validator();
 #endif

@@ -163,6 +163,8 @@ public:
                     else worker->resetQuickSendMode();
                     JsonExport *jsonExportObject = new JsonExport(packet);
                     globalReceiverSink->pushObject(jsonExportObject, DEFAULT_PRIORITY);
+                    //Schedule a packet processor for every packet in receiver sink
+                    init_validator();
                 }
             }     
         } else {
