@@ -10,20 +10,6 @@ ProcessDataPacket::ProcessDataPacket(json packet){
     data = packet["body"]["data"];
     packetStausCode = packet["head"];
     workerUid = packet["id"];
-    sqlAccess = new SqlAccess(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, 
-                    USERDAT_TABLE_NAME);
-    sqlAccess->initialize();
-}
-
-std::string ProcessDataPacket::getExtension()
-{
-    std::string extension;
-
-    if(pDataType == INTERMEDIATE_RESULT)
-        extension = "_INTR";
-    else extension = "_RES";
-
-    return extension;
 }
 
 void ProcessDataPacket::detectDataType()
@@ -47,31 +33,25 @@ int ProcessDataPacket::createCsvFromData()
         return -1;
     }
 
-    outFile.open(HOME_DIR + "/temp_files/" + tableId + "_INTER.csv", std::ios::out | std::ios::trunc);
+    if(pDataType == INTERMEDIATE_RESULT)
+        outFile.open(HOME_DIR + INTER_RESULT_DATA_DIR + tableId + ".csv", std::ios::out | std::ios::trunc);
+    else
+        outFile.open(HOME_DIR + FINAL_RESULT_DATA_DIR + tableId + ".csv", std::ios::out | std::ios::trunc);
     outFile << data;
     outFile.close();
 
-    DEBUG_MSG(__func__, "created csv file successfully");
+    DEBUG_MSG(__func__, "created csv file for table: ", tableId, " successfully");
     return 0;
-}
-
-int ProcessDataPacket::pushCsvToDb()
-{
-    DEBUG_MSG(__func__, "pushing ", tableId, " results into database");
-    sqlAccess->sqlWriteBlob(HOME_DIR + "/temp_files/" + tableId + "_INTER.csv", USERDAT_INTER_COL_ID, 
-                    USERDAT_ALIASNAME_COL_ID ,tableId);
-    return 0;
-}
-
-void ProcessDataPacket::cleanUp()
-{
-    std::filesystem::remove(HOME_DIR + "/temp_files/"+ tableId + "_INTER.csv");
 }
 
 void ProcessDataPacket::pushDataToDb()
 {
-    DEBUG_MSG(__func__, "pushing ", tableId, " results into database");
+    sqlAccess = new SqlAccess(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, 
+                    USERDAT_TABLE_NAME);
+    sqlAccess->initialize();
+    DEBUG_MSG(__func__, "pushing ", tableId, " final results into database");
     sqlAccess->sqlWriteString(data, USERDAT_RES_COL_ID, USERDAT_ALIASNAME_COL_ID, tableId);
+    delete sqlAccess;
 }
 
 void ProcessDataPacket::execute()
@@ -82,15 +62,13 @@ void ProcessDataPacket::execute()
     } 
 
     detectDataType();
-    if(pDataType == INTERMEDIATE_RESULT){
-        if(createCsvFromData()){
-            DEBUG_ERR(__func__, "Aborting packet data processing");
-        } else {
-            pushCsvToDb();
-            cleanUp();
-        }
-    } else {
+    if(createCsvFromData()){
+        DEBUG_ERR(__func__, "Aborting packet data processing");
+        return;
+    }
+
+    if(pDataType != INTERMEDIATE_RESULT){
         pushDataToDb();
     }
-    delete sqlAccess;
+    DEBUG_MSG(__func__, "Finished processing ", tableId," data");
 }

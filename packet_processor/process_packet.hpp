@@ -24,12 +24,10 @@ class ProcessDataPacket{
         };
     public:
         ProcessDataPacket(json packet);
-        std::string getExtension();
         void execute();
         void detectDataType();
         int createCsvFromData();
         int pushCsvToDb();
-        void cleanUp();
         void pushDataToDb();
 };
 
