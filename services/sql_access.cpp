@@ -107,10 +107,14 @@ int SqlAccess::sqlWriteBlob(std::string fileLoc, std::string columnName, std::st
 
     return 0;
 }
+
+int SqlAccess::sqlWriteString(std::string resultString, std::string columnName, std::string rowIdentifierName, 
+                std::string rowIdentifierValue)
 {
     try{
-        std::string query = "UPDATE " + dataTable + " SET " + columnName + " = LOAD_FILE('" + fileLoc +"') WHERE tableID="
-                        + tableID + ";";
+        std::string query = "UPDATE " + dataTable + " SET " + columnName + "='"+ resultString +"' WHERE "+ 
+        rowIdentifierName + "='"+ rowIdentifierValue + "';";
+        DEBUG_MSG(__func__, resultString);
         sqlExecutor = conn->prepareStatement(query);
         res = sqlExecutor->executeQuery();
     }catch(sql::SQLException &e){
