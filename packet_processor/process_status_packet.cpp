@@ -53,6 +53,9 @@ void ProcessStatusPacket::execute()
     json packet;
     Worker *worker;
     OutDataState *outDataState;
+    if(P_QSEND & statusCode){
+        statusCode &= ~(P_QSEND);
+    }
     switch(statusCode)
     {
         case P_RESET:
