@@ -21,7 +21,7 @@ void SqlAccess::initialize()
         driver = get_driver_instance();
         conn = driver->connect(url, username, password);
         conn->setSchema(database);
-        DEBUG_MSG(__func__, "sql initillized successfully");
+        DEBUG_MSG(__func__, "sql initialized successfully");
         inited.setFlag();
     }catch(sql::SQLException &e){
         DEBUG_ERR(__func__, e.what());
@@ -36,7 +36,7 @@ std::string SqlAccess::sqlQueryDb(std::string queryStatement, std::string column
     
     try{
         sqlExecutor = conn->prepareStatement(queryStatement);
-        sqlExecutor->executeQuery();
+        res = sqlExecutor->executeQuery();
         while(res->next()){
             if(columnName.empty())
                 result = result + res->getString(1);
@@ -57,7 +57,7 @@ std::list<std::string> SqlAccess::sqlQueryDbList(std::string queryStatement, std
     
     try{
         sqlExecutor = conn->prepareStatement(queryStatement);
-        sqlExecutor->executeQuery();
+        res = sqlExecutor->executeQuery();
         while(res->next()){
             if(columnName.empty())
                 result.push_back(res->getString(1));
@@ -77,7 +77,7 @@ int SqlAccess::sqlQueryDbGetInt(std::string queryStatement, std::string columnNa
 
     try{
         sqlExecutor = conn->prepareStatement(queryStatement);
-        sqlExecutor->executeQuery();
+        res = sqlExecutor->executeQuery();
         while(res->next()){
             if(columnName.empty())
                 result = res->getInt(1);
@@ -112,7 +112,7 @@ int SqlAccess::sqlWriteBlob(std::string fileLoc, std::string columnName, std::st
         std::string query = "UPDATE " + dataTable + " SET " + columnName + " = LOAD_FILE('" + fileLoc +"') WHERE tableID="
                         + tableID + ";";
         sqlExecutor = conn->prepareStatement(query);
-        sqlExecutor->executeQuery();
+        res = sqlExecutor->executeQuery();
     }catch(sql::SQLException &e){
         DEBUG_ERR(__func__, "sql error: ", e.what());
         return -1;
@@ -128,7 +128,7 @@ std::list<std::string> SqlAccess::sqlReadList(std::string tableID, std::string c
     try{
         std::string query = "SELECT " + columnName + " FROM " + tableID +";";
         sqlExecutor = conn->prepareStatement(query);
-        sqlExecutor->executeQuery();
+        res = sqlExecutor->executeQuery();
         while(res->next()){
             resultList.push_back(res->getString(columnName));
         }
