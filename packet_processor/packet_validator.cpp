@@ -61,11 +61,11 @@ JobStatus start_validator(void *data)
     if(packet->isDataPacket()){
         ProcessDataPacket processData(packet->getPacket());
         processData.execute();
-        DEBUG_MSG(__func__, "packet data processing done");
-    } else {
-        
     }
-    return JOB_PENDING;
+    ProcessStatusPacket processStatusPacket(packet->getPacket());
+    processStatusPacket.execute();
+
+    return JOB_DONE;
 }
 
 JobStatus pause_valdiator(void *data){
