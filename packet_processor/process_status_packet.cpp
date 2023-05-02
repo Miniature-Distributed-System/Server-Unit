@@ -71,7 +71,9 @@ void ProcessStatusPacket::execute()
                 DEBUG_ERR(__func__, "worker with workerUid:", workerUid, " not found");
                 return;
             }
-            worker->matchAckablePacket(tableId);
+            if(worker->matchAckablePacket(tableId)){
+                DEBUG_MSG(__func__, "packet with ID: ", tableId, " was acknowledged");
+            } else DEBUG_ERR(__func__, "packet with ID: ", tableId, " was not found in worker list");
             break;
         case P_INTR_RES:
             globalOutDataRegistry.updateTaskStatus(tableId, DATA_INTER);
