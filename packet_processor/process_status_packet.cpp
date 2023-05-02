@@ -5,8 +5,44 @@
 #include "process_packet.hpp"
 #include "packet_constructor.hpp"
 
+using nlohmann::json_schema::json_validator;
+
+static json packetSchema = R"(
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "packet validator",
+    "properties": {
+      "id": {
+          "description": "table ID",
+          "type": "string"
+      },
+      "priority": {
+          "description": "CU identification number",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3
+      }
+    },
+    "required": [
+                 "id"
+                 ],
+    "type": "object"
+}
+)"_json;
+
 ProcessStatusPacket::ProcessStatusPacket(json packet)
 {
+    json_validator validator;
+    validator.set_root_schema(packetSchema);
+
+    try{
+        auto defaultPatch = validator.validate(packet["body"]);
+        DEBUG_MSG(__func__, "packet is a valid status packet");
+    }catch (const std::exception &e) {
+        DEBUG_ERR(__func__, "is not a valid status packet, ", e.what());
+        return;
+    }
+    
     tableId = packet["body"]["id"];
     workerUid = packet["id"];
     statusCode = packet["head"];
