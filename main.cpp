@@ -33,20 +33,48 @@ int main()
     int sinkMaxSize = 20;
     int timeoutTimerSleepSec = 5;
     int maxThreads = 2;
+    std::string dir, username, password, name;
 
     monitorStop.initFlag();
 
     std::cout << "--------------------------------------------------------";
-    std::cout << "Starting Server....";
+    std::cout << "Server Initilization";
     std::cout << "--------------------------------------------------------" << std::endl;
     std::cout << "\nEnter IP address: ";
     std::cin >> address;
-    std::cout << "\nEnter Port number:";
+    std::cout << "\nEnter Port number: ";
     std::cin >> port;
-    std::cout << "\nEnter number of socket threads:";
+    std::cout << "\nEnter number of socket threads: ";
     std::cin >> socketThreads;
+    std::cout << "\nEnter number of scheduler threads: ";
+    std::cin >> maxThreads;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "\nEnter server output directory full path: ";
+    std::cin.clear();
+    getline(std::cin, dir);
+    if(!dir.empty()){
+        HOME_DIR = dir;
+    } else std::cout << "\nUsing default output directory";
+    
+    std::cout << "\nEnter database name: ";
+    std::cin.clear();
+    getline(std::cin, name);
+    std::cout << "\nEnter database username: ";
+    std::cin.clear();
+    getline(std::cin, username);
+    std::cout << "\nEnter database password:";
+    std::cin.clear();
+    getline(std::cin, password);
+    if(username.empty() || password.empty() || name.empty()){
+        std::cout << "\nUsing default database username/password";
+    } else {
+        DATABASE_NAME = name;
+        DATABASE_USERNAME = username;
+        DATABASE_PASSWORD = password;
+    }
 
-    std::cout << "-------Logs starts here---------\n\n";
+    std::cout << "--------------------------------SERVER STARTING--------------------------------";
+    std::cout << "-----------------------------Logs Starts From Here-----------------------------\n\n";
 
     globalReceiverSink = new Sink(sinkMaxSize, "ReceiverSink");
     globalSenderSink = new Sink(sinkMaxSize, "SenderSink");
