@@ -10,7 +10,7 @@ bool Timeout::isWorkerRegistered(Worker* worker)
     for(auto i = timedoutWorkerRegistry.begin(); i != timedoutWorkerRegistry.end(); i++){
         if(worker == *i){
             DEBUG_MSG(__func__, "worker:",worker->getWorkerUID()," timed out!");
-            timedoutWorkerRegistry.erase(i);
+            timedoutWorkerRegistry.erase(i--);
             return true;
         }
     }
