@@ -26,7 +26,7 @@ int Instance::update(std::list<InstanceStruct*> instance)
     dataUpdated.setFlag();
     sem_post(&instanceListLock);
 
-    DEBUG_MSG(__func__, "successfully updated list");
+    DEBUG_MSG(__func__, "successfully updated instance list with depth:", instanceJsonList->size());
 
     return 0;
 }

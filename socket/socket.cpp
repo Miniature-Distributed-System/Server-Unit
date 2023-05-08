@@ -32,7 +32,6 @@
 #include "../worker_node/worker_registry.hpp"
 #include "../packet_processor/packet_constructor.hpp"
 #include "prevalidate_json.hpp"
-#include "socket.hpp"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -184,7 +183,7 @@ public:
                     break;
                 }
             }
-            DEBUG_MSG(__func__, "Worker: ", worker->getWorkerUID(), " :has packet scheduled");
+            DEBUG_MSG(__func__, "Worker: ", worker->getWorkerUID(), " :has packet scheduled ", outPacket);
         }
         ws_.text(ws_.got_text());
         ws_.write(net::buffer(std::string(outPacket.dump())));

@@ -25,6 +25,7 @@ SenderCoreData::SenderCoreData()
 void SenderCoreData::addWorker(std::string workerUid)
 {
     newWorkerList->push_back(workerUid);
+    DEBUG_MSG(__func__, "added worker for instance update depth:", newWorkerList->size());
 }
 
 void SenderCoreData::addPackets(OutPacket *outData)
@@ -139,8 +140,9 @@ void pushInstanceToWorkerQueue(std::list<std::string> *workerList)
             globalOutDataRegistry.updateTaskStatus(tableId, DATA_READY);
         }
         DEBUG_MSG(__func__, "queued packet into worker UID: ", workerUID);
-        workerList->pop_front();
+    DEBUG_MSG(__func__, "cleared pending workerList");
     }
+    DEBUG_MSG(__func__, "all workers instances updated");
 }
 
 int pushPendingPackets(std::list<OutPacket*>* outPacketList)
@@ -175,10 +177,9 @@ JobStatus startSenderCore(void *data)
 
     if(!senderData->isNewWorkerListEmpty()){
         pushInstanceToWorkerQueue(senderData->getWorkerList());
-        DEBUG_MSG(__func__, "cleared pending workerList");
     } else {
+        //Pull the packet from sender sink to be sent to the ideal worker
         pushUserDataToWorkerQueue();
-        DEBUG_MSG(__func__, "pushed data into queue");
     }
 
     return JOB_PENDING;

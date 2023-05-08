@@ -48,7 +48,7 @@ struct job_timer* init_timer(struct queue_job* job)
     jTimer->jobShouldPause = 0;
 
     if(!job->proc->pause_proc){
-        DEBUG_MSG(__func__, "The job is non preemtable");  
+        //DEBUG_MSG(__func__, "The job is non preemtable");  
         return jTimer;   
     }
 

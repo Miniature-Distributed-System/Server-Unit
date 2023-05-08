@@ -69,6 +69,7 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAc
         instanceList.push_back(instanceStruct);
     }
 
+    DEBUG_MSG(__func__, "instance data extraction done");
     return globalInstanceRegistery.update(instanceList);
 }
 
