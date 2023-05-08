@@ -1,5 +1,6 @@
 #include <random>
 #include "../include/debug_rp.hpp"
+#include "../sender_unit/sender_core.hpp"
 #include "worker_registry.hpp"
 
 WorkerRegistry::WorkerRegistry(){}
@@ -40,6 +41,7 @@ std::string WorkerRegistry::generateWorkerUid()
     worker = new Worker(finalComputeNodeId);
     currentWorkerList.push_front(worker);
     newWorker.setFlag();
+    senderCoreData->addWorker(finalComputeNodeId); 
 
     DEBUG_MSG(__func__, "compute unit assigned ID: ", finalComputeNodeId);
     return finalComputeNodeId;
