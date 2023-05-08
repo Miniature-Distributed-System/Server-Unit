@@ -46,7 +46,7 @@ bool JsonPrevalidator::validateJson()
     }
     catch (const std::exception &e)
     {
-        DEBUG_ERR(__func__, "packet invalid, ", e.what());
+        DEBUG_ERR(__func__, "packet invalid, ", e.what(), " packet", packet);
         return false;
     }
 }
@@ -55,8 +55,8 @@ bool JsonPrevalidator::checkQuickSendBit()
 {
     int headerBits = packet["head"];
     if (headerBits & P_QSEND)
-        return false;
-    return true;
+        return true;
+    return false;
 }
 
 json JsonPrevalidator::getJson()
