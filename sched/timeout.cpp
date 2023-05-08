@@ -22,37 +22,46 @@ bool Timeout::isWorkerRegistered(Worker* worker)
 
 void Timeout::addPacket(OutPacket* outPacket)
 {
+    sem_wait(&timeoutListLock);
     timedPackets.push_back(outPacket);
+    sem_post(&timeoutListLock);
 }
 
 void Timeout::popPacket(OutPacket* outPacket)
 {
+    sem_wait(&timeoutListLock);
     auto removed = std::remove(timedPackets.begin(), timedPackets.end(), outPacket);
     timedPackets.erase(removed, timedPackets.end());
+    sem_post(&timeoutListLock);
 }
 
 void Timeout::execute()
 {
     std::list<OutPacket*> outPackets;
 
+    sem_wait(&timeoutListLock);
     for(auto i = timedPackets.begin(); i != timedPackets.end(); i++)
     {
         OutPacket *outPacket = (*i);
         OutDataState *outDataState = outPacket->getOutDataState();
+        // Worker checked in before timeout
         if(outPacket->isCheckedIn()){
             if(outDataState->taskStatus == DATA_FINAL){
                 popPacket(outPacket);
-                //Worker packet dealloc
+                // Worker packet dealloc
                 delete outPacket;
-                //Table data dealloc
+                // Table data dealloc
                 globalOutDataRegistry.deleteTable(outDataState->id);
             } else {
+                // Reset timer for this packet
                 outPacket->checkOut();
             }
         } else {
+            // Worker not checked in even agfter timeout has occured
             if(!outDataState->worker->isCheckedIn()){
                 if(isWorkerRegistered(outDataState->worker)){
                     // Worker is timedout so remove it from list, de-alloc, reassign its resources and data
+                    DEBUG_MSG(__func__, "worker timeout ID:", outDataState->worker->getWorkerUID());
                     outPackets = globalWorkerRegistry.deleteWorker(outDataState->worker);
                     for(auto i = outPackets.begin(); i != outPackets.end(); i++){
                         senderCoreData->addPackets(*i);
@@ -65,4 +74,5 @@ void Timeout::execute()
             outDataState->worker->pushToFront(outPacket);
         }
     }
+    sem_post(&timeoutListLock);
 }
