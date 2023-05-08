@@ -138,7 +138,7 @@ void *sched_task(void *ptr)
         qSlots = get_total_empty_slots();
         for(j = 0; j < qSlots; j++)
         {
-            if(globalTaskPool.getTaskPoolSize() > 0)
+            if(globalTaskPool->getTaskPoolSize() > 0)
             {
                 DEBUG_MSG(__func__, "scheulding jobs...");
                 queue = get_quickest_queue();
