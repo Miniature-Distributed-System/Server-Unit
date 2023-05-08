@@ -201,6 +201,7 @@ struct process *senderCore = new process{
 
 int SenderCore::run()
 {
-    globalTaskPool.addTask(new taskStruct(senderCore, senderCoreData), MEDIUM_PRIORITY);
+    globalTaskPool->addTask(new taskStruct(senderCoreProcess, senderCoreData), LOW_PRIORITY);
+    DEBUG_MSG(__func__,"sender core pushed to task queue");
     return 0;
 }

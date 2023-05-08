@@ -61,7 +61,7 @@ JobStatus start_validator(void *data)
     if(packet->isDataPacket()){
         ProcessDataPacket processData(packet->getPacket());
         processData.execute();
-    }
+    } 
     ProcessStatusPacket processStatusPacket(packet->getPacket());
     processStatusPacket.execute();
 
@@ -84,6 +84,6 @@ struct process *valdiatorProcess = new process{
 
 int init_validator()
 {
-    globalTaskPool.addTask(new taskStruct(valdiatorProcess, NULL), MEDIUM_PRIORITY);
+    globalTaskPool->addTask(new taskStruct(valdiatorProcess, NULL), MEDIUM_PRIORITY);
     return 0;
 }

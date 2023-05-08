@@ -36,6 +36,6 @@ class TaskPool
         };
 };
 
-extern TaskPool globalTaskPool;
+extern TaskPool *globalTaskPool;
 
 #endif
