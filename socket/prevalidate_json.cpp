@@ -26,7 +26,11 @@ static json packetSchema = R"(
 
 JsonPrevalidator::JsonPrevalidator(std::string out)
 {
-    this->packet = out;
+    try{
+        this->packet = json::parse(out.c_str());
+    }catch (std::exception &e){
+        DEBUG_ERR(__func__, "packet corrupt: ", out);
+    }
 }
 
 bool JsonPrevalidator::validateJson()
