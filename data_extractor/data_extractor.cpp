@@ -2,7 +2,6 @@
 #include <sstream>
 #include "../sink/sink_stack.hpp"
 #include "../include/debug_rp.hpp"
-#include "../services/sql_access.hpp"
 #include "../sender_unit/instance.hpp"
 #include "../sender_unit/user_data.hpp"
 #include "../packet_processor/out_data_registry.hpp"
@@ -46,8 +45,8 @@ std::string* DataExtractor::getFileData(std::string fileName, bool isInstance)
 
 int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAccess *sqlAccess)
 {
-    InstanceStruct *instanceStruct = NULL;
-    std::list<InstanceStruct*> instanceList;
+    InstanceStruct instanceStruct;
+    std::list<InstanceStruct> instanceList;
     int j = 0;
 
     for(auto i = idList.begin(); i != idList.end(); i++,j++)
@@ -70,11 +69,11 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAc
         std::string algoTypeQuery = "SELECT " + INSTANCE_ALGO_COL_ID + " FROM " + INSTANCE_TABLE_NAME + " WHERE "
                         + INSTANCE_NAME_COL_ID + "='"+ curInstanceName +"';";
         std::uint8_t algoType = sqlAccess->sqlQueryDbGetInt(algoTypeQuery, INSTANCE_ALGO_COL_ID);
-        instanceStruct = new InstanceStruct(curInstanceName, algoType, resultData);
+        instanceStruct = InstanceStruct(curInstanceName, algoType, resultData);
         instanceList.push_back(instanceStruct);
     }
 
-    DEBUG_MSG(__func__, "instance data extraction done");
+    DEBUG_MSG(__func__, "instance data extraction done, total records:", instanceList.size());
     return globalInstanceRegistery.update(instanceList);
 }
 
@@ -103,7 +102,7 @@ int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNam
         + USERDAT_DAT_COL_ID + "='" + userTableName + "';";
         recordNameQuery = "SELECT " + USERDAT_ALIASNAME_COL_ID + " FROM " + USERDAT_TABLE_NAME + " WHERE " 
         + USERDAT_DAT_COL_ID + "='" + userTableName + "';";
-        
+
         std::string userRecordName = sqlAccess->sqlQueryDb(recordNameQuery);
         int userTablePriority = sqlAccess->sqlQueryDbGetInt(tablePriorityQuery);
         std::string userTableAlgo = sqlAccess->sqlQueryDb(tableAlgoIdQuery);
