@@ -63,7 +63,7 @@ JobStatus start_validator(void *data)
         processData.execute();
     } 
     ProcessStatusPacket processStatusPacket(packet->getPacket());
-    processStatusPacket.execute();
+    processStatusPacket.packetStatusParse();
 
     return JOB_DONE;
 }

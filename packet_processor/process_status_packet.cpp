@@ -9,7 +9,7 @@
 
 using nlohmann::json_schema::json_validator;
 
-static json packetSchema = R"(
+static json packetIdSchema = R"(
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "packet validator",
@@ -17,12 +17,6 @@ static json packetSchema = R"(
       "id": {
           "description": "table ID",
           "type": "string"
-      },
-      "priority": {
-          "description": "CU identification number",
-          "type": "number",
-          "minimum": 0,
-          "maximum": 3
       }
     },
     "required": [
@@ -62,19 +56,24 @@ static json packetStatsSchema = R"(
 ProcessStatusPacket::ProcessStatusPacket(json packet)
 {
     json_validator validator;
-    validator.set_root_schema(packetSchema);
+    validator.set_root_schema(packetIdSchema);
 
     try{
-        auto defaultPatch = validator.validate(packet["body"]);
-        DEBUG_MSG(__func__, "packet is a valid status packet");
+        auto defaultPatch = validator.validate(packet);
+        DEBUG_MSG(__func__, "packet has valid status");
     }catch (const std::exception &e) {
         DEBUG_ERR(__func__, "is not a valid status packet, ", e.what());
+        DEBUG_ERR(__func__, "is not a valid status packet: ", packet);
         return;
     }
-    
-    tableId = packet["body"]["id"];
+    try{
+        tableId = packet["body"]["id"];
+    } catch (const std::exception &e) {
+        tableId = "";
+    }
     workerUid = packet["id"];
     statusCode = packet["head"];
+
     validator.set_root_schema(packetStatsSchema);
     
     try{
@@ -99,35 +98,38 @@ std::vector<int> adv_tokenizer(std::string s, char del)
     while (!ss.eof()) {
         std::getline(ss, word, del);
         result.push_back(std::stoi(word));
-}
+    }
 
     return result;
 }
 
+void ProcessStatusPacket::packetStatusParse()
 {
     json packet;
     Worker *worker;
     OutDataState *outDataState;
+    
     if(P_QSEND & statusCode){
         statusCode &= ~(P_QSEND);
     }
+
+    worker = globalWorkerRegistry.getWorkerFromUid(workerUid);
+    if(!worker){
+        DEBUG_ERR(__func__, "worker with workerUid:", workerUid, " not found");
+        return;
+    }
+
     switch(statusCode)
     {
         case P_RESET:
-            worker = globalWorkerRegistry.getWorkerFromUid(workerUid);
-            if(!worker){
-                DEBUG_ERR(__func__, "worker with workerUid:", workerUid, " not found");
-                return;
-            }
             break;
         case P_DATA_ACK:
-            worker = globalWorkerRegistry.getWorkerFromUid(workerUid);
-            if(!worker){
-                DEBUG_ERR(__func__, "worker with workerUid:", workerUid, " not found");
-                return;
-            }
             if(worker->matchAckablePacket(tableId)){
                 DEBUG_MSG(__func__, "packet with ID: ", tableId, " was acknowledged");
+                if(globalInstanceRegistery.isInstanceId(tableId)){
+                    // Update tracker about the received instance table
+                    workerInstanceList.updateWorker(worker->getWorkerUID(), tableId);
+                }
             } else DEBUG_ERR(__func__, "packet with ID: ", tableId, " was not found in worker list");
             break;
         case P_INTR_RES:
@@ -168,4 +170,5 @@ std::vector<int> adv_tokenizer(std::string s, char del)
         } else DEBUG_MSG(__func__, "Skipping stats update for worker:", worker->getWorkerUID());
     }
 
+    DEBUG_MSG(__func__, "Finished processing ", tableId," status");
 }
