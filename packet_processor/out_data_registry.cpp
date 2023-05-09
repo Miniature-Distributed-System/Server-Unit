@@ -30,7 +30,7 @@ int OutDataRegistry::deleteTable(std::string dataTableName)
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
         if((*i)->id == dataTableName){
             DEBUG_MSG(__func__, "table: ", dataTableName, " successfully popped from list");
-            outDataRegistryList.remove(*i);
+            outDataRegistryList.erase(i--);
             delete (*i);
             return 0;
         }
