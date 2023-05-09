@@ -59,7 +59,7 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAc
         }
         
         std::string csvFileNameQuery = "SELECT " + INSTANCE_FILE_COL_ID + " FROM " + INSTANCE_TABLE_NAME + " WHERE "
-                        + INSTANCE_NAME_COL_ID + "="+ curInstanceName +";";
+                        + INSTANCE_NAME_COL_ID + "='"+ curInstanceName +"';";
         std::string csvFileName = sqlAccess->sqlQueryDb(csvFileNameQuery, INSTANCE_FILE_COL_ID);
         resultData = getFileData(csvFileName, true);
         if(!resultData){
@@ -68,7 +68,7 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAc
         }
 
         std::string algoTypeQuery = "SELECT " + INSTANCE_ALGO_COL_ID + " FROM " + INSTANCE_TABLE_NAME + " WHERE "
-                        + INSTANCE_NAME_COL_ID + "="+ curInstanceName +";";
+                        + INSTANCE_NAME_COL_ID + "='"+ curInstanceName +"';";
         std::uint8_t algoType = sqlAccess->sqlQueryDbGetInt(algoTypeQuery, INSTANCE_ALGO_COL_ID);
         instanceStruct = new InstanceStruct(curInstanceName, algoType, resultData);
         instanceList.push_back(instanceStruct);
