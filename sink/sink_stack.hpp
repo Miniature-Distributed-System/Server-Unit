@@ -2,35 +2,33 @@
 #define SINK_STACK_H
 #include "../socket/prevalidate_json.hpp"
 #include <semaphore.h>
+#include <list>
 #include "../include/flag.h"
 #include "../include/task.hpp"
 #define MAX_POOL_SIZE 20
 
 struct ExportSinkItem {
     void *dataObject;
+    TaskPriority taskPriority;
     ExportSinkItem(){}
-    ExportSinkItem(void *object){
-        dataObject = object;
-    }
+    ExportSinkItem(void *object, TaskPriority taskPriority) : dataObject(object), taskPriority(taskPriority){}
 };
 
-struct SinkItem{
-    ExportSinkItem *sinkItem;
-    std::uint8_t starveCounter;
-    SinkItem *next;
-    SinkItem(void *object, std::uint8_t starveCounter){
-        next = NULL;
-        starveCounter = 0;
-        sinkItem = new ExportSinkItem(object);
-    };
+class SinkItem{
+    public:
+        ExportSinkItem sinkItem;
+        std::uint8_t starveCounter;
+        SinkItem(void *object, std::uint8_t starveCounter, TaskPriority taskPriority){
+            starveCounter = 0;
+            sinkItem = ExportSinkItem(object, taskPriority);
+        };
 };
 
 class Sink 
 {
     private:
+        std::list<SinkItem*> *sinkItemList;
         sem_t sinkLock;
-        SinkItem *sinkHead;
-        std::uint64_t sinkItemCount;
         std::uint64_t sinkLimit;
         std::string debugPrefix;
     public:
@@ -40,6 +38,8 @@ class Sink
         int getCurrentSinkSpace();
         bool isSinkFull();
         ExportSinkItem popObject();
+        TaskPriority getTopTaskPriority();
+        bool isSinkEmpty();
 };
 
 extern Sink *globalReceiverSink;
