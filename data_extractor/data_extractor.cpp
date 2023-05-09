@@ -80,32 +80,42 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAc
 
 int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNameList, SqlAccess *sqlAccess)
 {
-    UserDataTable *userTable = NULL;
-    std::string curUserTableName;
-    std::string tablePriorityQuery;
-    int userTablePriority;
-    std::string tableAlgoIdQuery, userTableAlgo;
+    std::string csvFileNameQuery;
+    std::string tableAlgoIdQuery, recordNameQuery, tablePriorityQuery;
     std::string *fileData;
+    
+
+    for(auto i = userTableNameList.begin(); i != userTableNameList.end(); i++){
+        DEBUG_MSG(__func__,(*i));
+    }
 
     for(auto i = userTableNameList.begin(); i != userTableNameList.end(); i++){
         std::string userTableName = *i;
-        if((*i).empty()){
+        if(userTableName.empty()){
             DEBUG_ERR(__func__, "Table fetch failed");
             continue;
         }
+        DEBUG_MSG(__func__, "pulling user table file data:", userTableName);
         
         tablePriorityQuery = "SELECT " + USERDAT_DAT_PRIORITY_COL_ID + " FROM " + USERDAT_TABLE_NAME + " WHERE " 
         + USERDAT_DAT_COL_ID + "='" + userTableName + "';";
         tableAlgoIdQuery = "SELECT " + USERDAT_ALGO_COL_ID + " FROM " + USERDAT_TABLE_NAME + " WHERE " 
         + USERDAT_DAT_COL_ID + "='" + userTableName + "';";
+        recordNameQuery = "SELECT " + USERDAT_ALIASNAME_COL_ID + " FROM " + USERDAT_TABLE_NAME + " WHERE " 
+        + USERDAT_DAT_COL_ID + "='" + userTableName + "';";
         
-        userTablePriority = sqlAccess->sqlQueryDbGetInt(tablePriorityQuery);
-        userTableAlgo = sqlAccess->sqlQueryDb(tablePriorityQuery);
+        std::string userRecordName = sqlAccess->sqlQueryDb(recordNameQuery);
+        int userTablePriority = sqlAccess->sqlQueryDbGetInt(tablePriorityQuery);
+        std::string userTableAlgo = sqlAccess->sqlQueryDb(tableAlgoIdQuery);
 
-        fileData = getFileData(curUserTableName, false);
-        userTable = new UserDataTable(userTableName, getTaskPriority(userTablePriority), userTableAlgo, fileData);
-        globalSenderSink->pushObject(userTable, getTaskPriority(userTablePriority));
-        globalOutDataRegistry.addTable(userTableName);
+        fileData = getFileData(userTableName, false);
+        DEBUG_MSG(__func__, "Table Name:",userRecordName, "Instance Name:",  userTableAlgo," priority:" ,userTablePriority," algo:" ,userTableAlgo);
+        UserDataTable *userDataTable = new UserDataTable(userTableName.c_str(), getTaskPriority(userTablePriority), userTableAlgo.c_str(), fileData);
+        userDataTable->userTable = userRecordName;
+        userDataTable->instanceName = userTableAlgo;
+        userDataTable->data = fileData;
+        globalSenderSink->pushObject(userDataTable, getTaskPriority(userTablePriority));
+        globalOutDataRegistry.addTable(userRecordName);
     }
     DEBUG_MSG(__func__, "pushed user tables from DB to sender stack");
     return 0;
