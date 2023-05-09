@@ -1,6 +1,7 @@
 #include "out_data_registry.hpp"
 #include "../include/flag.h"
 #include "../include/debug_rp.hpp"
+#include "../services/sql_access.hpp"
 
 int OutDataRegistry::addTable(std::string dataTableName, Worker *worker)
 {
@@ -69,6 +70,27 @@ bool OutDataRegistry::assignWorker(std::string id, Worker *worker)
     return false;
 }
 
+std::string userStatusEnumToString(UserTaskStatus status)
+{
+    switch(status){
+        case DATA_QUEUED: return "Data Queued";
+        case DATA_READY: return "Data Ready";
+        case DATA_SENT: return "Data Sent";
+        case DATA_INTER: return "Intermediate Data Received";
+        case DATA_FINAL: return "Received Final Data";
+        default: "";
+    }
+}
+
+void updateStatusInDb(std::string result, std::string dataTableName)
+{
+    SqlAccess *sqlAccess = new SqlAccess(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, 
+                            USERDAT_TABLE_NAME);
+    sqlAccess->initialize();
+    sqlAccess->sqlWriteString(result, USERDAT_STATUS_COL_ID, USERDAT_ALIASNAME_COL_ID, dataTableName);
+    delete sqlAccess;
+}
+
 int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus status)
 {
     OutDataState *outDataState;
@@ -76,6 +98,9 @@ int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus 
         outDataState = *i;
         if(outDataState->id == dataTableName){
             DEBUG_MSG(__func__, "updating status for table name: ", dataTableName, " with state: ", status);
+            std::string result = userStatusEnumToString(status);
+            if(!result.empty())
+                updateStatusInDb(result, dataTableName);
             outDataState->taskStatus = status;
             return true;
         }
