@@ -92,23 +92,29 @@ json Worker::getQueuedPacket()
         DEBUG_MSG(__func__,"worker-", workerUID,": re-sending non-acked packet to worker");
         ackPacketPop.resetFlag();
         sem_post(&workerLock);
+        if(ackPendingQueue.size() > 0)
         return ackPendingQueue.front()->packet;
+        else 
+            DEBUG_ERR(__func__, "No ackable packets present flag should have be off");
     }
 
     if(senderQueue.size() > 0){
         outPacket = senderQueue.front();
         if(outPacket->isAckable()){
+            //Check if ackQueue is full if it is then we cant send any more ackable packets
             if(ackPendingQueue.size() > WORKER_QUEUE_SIZE / 2){
                 // Only send non ackable packets
                 for(auto i = senderQueue.begin(); i != senderQueue.end(); i++){
                     if(!(*i)->isAckable()){
                         outPacket = (*i);
-                        senderQueue.erase(i);
+                        senderQueue.erase(i--);
                         DEBUG_MSG(__func__,"worker-", workerUID,": sending non-ackable packet to worker");
                         sem_post(&workerLock);
                         return (*i)->packet;
                     }
                 }
+                sem_post(&workerLock);
+                return json({});
             } else {
                 //Add packet into timeout counter
                 packetTimeout->addPacket(outPacket);
@@ -116,11 +122,10 @@ json Worker::getQueuedPacket()
             }
         }
     } else {
-        DEBUG_MSG(__func__, "nothing to send to:", workerUID);
         sem_post(&workerLock);
         return json({});
     }
-    DEBUG_MSG(__func__, "popped from queue");
+    DEBUG_MSG(__func__, "popped from queue size:", senderQueue.size());
     senderQueue.pop_front();
     sem_post(&workerLock);
     return outPacket->packet;
