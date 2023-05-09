@@ -24,15 +24,20 @@ std::string* DataExtractor::getFileData(std::string fileName, bool isInstance)
     std::string *resultData, extractedData;
     std::ostringstream buf; 
     std::fstream dataFile;
+    std::string dataDirectoryPath;
+    
     if(isInstance)
-        dataFile.open(INSTANCE_FILE_DATA_DIR + "" + fileName, std::ios::in);
+        dataDirectoryPath = HOME_DIR + INSTANCE_FILE_DATA_DIR + fileName;
     else
-        dataFile.open(USER_FILE_DATA_DIR + "" + fileName, std::ios::in);
+        dataDirectoryPath = HOME_DIR + USER_FILE_DATA_DIR + fileName;
+
+    dataFile.open(dataDirectoryPath, std::ios::in);
     if(dataFile){
         buf << dataFile.rdbuf();
         resultData = new std::string;
         *resultData = buf.str();
-        DEBUG_MSG(__func__, "Data extracted form file was: ", buf.str());
+        resultData->erase(std::remove(resultData->begin(), resultData->end(), '\r'), resultData->end());
+
         return resultData;
     }
     DEBUG_ERR(__func__, "No data was found in ", fileName);
