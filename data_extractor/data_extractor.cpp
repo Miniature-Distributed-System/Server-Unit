@@ -53,7 +53,7 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAc
     for(auto i = idList.begin(); i != idList.end(); i++,j++)
     {
         std::string curInstanceName = *i, *resultData;
-        if(!curInstanceName.empty()) {
+        if(curInstanceName.empty()) {
             DEBUG_MSG(__func__, "instance id: ", j, " is empty");
             continue;
         }
