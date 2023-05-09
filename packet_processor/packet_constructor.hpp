@@ -11,7 +11,7 @@ using json = nlohmann::json;
 
 class PacketConstructor {
     public:
-        static json create(ServerPacketCodes code, std::uint64_t workerUid, json packet = json({}));
+        static json create(ServerPacketCodes code, std::string workerUid, json packet = json({}));
 };
 
 #endif
