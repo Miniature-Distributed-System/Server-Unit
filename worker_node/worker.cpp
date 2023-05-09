@@ -42,9 +42,9 @@ Worker::Worker(std::string workerUID)
 {
     this->workerUID = workerUID;
     attendance.initFlag(true);
-    ackPacketPop.initFlag();
-    quickSendMode.initFlag();
-    workerReady.initFlag();
+    ackPacketPop.initFlag(false);
+    quickSendMode.initFlag(false);
+    workerReady.initFlag(false);
     sem_init(&workerLock, 0, 1);
 }
 
