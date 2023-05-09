@@ -3,6 +3,7 @@
 
 #include "../include/packet.hpp"
 #include "../services/sql_access.hpp"
+#include "../include/flag.h"
 
 #ifndef JSON_H
 #define JSON_H
@@ -35,10 +36,14 @@ class ProcessStatusPacket{
         int statusCode;
         std::string tableId;
         std::string workerUid;
+        Flag statsPresent;
+        double queueTime;
+        std::string vectorString;
+        int threadCount;
     public:
         ProcessStatusPacket(json packet);
         ServerPacketCodes getPacketStatusCode();
-        void execute();
+        void packetStatusParse();
 };
 
 #endif

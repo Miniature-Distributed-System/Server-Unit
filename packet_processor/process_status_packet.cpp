@@ -1,5 +1,7 @@
 #include "../include/debug_rp.hpp"
 #include "../worker_node/worker_registry.hpp"
+#include "../sender_unit/instance.hpp"
+#include "../sender_unit/worker_instance_list.hpp"
 #include "../include/packet.hpp"
 #include "out_data_registry.hpp"
 #include "process_packet.hpp"
@@ -30,6 +32,33 @@ static json packetSchema = R"(
 }
 )"_json;
 
+static json packetStatsSchema = R"(
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "packet validator",
+    "properties": {
+      "avgQueueTime": {
+          "description": "Average queue time",
+          "type": "number"
+      },
+      "taskQueue": {
+          "description": "Task queue vector in string form",
+          "type": "string"
+      },
+      "totalAvailableThreads": {
+          "description": "Total alloted threads for this worker",
+          "type": "number"
+      }
+    },
+    "required": [
+                 "avgQueueTime",
+                 "taskQueue",
+                 "totalAvailableThreads"
+                 ],
+    "type": "object"
+}
+)"_json;
+
 ProcessStatusPacket::ProcessStatusPacket(json packet)
 {
     json_validator validator;
@@ -46,9 +75,35 @@ ProcessStatusPacket::ProcessStatusPacket(json packet)
     tableId = packet["body"]["id"];
     workerUid = packet["id"];
     statusCode = packet["head"];
+    validator.set_root_schema(packetStatsSchema);
+    
+    try{
+        auto defaultPatch = validator.validate(packet["stats"]);
+        DEBUG_MSG(__func__, "packet has valid stats header");
+    }catch (const std::exception &e) {
+        DEBUG_ERR(__func__, "does not have a valid stats header, ", e.what());
+        statsPresent.initFlag(false);
+        return;
+    }
+    statsPresent.initFlag(true);
+    queueTime = packet["stats"]["avgQueueTime"];
+    vectorString = packet["stats"]["taskQueue"];
+    threadCount = packet["stats"]["totalAvailableThreads"];
 }
 
-void ProcessStatusPacket::execute()
+std::vector<int> adv_tokenizer(std::string s, char del)
+{
+    std::stringstream ss(s);
+    std::string word;
+    std::vector<int> result;
+    while (!ss.eof()) {
+        std::getline(ss, word, del);
+        result.push_back(std::stoi(word));
+}
+
+    return result;
+}
+
 {
     json packet;
     Worker *worker;
@@ -104,4 +159,13 @@ void ProcessStatusPacket::execute()
         default:
             DEBUG_ERR(__func__,"packet status did not match any known status codes");
     }
+
+    if(statsPresent.isFlagSet()){
+        if(worker){
+            WorkerStats workerStats = WorkerStats(threadCount, adv_tokenizer(vectorString, ','), queueTime);
+            worker->setWorkerStats(workerStats);
+            DEBUG_MSG(__func__, "updated worker:", worker->getWorkerUID());
+        } else DEBUG_MSG(__func__, "Skipping stats update for worker:", worker->getWorkerUID());
+    }
+
 }
