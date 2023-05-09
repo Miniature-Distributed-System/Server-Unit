@@ -11,13 +11,16 @@ using json = nlohmann::json;
 #endif
 
 
-struct UserDataTable {
-    std::string userTable;
-    TaskPriority priority;
-    std::string instanceName;
-    std::string *data;
-    UserDataTable(std::string userTable, TaskPriority priority, std::string instanceTable, std::string *data);
-    json toJson();
+class UserDataTable {
+    public:
+        std::string userTable;
+        TaskPriority priority;
+        std::string instanceName;
+        std::string *data;
+        UserDataTable(){}
+        UserDataTable(std::string userTable, TaskPriority priority, std::string instanceTable, std::string *data);
+        json toJson();
+        void destruct();
 };
 
 #endif

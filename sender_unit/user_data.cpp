@@ -1,3 +1,4 @@
+#include "../include/debug_rp.hpp"
 #include "user_data.hpp"
 
 UserDataTable::UserDataTable(std::string userTableName, TaskPriority priority, std::string instanceTableName, 
@@ -18,4 +19,9 @@ json UserDataTable::toJson()
     packet["body"]["data"] = *data;
 
     return packet;
+}
+
+void UserDataTable::destruct()
+{
+    delete this;
 }
