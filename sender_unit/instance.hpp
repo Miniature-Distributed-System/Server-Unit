@@ -15,6 +15,7 @@ struct InstanceStruct {
     std::string instanceName;
     std::uint8_t algoType;
     std::string *data;
+    InstanceStruct(){}
     InstanceStruct(std::string instanceName,std::uint8_t algoType, std::string *data){
         this->instanceName = instanceName;
         this->data = data;
@@ -23,14 +24,15 @@ struct InstanceStruct {
 };
 
 class Instance {
-        std::list<InstanceStruct*> instanceList;
+        std::list<InstanceStruct> instanceList;
+        std::list<json>* instanceJsonList;
         sem_t instanceListLock;
         Flag dataUpdated;
     public:
         Instance();
-        int update(std::list<InstanceStruct*> instance);
-        std::list<InstanceStruct*> getInstance();
-        std::list<json>* toJson();
+        int update(std::list<InstanceStruct> instance);
+        std::list<InstanceStruct> getInstance();
+        std::list<json> toJson();
         void resetFlag();
         bool getUpdateStatus();
 };
