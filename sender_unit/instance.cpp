@@ -93,3 +93,17 @@ bool Instance::getUpdateStatus()
 {
     return dataUpdated.isFlagSet();
 }
+
+bool Instance::isInstanceId(std::string instanceId)
+{
+    sem_wait(&instanceListLock);
+    for(auto i = instanceList.begin(); i != instanceList.end(); i++){
+        if(!instanceId.compare((*i).instanceName)){
+            sem_post(&instanceListLock);
+            return true;
+        }
+    }
+    sem_post(&instanceListLock);
+    
+    return false;
+}

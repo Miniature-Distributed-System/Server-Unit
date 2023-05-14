@@ -35,6 +35,8 @@ class Instance {
         std::list<json> toJson();
         void resetFlag();
         bool getUpdateStatus();
+        int getInsanceListSize(){ return instanceList.size();};
+        bool isInstanceId(std::string table);
 };
 
 extern Instance globalInstanceRegistery;
