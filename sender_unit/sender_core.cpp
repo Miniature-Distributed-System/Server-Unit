@@ -35,9 +35,9 @@ void SenderCoreData::addPackets(OutPacket *outData)
 
 bool SenderCoreData::isNewWorkerListEmpty()
 {
-    if(newWorkerList->size() > 0)
+    if(newWorkerList->size() <= 0)
+        return true;
         return false;
-    return true;
 }
 
 bool SenderCoreData::isPendingPacketsListEmpty()
