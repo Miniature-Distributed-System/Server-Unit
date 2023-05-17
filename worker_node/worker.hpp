@@ -56,5 +56,6 @@ class Worker {
         bool isQuickSendMode();
         void setWorkerReady();
         bool isWorkerReady();
+        void resetWorkerReady();
 };
 #endif

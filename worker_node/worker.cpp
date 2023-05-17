@@ -209,6 +209,11 @@ void Worker::setWorkerReady()
     workerReady.setFlag();
 }
 
+void Worker::resetWorkerReady()
+{
+    workerReady.resetFlag();
+}
+
 bool Worker::isWorkerReady()
 {
     return workerReady.isFlagSet();
