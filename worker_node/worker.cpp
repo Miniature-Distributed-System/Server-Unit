@@ -140,10 +140,13 @@ bool Worker::matchAckablePacket(std::string id)
 {
     sem_wait(&workerLock);
     for(auto i = ackPendingQueue.begin(); i != ackPendingQueue.end(); i++){
-        if((*i)->getOutDataState()->id == id){
-            delete (*i);
-            ackPendingQueue.erase(i);
-            DEBUG_MSG(__func__,"worker-", workerUID,": packet acked");
+        OutPacket *outPacket = (*i);
+        if(outPacket->getOutDataState()->id == id){
+            // Pull received packet out from timer
+            packetTimeout->popPacket(outPacket);
+            delete outPacket;
+            ackPendingQueue.erase(i--);
+            DEBUG_MSG(__func__,"worker:", workerUID,"- packet acknowledged");
             sem_post(&workerLock);
             return true;
         }
