@@ -193,7 +193,10 @@ void Worker::setQuickSendMode()
 
 void Worker::resetQuickSendMode()
 {
+    if(quickSendMode.isFlagSet()){
+        DEBUG_MSG(__func__, "worker:", workerUID, " has exited quick send mode");
     quickSendMode.resetFlag();
+    }
 }
 
 bool Worker::isQuickSendMode()
