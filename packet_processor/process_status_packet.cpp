@@ -122,14 +122,18 @@ void ProcessStatusPacket::packetStatusParse()
     switch(statusCode)
     {
         case P_RESET:
+            if(globalInstanceRegistery.isInstanceId(tableId)){
+                // Update tracker about the table in processing
+                workerInstanceList.updateWorker(worker->getWorkerUID(), tableId);
+            }
             break;
         case P_DATA_ACK:
             if(worker->matchAckablePacket(tableId)){
-                DEBUG_MSG(__func__, "packet with ID: ", tableId, " was acknowledged");
                 if(globalInstanceRegistery.isInstanceId(tableId)){
                     // Update tracker about the received instance table
                     workerInstanceList.updateWorker(worker->getWorkerUID(), tableId);
                 }
+                DEBUG_MSG(__func__, "packet with ID: ", tableId, " was acknowledged");
             } else DEBUG_ERR(__func__, "packet with ID: ", tableId, " was not found in worker list");
             break;
         case P_INTR_RES:
