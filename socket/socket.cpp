@@ -103,9 +103,6 @@ public:
     {
         if (ec)
             return fail(ec, "accept");
-
-        // Read a message
-        DEBUG_MSG(__func__, "Accepted connection");
         do_read();
     }
 
@@ -172,7 +169,6 @@ public:
         buffer_.consume(buffer_.size());
         json outPacket;
         if(isNewWorker.isFlagSet()){
-            DEBUG_MSG(__func__, "construct packet");
             outPacket = PacketConstructor().create(SP_HANDSHAKE, workerUid);
         } else {
             DEBUG_MSG(__func__, "wait for packet qsend:", worker->isQuickSendMode());
