@@ -1,6 +1,7 @@
 #include <random>
 #include "../include/debug_rp.hpp"
 #include "../sender_unit/sender_core.hpp"
+#include "../include/logger.hpp"
 #include "worker_registry.hpp"
 
 WorkerRegistry::WorkerRegistry(){}
@@ -43,7 +44,7 @@ std::string WorkerRegistry::generateWorkerUid()
     newWorker.setFlag();
     senderCoreData->addWorker(finalComputeNodeId); 
 
-    DEBUG_MSG(__func__, "compute unit assigned ID: ", finalComputeNodeId);
+    Log().info(__func__, "compute unit assigned ID: ", finalComputeNodeId);
     return finalComputeNodeId;
 }
 
@@ -56,7 +57,7 @@ std::list<OutPacket*> WorkerRegistry::deleteWorker(Worker *worker)
     outPacket = worker->shutDown();
     delete worker;
     deadWorkerList.push_front(computeNodeId);
-    DEBUG_MSG(__func__, "compute unit with ID", computeNodeId, " has been removed from active list");
+    Log().info(__func__, "compute unit with ID", computeNodeId, " has been removed from active list");
 
     return outPacket;
 }
@@ -84,6 +85,6 @@ Worker* WorkerRegistry::getWorkerFromUid(std::string workerUid)
                 return worker;
         } 
     }
-    DEBUG_ERR(__func__, "could not find worker with UID: ", workerUid);
+    Log().error(__func__, "could not find worker with UID: ", workerUid);
     return NULL;
 }

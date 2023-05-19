@@ -1,5 +1,6 @@
 #include "sink_stack.hpp"
 #include "../include/debug_rp.hpp"
+#include "../include/logger.hpp"
 
 //TO-DO:
 //These are randomly choosen values no actual research has been done on this
@@ -27,13 +28,13 @@ Sink::Sink(std::uint64_t maxSinkSize, std::string debugPrefix){
     sinkLimit = maxSinkSize;
     this->debugPrefix = debugPrefix + ": ";
     sem_init(&sinkLock, 0, 1);
-    DEBUG_MSG(__func__, debugPrefix, " sink initlilized");
+    Log().info(__func__, debugPrefix, " sink initlilized");
 }
 
 int Sink::pushObject(void *object, TaskPriority priority)
 {
     if(sinkItemList->size() >= MAX_POOL_SIZE || !object){
-        DEBUG_MSG(__func__, debugPrefix, "Max pool size reached cannot push anymore");
+        Log().info(__func__, debugPrefix, "Max pool size reached cannot push anymore");
         return -1;
     }
 
@@ -52,7 +53,7 @@ int Sink::pushObject(void *object, TaskPriority priority)
     }
 end:
     sem_post(&sinkLock);
-    DEBUG_MSG(__func__, debugPrefix, "Item added to sink, itemCount:",sinkItemList->size());
+    Log().info(__func__, debugPrefix, "Item added to sink, itemCount:",sinkItemList->size());
     return 0;
 }
 
@@ -61,7 +62,7 @@ ExportSinkItem Sink::popObject(){
     ExportSinkItem exportSinkItem;
     
     if(sinkItemList->size() == 0){
-        DEBUG_MSG(__func__, debugPrefix, "Empty no more Items");
+        Log().info(__func__, debugPrefix, "Empty no more Items");
         return exportSinkItem;
     }
 
@@ -71,7 +72,7 @@ ExportSinkItem Sink::popObject(){
     delete topSinkItem;
     sinkItemList->pop_front();
     sem_post(&sinkLock);
-    DEBUG_MSG(__func__, debugPrefix, "topmost sink item popped itemCount:",sinkItemList->size());
+    Log().info(__func__, debugPrefix, "topmost sink item popped itemCount:",sinkItemList->size());
     return exportSinkItem;
 }
 

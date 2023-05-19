@@ -2,6 +2,7 @@
 #include "../include/flag.h"
 #include "../include/debug_rp.hpp"
 #include "../services/sql_access.hpp"
+#include "../include/logger.hpp"
 
 int OutDataRegistry::addTable(std::string dataTableName, Worker *worker)
 {
@@ -16,7 +17,7 @@ int OutDataRegistry::addTable(std::string dataTableName, Worker *worker)
     }
 
     if(!resultStatus.isFlagSet()){
-        DEBUG_MSG(__func__, "New table :", dataTableName, " added to list");
+        Log().info(__func__, "New table :", dataTableName, " added to list");
         outData = new OutDataState(dataTableName, DATA_QUEUED);
         if(worker)
             outData->worker = worker;
@@ -30,14 +31,14 @@ int OutDataRegistry::deleteTable(std::string dataTableName)
 {
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
         if((*i)->id == dataTableName){
-            DEBUG_MSG(__func__, "table: ", dataTableName, " successfully popped from list");
+            Log().info(__func__, "table: ", dataTableName, " successfully popped from list");
             outDataRegistryList.erase(i--);
             delete (*i);
             return 0;
         }
     }
 
-    DEBUG_ERR(__func__, "Popping table: ", dataTableName, " failed as not found in list");
+    Log().debug(__func__, "Popping table: ", dataTableName, " failed as not found in list");
     return -1;
 }
 
@@ -45,12 +46,12 @@ bool OutDataRegistry::findMatchInList(std::string dataTableName)
 {
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
         if((*i)->id == dataTableName){
-            DEBUG_MSG(__func__, "found match for table name: ", dataTableName);
+            Log().info(__func__, "found match for table name: ", dataTableName);
             return true;
         }
     }
 
-    DEBUG_ERR(__func__, "found no match for table name:", dataTableName);
+    Log().error(__func__, "found no match for table name:", dataTableName);
     return false;
 }
 
@@ -60,13 +61,13 @@ bool OutDataRegistry::assignWorker(std::string id, Worker *worker)
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
         outDataState = *i;
         if(outDataState->id == id){
-            DEBUG_MSG(__func__, "updating status for table name: ", id);
+            Log().info(__func__, "updating status for table name: ", id);
             outDataState->worker = worker;
             return true;
         }
     }
 
-    DEBUG_ERR(__func__, "found no match for table name:", id, " failed to update status");
+    Log().error(__func__, "found no match for table name:", id, " failed to update status");
     return false;
 }
 
@@ -97,7 +98,7 @@ int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus 
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
         outDataState = *i;
         if(outDataState->id == dataTableName){
-            DEBUG_MSG(__func__, "updating status for table name: ", dataTableName, " with state: ", status);
+            Log().info(__func__, "updating status for table name: ", dataTableName, " with state: ", status);
             std::string result = userStatusEnumToString(status);
             if(!result.empty())
                 updateStatusInDb(result, dataTableName);
@@ -106,7 +107,7 @@ int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus 
         }
     }
 
-    DEBUG_ERR(__func__, "found no match for table name:", dataTableName, " failed to update status");
+    Log().error(__func__, "found no match for table name:", dataTableName, " failed to update status");
     return false;
 }
 
@@ -125,6 +126,6 @@ OutDataState* OutDataRegistry::getOutDataRegistryFromId(std::string id)
         }
     }
 
-    DEBUG_ERR(__func__, "found no match for table name:", id, " failed to update status");
+    Log().error(__func__, "found no match for table name:", id, " failed to update status");
     return NULL;    
 }

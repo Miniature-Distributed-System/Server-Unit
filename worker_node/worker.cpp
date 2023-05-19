@@ -1,6 +1,7 @@
 #include "../include/debug_rp.hpp"
 #include "../sched/timeout.hpp"
 #include "../packet_processor/out_data_registry.hpp"
+#include "../include/logger.hpp"
 #include "worker.hpp"
 
 OutPacket:: OutPacket(json packet, OutDataState* outData, bool ackable){
@@ -50,13 +51,13 @@ Worker::Worker(std::string workerUID)
 
 void Worker::checkIn()
 {
-    DEBUG_MSG(__func__,"Worker-",workerUID, ": attendence marked");  
+    Log().info(__func__,"Worker-",workerUID, ": attendence marked");  
     attendance.setFlag();
 }
 
 void Worker::checkOut()
 {
-    DEBUG_MSG(__func__,"Worker-",workerUID, ": attendence marked");  
+    Log().info(__func__,"Worker-",workerUID, ": attendence marked");  
     attendance.resetFlag();
 }
 
@@ -73,13 +74,13 @@ std::string Worker::getWorkerUID()
 int Worker::queuePacket(OutPacket* packet)
 {
     if(senderQueue.size() > WORKER_QUEUE_SIZE){
-        DEBUG_MSG(__func__,"worker-", workerUID,": max limit reached");
+        //Log().info(__func__,"worker-", workerUID,": queue Full size:", senderQueue.size());
         return 1;
     }
     sem_wait(&workerLock);
     senderQueue.push_back(packet);
     sem_post(&workerLock);
-    DEBUG_MSG(__func__, "worker-", workerUID, ": pushed packet to queue");
+    Log().info(__func__, "worker-", workerUID, ": pushed packet to queue, size:", senderQueue.size());
     return 0;
 }
 
@@ -89,13 +90,13 @@ json Worker::getQueuedPacket()
 
     sem_wait(&workerLock);
     if(ackPacketPop.isFlagSet()){
-        DEBUG_MSG(__func__,"worker-", workerUID,": re-sending non-acked packet to worker");
+        Log().info(__func__,"worker-", workerUID,": re-sending non-acked packet to worker");
         ackPacketPop.resetFlag();
         sem_post(&workerLock);
         if(ackPendingQueue.size() > 0)
-        return ackPendingQueue.front()->packet;
+            return ackPendingQueue.front()->packet;
         else 
-            DEBUG_ERR(__func__, "No ackable packets present flag should have be off");
+            Log().error(__func__, "No ackable packets present flag should have be off");
     }
 
     if(senderQueue.size() > 0){
@@ -108,7 +109,7 @@ json Worker::getQueuedPacket()
                     if(!(*i)->isAckable()){
                         outPacket = (*i);
                         senderQueue.erase(i--);
-                        DEBUG_MSG(__func__,"worker-", workerUID,": sending non-ackable packet to worker");
+                        Log().info(__func__,"worker-", workerUID,": sending non-ackable packet to worker");
                         sem_post(&workerLock);
                         return (*i)->packet;
                     }
@@ -125,7 +126,7 @@ json Worker::getQueuedPacket()
         sem_post(&workerLock);
         return json({});
     }
-    DEBUG_MSG(__func__, "popped from queue size:", senderQueue.size());
+    Log().info(__func__, "popped from queue size:", senderQueue.size());
     senderQueue.pop_front();
     sem_post(&workerLock);
     return outPacket->packet;
@@ -146,14 +147,14 @@ bool Worker::matchAckablePacket(std::string id)
             packetTimeout->popPacket(outPacket);
             delete outPacket;
             ackPendingQueue.erase(i--);
-            DEBUG_MSG(__func__,"worker:", workerUID,"- packet acknowledged");
+            Log().info(__func__,"worker:", workerUID,"- packet acknowledged");
             sem_post(&workerLock);
             return true;
         }
     }
 
     sem_post(&workerLock);
-    DEBUG_ERR(__func__,"worker-", workerUID,": no such packet found!");
+    Log().error(__func__,"worker-", workerUID,": no such packet found!");
     return false;
 }
 
@@ -170,7 +171,7 @@ std::list<OutPacket*> Worker::shutDown()
         outPacket.push_back(*i);
     }
 
-    DEBUG_MSG(__func__,"worker-",workerUID, ": shut down complete");
+    Log().info(__func__,"worker-",workerUID, ": shut down complete");
     sem_post(&workerLock);
     sem_destroy(&workerLock);
     return outPacket;
@@ -188,14 +189,15 @@ void Worker::pushToFront(OutPacket* outPacket)
 
 void Worker::setQuickSendMode()
 {
+    Log().info(__func__, "worker:", workerUID, " is in quick send mode");
     quickSendMode.setFlag();
 }
 
 void Worker::resetQuickSendMode()
 {
     if(quickSendMode.isFlagSet()){
-        DEBUG_MSG(__func__, "worker:", workerUID, " has exited quick send mode");
-    quickSendMode.resetFlag();
+        Log().info(__func__, "worker:", workerUID, " has exited quick send mode");
+        quickSendMode.resetFlag();
     }
 }
 

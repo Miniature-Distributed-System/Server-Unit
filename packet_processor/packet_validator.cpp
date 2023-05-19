@@ -3,6 +3,7 @@
 #include "../include/debug_rp.hpp"
 #include "../sched/task_pool.hpp"
 #include "../sink/sink_stack.hpp"
+#include "../include/logger.hpp"
 #include "packet_validator.hpp"
 
 static json packetSchema = R"(
@@ -41,9 +42,9 @@ void PacketValidator::validatePacket()
 
     try{
         auto defaultPatch = validator.validate(packet["body"]);
-        DEBUG_MSG(__func__, "packet is a valid data packet");
+        Log().pktProcessorInfo(__func__, "packet is a valid data packet");
     }catch (const std::exception &e) {
-        DEBUG_ERR(__func__, "is not a valid data packet, ", e.what());
+        Log().debug(__func__, "is not a valid data packet, ", e.what());
         isValid = false;
         return;
     }

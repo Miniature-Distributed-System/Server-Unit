@@ -1,5 +1,6 @@
 #include "../include/task.hpp"
 #include "../include/debug_rp.hpp"
+#include "../include/logger.hpp"
 #include "../packet_processor/out_data_registry.hpp"
 #include "../worker_node/worker_registry.hpp"
 #include "../sender_unit/sender_core.hpp"
@@ -9,14 +10,14 @@ bool Timeout::isWorkerRegistered(Worker* worker)
 {
     for(auto i = timedoutWorkerRegistry.begin(); i != timedoutWorkerRegistry.end(); i++){
         if(worker == *i){
-            DEBUG_MSG(__func__, "worker:",worker->getWorkerUID()," timed out!");
+            Log().info(__func__, "worker:",worker->getWorkerUID()," timed out!");
             timedoutWorkerRegistry.erase(i--);
             return true;
         }
     }
 
     timedoutWorkerRegistry.push_back(worker);
-    DEBUG_MSG(__func__, "worker first timeout strike");
+    Log().info(__func__, "worker first timeout strike");
     return false;
 }
 
@@ -61,12 +62,12 @@ void Timeout::execute()
             if(!outDataState->worker->isCheckedIn()){
                 if(isWorkerRegistered(outDataState->worker)){
                     // Worker is timedout so remove it from list, de-alloc, reassign its resources and data
-                    DEBUG_MSG(__func__, "worker timeout ID:", outDataState->worker->getWorkerUID());
+                    Log().info(__func__, "worker timeout ID:", outDataState->worker->getWorkerUID());
                     outPackets = globalWorkerRegistry.deleteWorker(outDataState->worker);
                     for(auto i = outPackets.begin(); i != outPackets.end(); i++){
                         senderCoreData->addPackets(*i);
                     }
-                    DEBUG_MSG(__func__, "worker packets have been sent for re-assignment");
+                    Log().info(__func__, "worker packets have been sent for re-assignment");
                     return;
                 }
             }

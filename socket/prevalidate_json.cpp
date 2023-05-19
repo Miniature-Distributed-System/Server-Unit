@@ -1,5 +1,6 @@
 #include "../include/debug_rp.hpp"
 #include "../include/packet.hpp"
+#include "../include/logger.hpp"
 #include "prevalidate_json.hpp"
 
 static json packetSchema = R"(
@@ -29,7 +30,7 @@ JsonPrevalidator::JsonPrevalidator(std::string out)
     try{
         this->packet = json::parse(out.c_str());
     }catch (std::exception &e){
-        DEBUG_ERR(__func__, "packet corrupt: ", out);
+        Log().error(__func__, "packet corrupt: ", out);
     }
 }
 
@@ -41,12 +42,12 @@ bool JsonPrevalidator::validateJson()
     try
     {
         auto defaultPatch = validator.validate(packet);
-        DEBUG_MSG(__func__, "packet validation success!");
+        Log().info(__func__, "packet validation success!");
         return true;
     }
     catch (const std::exception &e)
     {
-        DEBUG_ERR(__func__, "packet invalid, ", e.what(), " packet", packet);
+        Log().debug(__func__, "packet invalid, ", e.what(), " packet", packet);
         return false;
     }
 }

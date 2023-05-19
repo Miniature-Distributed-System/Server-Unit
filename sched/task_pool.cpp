@@ -1,13 +1,14 @@
 #include "task_pool.hpp"
 #include "task_scheduler.hpp"
 #include "../include/debug_rp.hpp"
+#include "../include/logger.hpp"
 
 TaskPool::TaskPool()
 {
     sem_init(&taskPoolLock, 0, 1);
     taskPoolCount = 0;
     headNode = NULL;
-    DEBUG_MSG(__func__,"inited TaskPool!");
+    Log().info(__func__,"inited TaskPool!");
 }
 
 int TaskPool::addTask(taskStruct *task, TaskPriority loadType)
@@ -16,7 +17,7 @@ int TaskPool::addTask(taskStruct *task, TaskPriority loadType)
     
     if(taskPoolCount >= MAX_TASK_POOL_SIZE)
     {
-        DEBUG_MSG(__func__,"Task Queue is full");
+        Log().info(__func__,"Task Queue is full");
         return -1;
     }
     
@@ -36,7 +37,7 @@ int TaskPool::addTask(taskStruct *task, TaskPriority loadType)
                 node->next = tailNode;
                 taskPoolCount++;
                 sem_post(&taskPoolLock);
-                DEBUG_MSG(__func__, "New node added at tail: ", taskPoolCount);
+                Log().info(__func__, "New node added at tail: ", taskPoolCount);
                 pthread_cond_signal(&cond);
                 return 0;
             }
@@ -45,7 +46,7 @@ int TaskPool::addTask(taskStruct *task, TaskPriority loadType)
     }
 
     sem_post(&taskPoolLock);
-    DEBUG_MSG(__func__, "New node added at tail: ", taskPoolCount);
+    Log().info(__func__, "New node added at tail: ", taskPoolCount);
     pthread_cond_signal(&cond);
     return 0;
 }
@@ -55,7 +56,7 @@ taskPoolNode TaskPool::popTask()
     taskPoolNode task, *temp;
 
     if(taskPoolCount <= 0){
-        DEBUG_MSG(__func__, "The task pool is empty");
+        Log().info(__func__, "The task pool is empty");
         return taskPoolNode();
     }
     sem_wait(&taskPoolLock);
@@ -65,6 +66,6 @@ taskPoolNode TaskPool::popTask()
     delete temp;
     taskPoolCount--;
     sem_post(&taskPoolLock);
-    DEBUG_MSG(__func__, "Popped item, total remaining items in queue: ",taskPoolCount);
+    Log().info(__func__, "Popped item, total remaining items in queue: ",taskPoolCount);
     return task;
 }

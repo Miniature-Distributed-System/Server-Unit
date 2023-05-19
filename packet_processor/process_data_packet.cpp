@@ -1,5 +1,6 @@
 #include <fstream>
 #include "../include/debug_rp.hpp"
+#include "../include/logger.hpp"
 #include "../worker_node/worker_registry.hpp"
 #include "../configs.h"
 #include "process_packet.hpp"
@@ -20,7 +21,7 @@ void ProcessDataPacket::detectDataType()
         pDataType = FINAL_RESULT;
     }else{
         pDataType = ERROR_DATA;
-        DEBUG_ERR(__func__,"Packet does not match any Types");
+        Log().debug(__func__,"Packet does not match any Types");
     }
 }
 
@@ -29,7 +30,7 @@ int ProcessDataPacket::createCsvFromData()
     std::ofstream outFile;
     
     if(data.length() == 0){
-        DEBUG_ERR(__func__, "Data feild is empty");
+        Log().error(__func__, "Data feild is empty");
         return -1;
     }
 
@@ -40,7 +41,7 @@ int ProcessDataPacket::createCsvFromData()
     outFile << data;
     outFile.close();
 
-    DEBUG_MSG(__func__, "created csv file for table: ", tableId, " successfully");
+    Log().pktProcessorInfo(__func__, "created csv file for table: ", tableId, " successfully");
     return 0;
 }
 
@@ -49,7 +50,7 @@ void ProcessDataPacket::pushDataToDb()
     sqlAccess = new SqlAccess(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, 
                     USERDAT_TABLE_NAME);
     sqlAccess->initialize();
-    DEBUG_MSG(__func__, "pushing ", tableId, " final results into database");
+    Log().pktProcessorInfo(__func__, "pushing ", tableId, " final results into database");
     sqlAccess->sqlWriteString(data, USERDAT_RES_COL_ID, USERDAT_ALIASNAME_COL_ID, tableId);
     delete sqlAccess;
 }
@@ -57,18 +58,18 @@ void ProcessDataPacket::pushDataToDb()
 void ProcessDataPacket::execute()
 {
     if(!globalOutDataRegistry.findMatchInList(tableId)){
-        DEBUG_ERR(__func__, "no table with tableID:", tableId, " found.");
+        Log().error(__func__, "no table with tableID:", tableId, " found.");
         return;
     } 
 
     detectDataType();
     if(createCsvFromData()){
-        DEBUG_ERR(__func__, "Aborting packet data processing");
+        Log().error(__func__, "Aborting packet data processing");
         return;
     }
 
     if(pDataType != INTERMEDIATE_RESULT){
         pushDataToDb();
     }
-    DEBUG_MSG(__func__, "Finished processing ", tableId," data");
+    Log().pktProcessorInfo(__func__, "Finished processing ", tableId," data");
 }

@@ -27,6 +27,7 @@
 #include <vector>
 #include "../include/debug_rp.hpp"
 #include "../include/packet.hpp"
+#include "../include/logger.hpp"
 #include "../sink/sink_stack.hpp"
 #include "../packet_processor/packet_validator.hpp"
 #include "../worker_node/worker_registry.hpp"
@@ -136,24 +137,24 @@ public:
         // Echo the message
         std::string out(boost::asio::buffer_cast<const char *>(buffer_.data()),
                         buffer_.size());
-        DEBUG_MSG(__func__,"Read message from client:-", out);
+        Log().info(__func__,"Read message from client:-", out);
         JsonPrevalidator jsonPrevalidator(out);
         isNewWorker.initFlag(false);
         if (jsonPrevalidator.validateJson())
         {
             json packet = jsonPrevalidator.getJson();
             if(packet["id"].empty()){
-                DEBUG_MSG(__func__, " id feild empty");
+                Log().info(__func__, " id feild empty");
                 workerUid = globalWorkerRegistry.generateWorkerUid();
                 isNewWorker.setFlag();
             } else {
                 worker = globalWorkerRegistry.getWorkerFromUid(packet["id"]);
                 if(worker == NULL){
-                    DEBUG_MSG(__func__, "could not find the worker:", packet["id"], " in worker list");
+                    Log().info(__func__, "could not find the worker:", packet["id"], " in worker list");
                     workerUid = globalWorkerRegistry.generateWorkerUid();
                     isNewWorker.setFlag();
                 } else {
-                    DEBUG_MSG(__func__, "worker:", packet["id"], " successfully identified");
+                    Log().info(__func__, "worker:", packet["id"], " successfully identified");
                     if(jsonPrevalidator.checkQuickSendBit()) 
                         worker->setQuickSendMode();
                     else worker->resetQuickSendMode();
@@ -171,7 +172,7 @@ public:
         if(isNewWorker.isFlagSet()){
             outPacket = PacketConstructor().create(SP_HANDSHAKE, workerUid);
         } else {
-            DEBUG_MSG(__func__, "wait for packet qsend:", worker->isQuickSendMode());
+            Log().info(__func__, "wait for packet qsend:", worker->isQuickSendMode());
             while(outPacket.empty()){
                 outPacket = worker->getQueuedPacket();
                 if(outPacket.empty() && worker->isQuickSendMode()){
@@ -179,7 +180,7 @@ public:
                     break;
                 }
             }
-            DEBUG_MSG(__func__, "Worker: ", worker->getWorkerUID(), " :has packet scheduled ", outPacket);
+            Log().info(__func__, "Worker: ", worker->getWorkerUID(), " :has packet scheduled ", outPacket);
         }
         ws_.text(ws_.got_text());
         ws_.write(net::buffer(std::string(outPacket.dump())));

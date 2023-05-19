@@ -1,4 +1,5 @@
 #include "../include/debug_rp.hpp"
+#include "../include/logger.hpp"
 #include "sql_access.hpp"
 
 using namespace sql;
@@ -21,11 +22,11 @@ void SqlAccess::initialize()
         driver = get_driver_instance();
         conn = driver->connect(url, username, password);
         conn->setSchema(database);
-        DEBUG_MSG(__func__, "sql initialized successfully");
+        Log().info(__func__, "sql initialized successfully");
         inited.setFlag();
     }catch(sql::SQLException &e){
-        DEBUG_ERR(__func__, e.what());
-        DEBUG_ERR(__func__, "sql Error code: ", e.getErrorCode());
+        Log().error(__func__, e.what());
+        Log().error(__func__, "sql Error code: ", e.getErrorCode());
         inited.resetFlag();
     }
 }
@@ -44,7 +45,7 @@ std::string SqlAccess::sqlQueryDb(std::string queryStatement, std::string column
                 result = result + res->getString(columnName);
         }
     }catch(sql::SQLException &e){
-        DEBUG_ERR(__func__, "sql error: ", e.what());
+        Log().error(__func__, "sql error: ", e.what());
         return "";
     }
 
@@ -65,7 +66,7 @@ std::list<std::string> SqlAccess::sqlQueryDbList(std::string queryStatement, std
                 result.push_back(res->getString(columnName));
         }
     }catch(sql::SQLException &e){
-        DEBUG_ERR(__func__, "sql error: ", e.what());
+        Log().error(__func__, "sql error: ", e.what());
     }
 
     return result;
@@ -85,7 +86,7 @@ int SqlAccess::sqlQueryDbGetInt(std::string queryStatement, std::string columnNa
                 result = res->getInt(columnName);
         }
     }catch(sql::SQLException &e){
-        DEBUG_ERR(__func__, "sql error: ", e.what());
+        Log().error(__func__, "sql error: ", e.what());
         return -1;
     }
     
@@ -101,7 +102,7 @@ int SqlAccess::sqlWriteBlob(std::string fileLoc, std::string columnName, std::st
         sqlExecutor = conn->prepareStatement(query);
         res = sqlExecutor->executeQuery();
     }catch(sql::SQLException &e){
-        DEBUG_ERR(__func__, "sql error: ", e.what());
+        Log().error(__func__, "sql error: ", e.what());
         return -1;
     }
 
@@ -114,11 +115,11 @@ int SqlAccess::sqlWriteString(std::string resultString, std::string columnName, 
     try{
         std::string query = "UPDATE " + dataTable + " SET " + columnName + "='"+ resultString +"' WHERE "+ 
         rowIdentifierName + "='"+ rowIdentifierValue + "';";
-        DEBUG_MSG(__func__, resultString);
+        Log().info(__func__, resultString);
         sqlExecutor = conn->prepareStatement(query);
         res = sqlExecutor->executeQuery();
     }catch(sql::SQLException &e){
-        DEBUG_ERR(__func__, "sql error: ", e.what());
+        Log().error(__func__, "sql error: ", e.what());
         return -1;
     }
 
@@ -137,7 +138,7 @@ std::list<std::string> SqlAccess::sqlReadList(std::string tableID, std::string c
             resultList.push_back(res->getString(columnName));
         }
     }catch(sql::SQLException &e){
-        DEBUG_ERR(__func__, "sql error: ", e.what());
+        Log().error(__func__, "sql error: ", e.what());
     }
 
     return resultList;

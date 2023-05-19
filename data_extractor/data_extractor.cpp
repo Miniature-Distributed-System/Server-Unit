@@ -5,6 +5,7 @@
 #include "../sender_unit/instance.hpp"
 #include "../sender_unit/user_data.hpp"
 #include "../packet_processor/out_data_registry.hpp"
+#include "../include/logger.hpp"
 #include "../configs.h"
 #include "data_extractor.hpp"
 
@@ -39,7 +40,7 @@ std::string* DataExtractor::getFileData(std::string fileName, bool isInstance)
 
         return resultData;
     }
-    DEBUG_ERR(__func__, "No data was found in ", fileName);
+    Log().error(__func__, "No data was found in ", fileName);
     return NULL;
 }
 
@@ -53,7 +54,7 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAc
     {
         std::string curInstanceName = *i, *resultData;
         if(curInstanceName.empty()) {
-            DEBUG_MSG(__func__, "instance id: ", j, " is empty");
+            Log().info(__func__, "instance id: ", j, " is empty");
             continue;
         }
         
@@ -62,7 +63,7 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAc
         std::string csvFileName = sqlAccess->sqlQueryDb(csvFileNameQuery, INSTANCE_FILE_COL_ID);
         resultData = getFileData(csvFileName, true);
         if(!resultData){
-            DEBUG_ERR(__func__, "fetching ", csvFileName, " failed for ", curInstanceName, " in ", INSTANCE_TABLE_NAME);
+            Log().error(__func__, "fetching ", csvFileName, " failed for ", curInstanceName, " in ", INSTANCE_TABLE_NAME);
             continue;
         }
 
@@ -73,7 +74,7 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAc
         instanceList.push_back(instanceStruct);
     }
 
-    DEBUG_MSG(__func__, "instance data extraction done, total records:", instanceList.size());
+    Log().info(__func__, "instance data extraction done, total records:", instanceList.size());
     return globalInstanceRegistery.update(instanceList);
 }
 
@@ -85,16 +86,16 @@ int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNam
     
 
     for(auto i = userTableNameList.begin(); i != userTableNameList.end(); i++){
-        DEBUG_MSG(__func__,(*i));
+        Log().info(__func__,(*i));
     }
 
     for(auto i = userTableNameList.begin(); i != userTableNameList.end(); i++){
         std::string userTableName = *i;
         if(userTableName.empty()){
-            DEBUG_ERR(__func__, "Table fetch failed");
+            Log().error(__func__, "Table fetch failed");
             continue;
         }
-        DEBUG_MSG(__func__, "pulling user table file data:", userTableName);
+        Log().info(__func__, "pulling user table file data:", userTableName);
         
         tablePriorityQuery = "SELECT " + USERDAT_DAT_PRIORITY_COL_ID + " FROM " + USERDAT_TABLE_NAME + " WHERE " 
         + USERDAT_DAT_COL_ID + "='" + userTableName + "';";
@@ -108,7 +109,7 @@ int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNam
         std::string userTableAlgo = sqlAccess->sqlQueryDb(tableAlgoIdQuery);
 
         fileData = getFileData(userTableName, false);
-        DEBUG_MSG(__func__, "Table Name:",userRecordName, "Instance Name:",  userTableAlgo," priority:" ,userTablePriority," algo:" ,userTableAlgo);
+        Log().info(__func__, "Table Name:",userRecordName, "Instance Name:",  userTableAlgo," priority:" ,userTablePriority," algo:" ,userTableAlgo);
         UserDataTable *userDataTable = new UserDataTable(userTableName.c_str(), getTaskPriority(userTablePriority), userTableAlgo.c_str(), fileData);
         userDataTable->userTable = userRecordName;
         userDataTable->instanceName = userTableAlgo;
@@ -116,6 +117,6 @@ int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNam
         globalSenderSink->pushObject(userDataTable, getTaskPriority(userTablePriority));
         globalOutDataRegistry.addTable(userRecordName);
     }
-    DEBUG_MSG(__func__, "pushed user tables from DB to sender stack");
+    Log().info(__func__, "pushed user tables from DB to sender stack");
     return 0;
 }

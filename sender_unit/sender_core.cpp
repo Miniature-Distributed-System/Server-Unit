@@ -8,6 +8,7 @@
 #include "../data_extractor/data_extractor.hpp"
 #include "../packet_processor/out_data_registry.hpp"
 #include "../packet_processor/packet_constructor.hpp"
+#include "../include/logger.hpp"
 #include "sender_core.hpp"
 #include "instance.hpp"
 #include "user_data.hpp"
@@ -19,13 +20,13 @@ SenderCoreData::SenderCoreData()
 {
     newWorkerList = new std::list<std::string>;
     pendingPacketsList = new std::list<OutPacket*>;
-    DEBUG_MSG(__func__, "inited sender core data");
+    Log().senderCoreInfo(__func__, "inited sender core data");
 }
 
 void SenderCoreData::addWorker(std::string workerUid)
 {
     newWorkerList->push_back(workerUid);
-    DEBUG_MSG(__func__, "added worker for instance update depth:", newWorkerList->size());
+    Log().senderCoreInfo(__func__, "added worker for instance update depth:", newWorkerList->size());
 }
 
 void SenderCoreData::addPackets(OutPacket *outData)
@@ -68,22 +69,20 @@ Worker* findIdealWorker()
     {
         worker = *i;
         if(worker == NULL){
-            DEBUG_ERR(__func__, "empty worker node");
+            Log().error(__func__, "Worker not found");
             continue;
         }
-        if(worker->getQueueSize() > hSize){
-            hSize = worker->getQueueSize();
-            hWorkerUid = worker->getWorkerUID();
+            Log().senderCoreInfo(__func__, "tempPoints: ", tempPoints, " worker:", worker->getWorkerUID());
         }
     }
 
     if(hWorkerUid.empty()){
-        //DEBUG_ERR(__func__, "all workers are full");
+        //Log().error(__func__, "all workers are full");
         return NULL;
     }
 
     resWorker = globalWorkerRegistry.getWorkerFromUid(hWorkerUid);
-    DEBUG_MSG(__func__, "worker with emptiest queue: ", hWorkerUid);
+    Log().senderCoreInfo(__func__, "worker with emptiest queue: ", finalWorkerUid);
 
     return resWorker;
 }
@@ -102,6 +101,7 @@ void pushUserDataToWorkerQueue()
 
     sinkItem = globalSenderSink->popObject();
     userData = (UserDataTable*)sinkItem.dataObject;
+    //Log().senderCoreInfo(__func__,"Table Name:",userData->userTable ,"Instance name:", userData->instanceName, " priority: ", userData->priority);
     packet = userData->toJson();
     worker->queuePacket(
         new OutPacket(
@@ -110,7 +110,7 @@ void pushUserDataToWorkerQueue()
         );
     globalOutDataRegistry.assignWorker(userData->userTable, worker);
     globalOutDataRegistry.updateTaskStatus(userData->userTable, DATA_READY);
-    DEBUG_MSG(__func__, "sender sink packet pushed to worker:", worker->getWorkerUID());
+    Log().senderCoreInfo(__func__, "sender sink packet pushed to worker:", worker->getWorkerUID());
 }
 
 void pushInstanceToWorkerQueue(std::list<std::string> *workerList)
@@ -120,6 +120,7 @@ void pushInstanceToWorkerQueue(std::list<std::string> *workerList)
     std::string tableId;
     std::list<json>* instanceJson = globalInstanceRegistery.toJson();
 
+    Log().senderCoreInfo(__func__, " worker list size:", workerList->size());
     for(auto i = workerList->begin(); i != workerList->end(); i++)
     {
         workerUID = *i;
@@ -131,6 +132,7 @@ void pushInstanceToWorkerQueue(std::list<std::string> *workerList)
         for(auto j = instanceJson->begin(); j != instanceJson->end(); j++)
         {
             tableId = (*j)["body"]["instanceid"];
+            Log().senderCoreInfo(__func__, "queuing packet with instance ID:", tableId);
             globalOutDataRegistry.addTable(tableId, worker);
             worker->queuePacket(
                 new OutPacket(
@@ -138,11 +140,14 @@ void pushInstanceToWorkerQueue(std::list<std::string> *workerList)
                     , tableId, true)
                 );
             globalOutDataRegistry.updateTaskStatus(tableId, DATA_READY);
+        Log().senderCoreInfo(__func__, "queued packet into worker UID: ", workerUID);
+    Log().senderCoreInfo(__func__, "cleared pending workerList");
+    Log().senderCoreInfo(__func__, "worker list size:", workers.size());
         }
         DEBUG_MSG(__func__, "queued packet into worker UID: ", workerUID);
     DEBUG_MSG(__func__, "cleared pending workerList");
     }
-    DEBUG_MSG(__func__, "all workers instances updated");
+    Log().senderCoreInfo(__func__, "all workers instances updated");
 }
 
 int pushPendingPackets(std::list<OutPacket*>* outPacketList)
@@ -169,10 +174,10 @@ JobStatus startSenderCore(void *data)
     if(!senderData->isPendingPacketsListEmpty()){
         rc = pushPendingPackets(senderData->getPendingPacketsList());
         if(rc){
-            DEBUG_MSG(__func__, "all worker queues are filled waiting to free-up or no worker present");
+            Log().senderCoreInfo(__func__, "all worker queues are filled waiting to free-up or no worker present");
             return JOB_PENDING;
         }
-        DEBUG_MSG(__func__, "pending packets pushed to queue");
+        Log().senderCoreInfo(__func__, "pending packets pushed to queue");
     }
 
     if(!senderData->isNewWorkerListEmpty()){
@@ -190,7 +195,7 @@ JobStatus pauseSenderCore(void *data)
 }
 JobStatus endSenderCore(void *data, JobStatus status)
 {
-    DEBUG_MSG(__func__, "sender instance is shutting down");
+    Log().senderCoreInfo(__func__, "sender instance is shutting down");
     return JOB_DONE;
 }
 
@@ -203,6 +208,6 @@ struct process *senderCore = new process{
 int SenderCore::run()
 {
     globalTaskPool->addTask(new taskStruct(senderCoreProcess, senderCoreData), LOW_PRIORITY);
-    DEBUG_MSG(__func__,"sender core pushed to task queue");
+    Log().senderCoreInfo(__func__,"sender core pushed to task queue");
     return 0;
 }

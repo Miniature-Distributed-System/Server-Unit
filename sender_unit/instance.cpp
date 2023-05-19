@@ -1,6 +1,7 @@
 #include "instance.hpp"
 #include "worker_instance_list.hpp"
 #include "../include/debug_rp.hpp"
+#include "../include/logger.hpp"
 
 Instance::Instance()
 {
@@ -15,7 +16,7 @@ int Instance::update(std::list<InstanceStruct> instance)
     Flag itemPresent;
 
     if(instance.size() == 0){
-        DEBUG_ERR(__func__, "instance list is empty");
+        Log().error(__func__, "instance list is empty");
         return EXIT_FAILURE;
     }
 
@@ -54,7 +55,7 @@ int Instance::update(std::list<InstanceStruct> instance)
         InstanceStruct instance = *i;
         json packet;
 
-        DEBUG_MSG(__func__,"pushing instance ID: ", instance.instanceName, " into list");
+        Log().info(__func__,"pushing instance ID: ", instance.instanceName, " into list");
         packet["body"]["instanceid"] = instance.instanceName;
         packet["body"]["algotype"] = instance.algoType;
         packet["body"]["data"] = *instance.data;
@@ -66,7 +67,7 @@ int Instance::update(std::list<InstanceStruct> instance)
     workerInstanceList.updateInstanceList(instanceList);
     sem_post(&instanceListLock);
 
-    DEBUG_MSG(__func__, "successfully updated instance list with depth:", instanceJsonList->size());
+    Log().info(__func__, "successfully updated instance list with depth:", instanceJsonList->size());
 
     return 0;
 }

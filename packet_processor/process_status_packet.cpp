@@ -3,6 +3,7 @@
 #include "../sender_unit/instance.hpp"
 #include "../sender_unit/worker_instance_list.hpp"
 #include "../include/packet.hpp"
+#include "../include/logger.hpp"
 #include "out_data_registry.hpp"
 #include "process_packet.hpp"
 #include "packet_constructor.hpp"
@@ -60,10 +61,9 @@ ProcessStatusPacket::ProcessStatusPacket(json packet)
 
     try{
         auto defaultPatch = validator.validate(packet);
-        DEBUG_MSG(__func__, "packet has valid status");
+        Log().pktProcessorInfo(__func__, "packet has valid status");
     }catch (const std::exception &e) {
-        DEBUG_ERR(__func__, "is not a valid status packet, ", e.what());
-        DEBUG_ERR(__func__, "is not a valid status packet: ", packet);
+        Log().debug(__func__, "is not a valid status packet, ", e.what());
         return;
     }
     try{
@@ -78,9 +78,9 @@ ProcessStatusPacket::ProcessStatusPacket(json packet)
     
     try{
         auto defaultPatch = validator.validate(packet["stats"]);
-        DEBUG_MSG(__func__, "packet has valid stats header");
+        Log().pktProcessorInfo(__func__, "packet has valid stats header");
     }catch (const std::exception &e) {
-        DEBUG_ERR(__func__, "does not have a valid stats header, ", e.what());
+        Log().debug(__func__, "does not have a valid stats header, ", e.what());
         statsPresent.initFlag(false);
         return;
     }
@@ -115,7 +115,7 @@ void ProcessStatusPacket::packetStatusParse()
 
     worker = globalWorkerRegistry.getWorkerFromUid(workerUid);
     if(!worker){
-        DEBUG_ERR(__func__, "worker with workerUid:", workerUid, " not found");
+        Log().error(__func__, "worker with workerUid:", workerUid, " not found");
         return;
     }
 
@@ -133,8 +133,8 @@ void ProcessStatusPacket::packetStatusParse()
                     // Update tracker about the received instance table
                     workerInstanceList.updateWorker(worker->getWorkerUID(), tableId);
                 }
-                DEBUG_MSG(__func__, "packet with ID: ", tableId, " was acknowledged");
-            } else DEBUG_ERR(__func__, "packet with ID: ", tableId, " was not found in worker list");
+                Log().pktProcessorInfo(__func__, "packet with ID: ", tableId, " was acknowledged");
+            } else Log().error(__func__, "packet with ID: ", tableId, " was not found in worker list");
             break;
         case P_INTR_RES:
             globalOutDataRegistry.updateTaskStatus(tableId, DATA_INTER);
@@ -145,7 +145,7 @@ void ProcessStatusPacket::packetStatusParse()
                         PacketConstructor().create(SP_INTR_ACK, workerUid), outDataState, false
                     )
                 );
-                DEBUG_MSG(__func__,"table:",tableId,"intermediate result received");
+                Log().pktProcessorInfo(__func__,"table:",tableId,"intermediate result received");
             }
             break;
         case P_FINAL_RES:
@@ -157,22 +157,22 @@ void ProcessStatusPacket::packetStatusParse()
                         PacketConstructor().create(SP_FRES_ACK, workerUid), outDataState, false
                     )
                 );
-                DEBUG_MSG(__func__,"table:",tableId,"final result received");
+                Log().pktProcessorInfo(__func__,"table:",tableId,"final result received");
             }
             break;
         case P_ERR:
             //TO-DO:
         default:
-            DEBUG_ERR(__func__,"packet status did not match any known status codes");
+            Log().debug(__func__,"packet status did not match any known status codes");
     }
 
     if(statsPresent.isFlagSet()){
         if(worker){
             WorkerStats workerStats = WorkerStats(threadCount, adv_tokenizer(vectorString, ','), queueTime);
             worker->setWorkerStats(workerStats);
-            DEBUG_MSG(__func__, "updated worker:", worker->getWorkerUID());
-        } else DEBUG_MSG(__func__, "Skipping stats update for worker:", worker->getWorkerUID());
+            Log().pktProcessorInfo(__func__, "updated worker:", worker->getWorkerUID());
+        } else Log().pktProcessorInfo(__func__, "Skipping stats update for worker:", worker->getWorkerUID());
     }
 
-    DEBUG_MSG(__func__, "Finished processing ", tableId," status");
+    Log().pktProcessorInfo(__func__, "Finished processing ", tableId," status");
 }
