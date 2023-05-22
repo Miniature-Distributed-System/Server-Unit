@@ -35,6 +35,7 @@ class ProcessDataPacket{
 class ProcessStatusPacket{
         int statusCode;
         std::string tableId;
+        std::string errorString;
         std::string workerUid;
         Flag statsPresent;
         double queueTime;

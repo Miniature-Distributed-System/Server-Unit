@@ -68,9 +68,8 @@ ProcessStatusPacket::ProcessStatusPacket(json packet)
     }
     try{
         tableId = packet["body"]["id"];
-    } catch (const std::exception &e) {
-        tableId = "";
-    }
+        errorString = packet["body"]["data"];
+    } catch (const std::exception &e) {}
     workerUid = packet["id"];
     statusCode = packet["head"];
 
@@ -161,7 +160,10 @@ void ProcessStatusPacket::packetStatusParse()
             }
             break;
         case P_ERR:
-            //TO-DO:
+            if(!errorString.empty()){
+                globalOutDataRegistry.updateTaskStatus(tableId, DATA_ERROR);
+                Log().pktProcessorInfo(__func__,"table:", tableId, " has error is data");
+            }
         default:
             Log().debug(__func__,"packet status did not match any known status codes");
     }
