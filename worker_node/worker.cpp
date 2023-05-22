@@ -134,7 +134,7 @@ json Worker::getQueuedPacket()
 
 int Worker::getQueueSize()
 {
-    return WORKER_QUEUE_SIZE - senderQueue.size();
+    return WORKER_QUEUE_SIZE * (1/2) - (senderQueue.size() + ackPendingQueue.size());
 }
 
 bool Worker::matchAckablePacket(std::string id)
