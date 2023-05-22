@@ -4,6 +4,7 @@
 #include "../include/flag.h"
 #include "../configs.h"
 #include <semaphore.h>
+#include "worker_stats.hpp"
 
 #ifndef JSON_H
 #define JSON_H
@@ -37,6 +38,7 @@ class Worker {
         Flag quickSendMode;
         Flag workerReady;
         sem_t workerLock;
+        WorkerStats workerStats;
 
     public:
         Worker();
@@ -57,5 +59,7 @@ class Worker {
         void setWorkerReady();
         bool isWorkerReady();
         void resetWorkerReady();
+        WorkerStats getWorkerStats(){ return workerStats;};
+        void setWorkerStats(WorkerStats workerStats){ this->workerStats = workerStats;};
 };
 #endif
