@@ -142,6 +142,11 @@ bool Worker::matchAckablePacket(std::string id)
     sem_wait(&workerLock);
     for(auto i = ackPendingQueue.begin(); i != ackPendingQueue.end(); i++){
         OutPacket *outPacket = (*i);
+        if(!outPacket){
+            Log().error(__func__, "NULL queue item found");
+            ackPendingQueue.erase(i--);
+            continue;
+        }
         if(outPacket->getOutDataState()->id == id){
             // Pull received packet out from timer
             packetTimeout->popPacket(outPacket);
