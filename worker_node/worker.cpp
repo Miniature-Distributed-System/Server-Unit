@@ -159,7 +159,7 @@ bool Worker::matchAckablePacket(std::string id)
     }
 
     sem_post(&workerLock);
-    Log().error(__func__,"worker-", workerUID,": no such packet found!");
+    Log().debug(__func__,"worker-", workerUID,": no such packet found!");
     return false;
 }
 
