@@ -18,11 +18,12 @@ enum TaskPriority {
 };
 
 enum UserTaskStatus {
-    DATA_QUEUED,
+    DATA_QUEUED = 0,
     DATA_READY,
     DATA_SENT,
     DATA_INTER,
     DATA_FINAL,
+    DATA_ERROR,
 };
 
 #endif
