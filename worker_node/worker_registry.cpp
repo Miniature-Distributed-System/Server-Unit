@@ -85,6 +85,6 @@ Worker* WorkerRegistry::getWorkerFromUid(std::string workerUid)
                 return worker;
         } 
     }
-    Log().error(__func__, "could not find worker with UID: ", workerUid);
+    Log().debug(__func__, "could not find worker with UID: ", workerUid);
     return NULL;
 }
