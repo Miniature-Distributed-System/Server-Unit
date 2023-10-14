@@ -40,31 +40,31 @@ int main()
     monitorStop.initFlag();
 
     std::cout << "--------------------------------------------------------";
-    std::cout << "Server Initilization";
+    std::cout << "\033[1;97;49mServer Initilization\033[0m";
     std::cout << "--------------------------------------------------------" << std::endl;
-    std::cout << "\nEnter IP address: ";
+    std::cout << "\n\e[33mEnter IP address: \033[0m";
     std::cin >> address;
-    std::cout << "\nEnter Port number: ";
+    std::cout << "\n\e[33mEnter Port number: \033[0m";
     std::cin >> port;
-    std::cout << "\nEnter number of socket threads: ";
+    std::cout << "\n\e[33mEnter number of socket threads: \033[0m";
     std::cin >> socketThreads;
-    std::cout << "\nEnter number of scheduler threads: ";
+    std::cout << "\n\e[33mEnter number of scheduler threads: \033[0m";
     std::cin >> maxThreads;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "\nEnter server output directory full path: ";
+    std::cout << "\n\e[33mEnter server output directory full path: \033[0m";
     std::cin.clear();
     getline(std::cin, dir);
     if(!dir.empty()){
         HOME_DIR = dir;
     } else std::cout << "\nUsing default output directory";
     
-    std::cout << "\nEnter database name: ";
+    std::cout << "\n\e[33mEnter database name: \033[0m";
     std::cin.clear();
     getline(std::cin, name);
-    std::cout << "\nEnter database username: ";
+    std::cout << "\n\e[33mEnter database username: \033[0m";
     std::cin.clear();
     getline(std::cin, username);
-    std::cout << "\nEnter database password:";
+    std::cout << "\n\e[33mEnter database password:\033[0m";
     std::cin.clear();
     getline(std::cin, password);
     if(username.empty() || password.empty() || name.empty()){
