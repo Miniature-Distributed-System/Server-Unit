@@ -84,6 +84,10 @@ int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNam
     std::string tableAlgoIdQuery, recordNameQuery, tablePriorityQuery;
     std::string *fileData;
     
+    if(!userTableNameList.size()){
+        Log().info(__func__, "No new user data");
+        return 0;
+    }
 
     for(auto i = userTableNameList.begin(); i != userTableNameList.end(); i++){
         Log().info(__func__,(*i));
