@@ -102,6 +102,7 @@ int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus 
             std::string result = userStatusEnumToString(status);
             if(!result.empty())
                 updateStatusInDb(result, dataTableName);
+            else Log().error(__func__, "unknown status code:", status);
             outDataState->taskStatus = status;
             return true;
         }
