@@ -98,7 +98,8 @@ int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus 
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
         outDataState = *i;
         if(outDataState->id == dataTableName){
-            Log().info(__func__, "updating status for table name: ", dataTableName, " with state: ", status);
+            if(status < outDataState->taskStatus)
+                return true;
             std::string result = userStatusEnumToString(status);
             if(!result.empty())
                 updateStatusInDb(result, dataTableName);
