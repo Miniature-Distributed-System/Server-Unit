@@ -74,11 +74,12 @@ bool OutDataRegistry::assignWorker(std::string id, Worker *worker)
 std::string userStatusEnumToString(UserTaskStatus status)
 {
     switch(status){
-        case DATA_QUEUED: return "Data Queued";
-        case DATA_READY: return "Data Ready";
-        case DATA_SENT: return "Data Sent";
-        case DATA_INTER: return "Intermediate Data Received";
-        case DATA_FINAL: return "Received Final Data";
+        case DATA_QUEUED: return "Data has been queued";
+        case DATA_READY: return "Searching for free workers";
+        case DATA_SENT: return "Data has been sent to worker";
+        case DATA_INTER: return "Intermediate data received successfully";
+        case DATA_FINAL: return "Success";
+        case DATA_ERROR: return "Error in uploaded data";
         default: "";
     }
 }
