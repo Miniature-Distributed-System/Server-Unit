@@ -12,6 +12,7 @@
 #include "sender_core.hpp"
 #include "instance.hpp"
 #include "user_data.hpp"
+#include "worker_instance_list.hpp"
 
 using nlohmann::json_schema::json_validator;
 using json = nlohmann::json;
