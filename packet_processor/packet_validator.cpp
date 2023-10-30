@@ -66,7 +66,7 @@ JobStatus start_validator(void *data)
     ProcessStatusPacket processStatusPacket(packet->getPacket());
     processStatusPacket.packetStatusParse();
 
-    return JOB_DONE;
+    return JOB_PENDING;
 }
 
 JobStatus pause_valdiator(void *data){
