@@ -90,6 +90,7 @@ void updateStatusInDb(std::string result, std::string dataTableName)
                             USERDAT_TABLE_NAME);
     sqlAccess->initialize();
     sqlAccess->sqlWriteString(result, USERDAT_STATUS_COL_ID, USERDAT_ALIASNAME_COL_ID, dataTableName);
+    Log().info(__func__, "updating status for table name: ", dataTableName, " with state: ", result);
     delete sqlAccess;
 }
 
