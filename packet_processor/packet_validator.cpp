@@ -55,6 +55,8 @@ void PacketValidator::validatePacket()
 JobStatus start_validator(void *data)
 {
     JsonExport *jsonExportObject = (JsonExport*)globalReceiverSink->popObject().dataObject;
+    if(!jsonExportObject)
+        return JOB_DONE;
     PacketValidator *packet = new PacketValidator(jsonExportObject->packet);
     jsonExportObject->destruct();
     packet->validatePacket();
