@@ -31,7 +31,7 @@ void *monitorUserTable(void *data)
                 
                 Log().info(__func__, "current time stamp:", currentTimeStamp, " saved timestamp: ", latestTimeStamp);
                 std::string queryTableName = "SELECT " +  USERDAT_DAT_COL_ID + " FROM " + USERDAT_TABLE_NAME + 
-                                " WHERE timestamp BETWEEN '" + latestTimeStamp + "' AND '" + currentTimeStamp + "';"; 
+                                " WHERE timestamp > '" + latestTimeStamp + "' AND timestamp <= CURRENT_TIMESTAMP;"; 
                 latestTimeStamp = currentTimeStamp;
                 std::list<std::string> fileNames = sqlAccess->sqlQueryDbList(queryTableName);
                 DataExtractor().executeUserTableExtractor(fileNames, sqlAccess);
