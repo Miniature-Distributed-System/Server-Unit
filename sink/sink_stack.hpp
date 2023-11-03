@@ -10,7 +10,9 @@
 struct ExportSinkItem {
     void *dataObject;
     TaskPriority taskPriority;
-    ExportSinkItem(){}
+    ExportSinkItem(){
+        dataObject = NULL;
+    }
     ExportSinkItem(void *object, TaskPriority taskPriority) : dataObject(object), taskPriority(taskPriority){}
 };
 
