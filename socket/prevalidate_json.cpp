@@ -30,7 +30,7 @@ JsonPrevalidator::JsonPrevalidator(std::string out)
     try{
         this->packet = json::parse(out.c_str());
     }catch (std::exception &e){
-        Log().error(__func__, "packet corrupt: ", out);
+        Log().debug(__func__, "packet corrupt: ", out);
     }
 }
 
