@@ -30,7 +30,7 @@ int ProcessDataPacket::createCsvFromData()
     std::ofstream outFile;
     
     if(data.length() == 0){
-        Log().error(__func__, "Data feild is empty");
+        Log().debug(__func__, "Data feild is empty");
         return -1;
     }
 
