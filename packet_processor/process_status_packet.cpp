@@ -114,7 +114,7 @@ void ProcessStatusPacket::packetStatusParse()
 
     worker = globalWorkerRegistry.getWorkerFromUid(workerUid);
     if(!worker){
-        Log().error(__func__, "worker with workerUid:", workerUid, " not found");
+        Log().debug(__func__, "worker with workerUid:", workerUid, " not found");
         return;
     }
 
@@ -133,7 +133,7 @@ void ProcessStatusPacket::packetStatusParse()
                     workerInstanceList.updateWorker(worker->getWorkerUID(), tableId);
                 }
                 Log().pktProcessorInfo(__func__, "packet with ID: ", tableId, " was acknowledged");
-            } else Log().error(__func__, "packet with ID: ", tableId, " was not found in worker list");
+            } else Log().debug(__func__, "packet with ID: ", tableId, " was not found in worker list");
             break;
         case P_INTR_RES:
             globalOutDataRegistry.updateTaskStatus(tableId, DATA_INTER);
@@ -144,7 +144,7 @@ void ProcessStatusPacket::packetStatusParse()
                         PacketConstructor().create(SP_INTR_ACK, workerUid), outDataState, false
                     )
                 );
-                Log().pktProcessorInfo(__func__,"table:",tableId,"intermediate result received");
+                Log().pktProcessorInfo(__func__,"table:",tableId," intermediate result received");
             }
             break;
         case P_FINAL_RES:
@@ -156,7 +156,7 @@ void ProcessStatusPacket::packetStatusParse()
                         PacketConstructor().create(SP_FRES_ACK, workerUid), outDataState, false
                     )
                 );
-                Log().pktProcessorInfo(__func__,"table:",tableId,"final result received");
+                Log().pktProcessorInfo(__func__,"table:",tableId," final result received");
             }
             break;
         case P_ERR:
