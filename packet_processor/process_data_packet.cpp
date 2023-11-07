@@ -58,13 +58,13 @@ void ProcessDataPacket::pushDataToDb()
 void ProcessDataPacket::execute()
 {
     if(!globalOutDataRegistry.findMatchInList(tableId)){
-        Log().error(__func__, "no table with tableID:", tableId, " found.");
+        Log().debug(__func__, "no table with tableID:", tableId, " found.");
         return;
     } 
 
     detectDataType();
     if(createCsvFromData()){
-        Log().error(__func__, "Aborting packet data processing");
+        Log().debug(__func__, "Aborting packet data processing");
         return;
     }
 
