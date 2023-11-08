@@ -39,7 +39,7 @@ bool SenderCoreData::isNewWorkerListEmpty()
 {
     if(newWorkerList->size() <= 0)
         return true;
-        return false;
+    return false;
 }
 
 bool SenderCoreData::isPendingPacketsListEmpty()
