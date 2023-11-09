@@ -127,7 +127,8 @@ void pushInstanceToWorkerQueue(std::list<std::string> *workerList)
         workerUID = *i;
         worker = globalWorkerRegistry.getWorkerFromUid(workerUID);
         if(worker == NULL){
-            DEBUG_ERR(__func__, "could not find worker");
+            Log().debug(__func__, "could not find worker, may have disconnected/timedout");
+            workerList->erase(i--);
             continue;
         }
         for(auto j = instanceJson->begin(); j != instanceJson->end(); j++)
