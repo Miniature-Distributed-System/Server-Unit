@@ -201,7 +201,7 @@ JobStatus endSenderCore(void *data, JobStatus status)
     return JOB_DONE;
 }
 
-struct process *senderCore = new process{
+struct process *senderCoreProcess = new process{
     .start_proc = startSenderCore,
     .pause_proc = pauseSenderCore,
     .end_proc = endSenderCore
