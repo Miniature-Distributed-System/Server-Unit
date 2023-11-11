@@ -15,7 +15,7 @@ void *monitorUserTable(void *data)
     //TO-DO
     std::string queryTimeStamp = "SELECT MAX(timestamp) as timestamp FROM " + USERDAT_TABLE_NAME + ";" ;
     std::string columnName = "timestamp";
-    std::string latestTimeStamp, currentTimeStamp;
+    std::string latestTimeStamp = "2022-05-01 00:00:00", currentTimeStamp;
     Log().info(__func__, "started monitoring user data table...");
     SqlAccess *sqlAccess = new SqlAccess(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME, 
                     USERDAT_TABLE_NAME);
