@@ -59,12 +59,32 @@ std::list<OutPacket*>* SenderCoreData::getPendingPacketsList()
     return pendingPacketsList;
 }
 
-Worker* findIdealWorker()
+
+/* findIdealWorker(): Finds the ideal worker from list of workers to send packet.
+ * Desc: This method takes the top most task's priority and the list workers. The method iterates over the list of
+ * workers to find the best worker using their stats. The workers is checked if its ready for transmission first, then
+ * the worker individual points are calculated.
+ * The avgQueueTime takes the queuing time of worker and multiplies it with the taskMapVector elements. The
+ * taskMapVector vector contains the number of tasks currently present in the queue of worker segrigated by priority.
+ * taskMapVector:- 1 1 3 3
+ * taskPriority:- 2 (Medium priority)
+ * avgTime = 1 * avgQueueTime + 1 * avgQueueTime + 3 * avgQueueTime;
+ * 
+ * Like shown above it conciders how long will the next packet take if it were to be queued in the particular worker
+ * This avgTime is divided by number of threads available in the worker higher the count more task will be distributed
+ * and quicker the queue will free up.
+ * Once tempPoints are calculated we compare it with our saved totalWorkerPoints to find who gets next packet.
+*/
+Worker* findIdealWorker(TaskPriority taskPriority = DEFAULT_PRIORITY)
 {
     std::list<Worker*> workerList = globalWorkerRegistry.getWorkerList();
     Worker *worker, *resWorker;
-    int hSize = 0;
-    std::string hWorkerUid = 0;
+    int finalworkerQueueSize = 0;
+    std::string finalWorkerUid;
+    double finalWorkerPoints;
+    Flag firstElement;
+
+    firstElement.initFlag(false);
 
     for(auto i = workerList.begin(); i != workerList.end(); i++)
     {
@@ -73,16 +93,51 @@ Worker* findIdealWorker()
             Log().error(__func__, "Worker not found");
             continue;
         }
-            Log().senderCoreInfo(__func__, "tempPoints: ", tempPoints, " worker:", worker->getWorkerUID());
-        }
+        if (!worker->isWorkerReady()) {
+            //Log().senderCoreInfo(__func__, "worker:", worker->getWorkerUID(), " not ready for user data");
+        } else {
+            
+            WorkerStats workerStats = worker->getWorkerStats();
+            double tempPoints, avgTime = 0;
+            
+            double avgQueueTime = workerStats.getAvgQueueTime();
+            int totalThreads = workerStats.getTotalAvilableThreads();
+            std::vector<int> taskMapVector = workerStats.getTaskQueueVector();
+            // This means the stats is not yet initlized for whatever reason
+            if(taskMapVector.size() == 0)
+                continue;
+            for(int i = taskPriority; i >= 0; i--){
+                if(taskMapVector[i])
+                    avgTime += avgQueueTime * taskMapVector[i];
+            }
+            // Lower points is better
+            tempPoints = avgTime ? (avgTime / totalThreads) : 0;
+            Log().senderCoreInfo(__func__, "tempPoints: ", tempPoints, " worker:", worker->getWorkerUID(),
+                 " Points to match:", finalWorkerPoints);
+            if(!firstElement.isFlagSet()){
+                firstElement.setFlag();
+                goto assign;
+            }
+            if(tempPoints <= finalWorkerPoints){
+                if(tempPoints == finalWorkerPoints){
+                    /* If both selected worker and worker chosen now have same points compare their on server queue 
+                     * sizes to determine who gets selected for next packet transmission. */
+                    if(worker->getQueueSize() > finalworkerQueueSize) continue;
+                }
+assign:
+                finalworkerQueueSize = worker->getQueueSize();
+                finalWorkerUid = worker->getWorkerUID();
+                finalWorkerPoints = tempPoints;
+            }
+        } 
     }
 
-    if(hWorkerUid.empty()){
+    if(finalWorkerUid.empty()){
         //Log().error(__func__, "all workers are full");
         return NULL;
     }
 
-    resWorker = globalWorkerRegistry.getWorkerFromUid(hWorkerUid);
+    resWorker = globalWorkerRegistry.getWorkerFromUid(finalWorkerUid);
     Log().senderCoreInfo(__func__, "worker with emptiest queue: ", finalWorkerUid);
 
     return resWorker;
