@@ -4,7 +4,7 @@
 #include "../services/sql_access.hpp"
 #include "../include/logger.hpp"
 
-int OutDataRegistry::addTable(std::string dataTableName, Worker *worker)
+int OutgoingDataRegistry::add(std::string dataTableName, Worker *worker)
 {
     OutDataState *outData = NULL;
     Flag resultStatus;
@@ -27,7 +27,7 @@ int OutDataRegistry::addTable(std::string dataTableName, Worker *worker)
     return 0;
 }
 
-int OutDataRegistry::deleteTable(std::string dataTableName)
+int OutgoingDataRegistry::delete(std::string dataTableName)
 {
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
         if((*i)->id == dataTableName){
@@ -42,7 +42,7 @@ int OutDataRegistry::deleteTable(std::string dataTableName)
     return -1;
 }
 
-bool OutDataRegistry::findMatchInList(std::string dataTableName)
+bool OutgoingDataRegistry::findMatchInList(std::string dataTableName)
 {
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
         if((*i)->id == dataTableName){
@@ -55,7 +55,7 @@ bool OutDataRegistry::findMatchInList(std::string dataTableName)
     return false;
 }
 
-bool OutDataRegistry::assignWorker(std::string id, Worker *worker)
+bool OutgoingDataRegistry::assignWorker(std::string id, Worker *worker)
 {
     OutDataState *outDataState;
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
@@ -94,7 +94,7 @@ void updateStatusInDb(std::string result, std::string dataTableName)
     delete sqlAccess;
 }
 
-int OutDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus status)
+int OutgoingDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus status)
 {
     OutDataState *outDataState;
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
@@ -120,7 +120,7 @@ std::list<OutDataState*> OutDataRegistry::getOutDataRegistryList()
     return outDataRegistryList;
 }
 
-OutDataState* OutDataRegistry::getOutDataRegistryFromId(std::string id)
+OutgoingDataState* OutgoingDataRegistry::getRegistryFromId(std::string id)
 {
     OutDataState *outDataState;
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){

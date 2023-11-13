@@ -16,18 +16,18 @@ struct OutDataState {
     }
 };
 
-class OutDataRegistry {
+class OutgoingDataRegistry {
         std::list<OutDataState*> outDataRegistryList;
     public:
-        int addTable(std::string packetList, Worker *worker = NULL);
-        int deleteTable(std::string tableName);
+        int add(std::string packetList, Worker *worker = NULL);
+        int delete(std::string tableName);
         bool findMatchInList(std::string tableName);
         bool assignWorker(std::string tableName, Worker *worker);
         int updateTaskStatus(std::string tableName, UserTaskStatus status);
-        std::list<OutDataState*> getOutDataRegistryList();
-        OutDataState* getOutDataRegistryFromId(std::string id);
+        std::list<OutgoingDataState*> list();
+        OutgoingDataState* getRegistryFromId(std::string id);
 };
 
-extern OutDataRegistry globalOutDataRegistry;
+extern OutgoingDataRegistry globalOutgoingDataRegistry;
 
 #endif
