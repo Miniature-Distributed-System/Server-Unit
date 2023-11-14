@@ -6,7 +6,7 @@
 
 int OutgoingDataRegistry::add(std::string dataTableName, Worker *worker)
 {
-    OutDataState *outData = NULL;
+    OutgoingDataState *outData = NULL;
     Flag resultStatus;
 
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
@@ -18,7 +18,7 @@ int OutgoingDataRegistry::add(std::string dataTableName, Worker *worker)
 
     if(!resultStatus.isFlagSet()){
         Log().info(__func__, "New table :", dataTableName, " added to list");
-        outData = new OutDataState(dataTableName, DATA_QUEUED);
+        outData = new OutgoingDataState(dataTableName, DATA_QUEUED);
         if(worker)
             outData->worker = worker;
         outDataRegistryList.push_back(outData);
@@ -57,7 +57,7 @@ bool OutgoingDataRegistry::findMatchInList(std::string dataTableName)
 
 bool OutgoingDataRegistry::assignWorker(std::string id, Worker *worker)
 {
-    OutDataState *outDataState;
+    OutgoingDataState *outDataState;
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
         outDataState = *i;
         if(outDataState->id == id){
@@ -96,7 +96,7 @@ void updateStatusInDb(std::string result, std::string dataTableName)
 
 int OutgoingDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskStatus status)
 {
-    OutDataState *outDataState;
+    OutgoingDataState *outDataState;
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
         outDataState = *i;
         if(outDataState->id == dataTableName){
@@ -115,14 +115,14 @@ int OutgoingDataRegistry::updateTaskStatus(std::string dataTableName, UserTaskSt
     return false;
 }
 
-std::list<OutDataState*> OutDataRegistry::getOutDataRegistryList()
+std::list<OutgoingDataState*> OutgoingDataRegistry::list()
 {
     return outDataRegistryList;
 }
 
 OutgoingDataState* OutgoingDataRegistry::getRegistryFromId(std::string id)
 {
-    OutDataState *outDataState;
+    OutgoingDataState *outDataState;
     for(auto i = outDataRegistryList.begin(); i != outDataRegistryList.end(); i++){
         outDataState = *i;
         if(outDataState->id == id){

@@ -6,18 +6,18 @@
 #include "../include/flag.h"
 #include "../worker_node/worker.hpp"
 
-struct OutDataState {
+struct OutgoingDataState {
     std::string id;
     UserTaskStatus taskStatus;
     Worker *worker;
-    OutDataState(std::string id, UserTaskStatus taskStatus){
+    OutgoingDataState(std::string id, UserTaskStatus taskStatus){
         this->id = id;
         this->taskStatus = taskStatus;
     }
 };
 
 class OutgoingDataRegistry {
-        std::list<OutDataState*> outDataRegistryList;
+        std::list<OutgoingDataState*> outDataRegistryList;
     public:
         int add(std::string packetList, Worker *worker = NULL);
         int delete(std::string tableName);
