@@ -12,21 +12,21 @@
 using json = nlohmann::json;
 #endif
 
-class OutDataState;
+class OutgoingDataState;
 
 struct OutPacket {
     private:
-        OutDataState* outData;
+        OutgoingDataState* outData;
         bool ackable;
         Flag status;
     public:
         json packet;
-        OutPacket(json packet, OutDataState* outData, bool ackable);
+        OutPacket(json packet, OutgoingDataState* outData, bool ackable);
         void checkIn();
         void checkOut();
         bool isCheckedIn();
         bool isAckable();
-        OutDataState* getOutDataState();
+        OutgoingDataState* getOutDataState();
 };
 
 class Worker {

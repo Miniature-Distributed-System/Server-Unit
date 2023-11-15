@@ -19,7 +19,7 @@ Flag monitorStop;
 Sink *globalReceiverSink;
 Sink *globalSenderSink;
 WorkerRegistry globalWorkerRegistry;
-OutDataRegistry globalOutDataRegistry;
+OutgoingDataRegistry globalOutgoingDataRegistry;
 SqlAccess *globalSqlAccess;
 TaskPool *globalTaskPool;
 SenderCoreData *senderCoreData;

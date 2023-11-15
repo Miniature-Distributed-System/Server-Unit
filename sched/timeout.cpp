@@ -44,7 +44,7 @@ void Timeout::execute()
     for(auto i = timedPackets.begin(); i != timedPackets.end(); i++)
     {
         OutPacket *outPacket = (*i);
-        OutDataState *outDataState = outPacket->getOutDataState();
+        OutgoingDataState *outDataState = outPacket->getOutDataState();
         // Worker checked in before timeout
         if(outPacket->isCheckedIn()){
             if(outDataState->taskStatus == DATA_FINAL){
@@ -52,7 +52,7 @@ void Timeout::execute()
                 // Worker packet dealloc
                 delete outPacket;
                 // Table data dealloc
-                globalOutDataRegistry.deleteTable(outDataState->id);
+                globalOutgoingDataRegistry.delete(outDataState->id);
             } else {
                 // Reset timer for this packet
                 outPacket->checkOut();

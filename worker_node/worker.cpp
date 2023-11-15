@@ -4,7 +4,7 @@
 #include "../include/logger.hpp"
 #include "worker.hpp"
 
-OutPacket:: OutPacket(json packet, OutDataState* outData, bool ackable){
+OutPacket:: OutPacket(json packet, OutgoingDataState* outData, bool ackable){
     this->packet = packet;
     this->outData = outData;
     this->ackable = ackable;
@@ -32,7 +32,7 @@ bool OutPacket::isAckable()
     return ackable;
 }
 
-OutDataState* OutPacket::getOutDataState()
+OutgoingDataState* OutPacket::getOutDataState()
 {
     return outData;
 }

@@ -57,7 +57,7 @@ void ProcessDataPacket::pushDataToDb()
 
 void ProcessDataPacket::execute()
 {
-    if(!globalOutDataRegistry.findMatchInList(tableId)){
+    if(!globalOutgoingDataRegistry.findMatchInList(tableId)){
         Log().debug(__func__, "no table with tableID:", tableId, " found.");
         return;
     } 

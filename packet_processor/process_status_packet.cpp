@@ -106,7 +106,7 @@ void ProcessStatusPacket::packetStatusParse()
 {
     json packet;
     Worker *worker;
-    OutDataState *outDataState;
+    OutgoingDataState *outDataState;
     
     if(P_QSEND & statusCode){
         statusCode &= ~(P_QSEND);
@@ -136,8 +136,8 @@ void ProcessStatusPacket::packetStatusParse()
             } else Log().debug(__func__, "packet with ID: ", tableId, " was not found in worker list");
             break;
         case P_INTR_RES:
-            globalOutDataRegistry.updateTaskStatus(tableId, DATA_INTER);
-            outDataState = globalOutDataRegistry.getOutDataRegistryFromId(tableId);
+            globalOutgoingDataRegistry.updateTaskStatus(tableId, DATA_INTER);
+            outDataState = globalOutgoingDataRegistry.getRegistryFromId(tableId);
             if(outDataState){
                  worker->queuePacket(
                     new OutPacket(
@@ -148,8 +148,8 @@ void ProcessStatusPacket::packetStatusParse()
             }
             break;
         case P_FINAL_RES:
-            globalOutDataRegistry.updateTaskStatus(tableId, DATA_FINAL);
-            outDataState = globalOutDataRegistry.getOutDataRegistryFromId(tableId);
+            globalOutgoingDataRegistry.updateTaskStatus(tableId, DATA_FINAL);
+            outDataState = globalOutgoingDataRegistry.getRegistryFromId(tableId);
             if(outDataState){
                  worker->queuePacket(
                     new OutPacket(
@@ -161,7 +161,7 @@ void ProcessStatusPacket::packetStatusParse()
             break;
         case P_ERR:
             if(!errorString.empty()){
-                globalOutDataRegistry.updateTaskStatus(tableId, DATA_ERROR);
+                globalOutgoingDataRegistry.updateTaskStatus(tableId, DATA_ERROR);
                 Log().pktProcessorInfo(__func__,"table:", tableId, " has error is data");
             }
         default:

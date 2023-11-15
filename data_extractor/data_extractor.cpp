@@ -119,7 +119,7 @@ int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNam
         userDataTable->instanceName = userTableAlgo;
         userDataTable->data = fileData;
         globalSenderSink->pushObject(userDataTable, getTaskPriority(userTablePriority));
-        globalOutDataRegistry.addTable(userRecordName);
+        globalOutgoingDataRegistry.add(userRecordName);
     }
     Log().info(__func__, "pushed user tables from DB to sender stack");
     return 0;
