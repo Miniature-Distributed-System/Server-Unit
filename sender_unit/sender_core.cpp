@@ -150,6 +150,10 @@ void pushUserDataToWorkerQueue()
     UserDataTable* userData;
     json packet;
 
+    if(globalSenderSink->isSinkEmpty()){
+        return;
+    }
+
     worker = findIdealWorker(globalSenderSink->getTopTaskPriority());
     if(worker == NULL){
         return;
