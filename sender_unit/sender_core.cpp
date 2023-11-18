@@ -158,7 +158,7 @@ void pushUserDataToWorkerQueue()
     if(worker == NULL){
         return;
     }
-
+    
     sinkItem = globalSenderSink->popObject();
     userData = (UserDataTable*)sinkItem.dataObject;
     //Log().senderCoreInfo(__func__,"Table Name:",userData->userTable ,"Instance name:", userData->instanceName, " priority: ", userData->priority);
@@ -166,10 +166,10 @@ void pushUserDataToWorkerQueue()
     worker->queuePacket(
         new OutPacket(
             PacketConstructor().create(SP_DATA_SENT, worker->getWorkerUID(), packet)
-            , userData->userTable, true)
+            , globalOutgoingDataRegistry.getRegistryFromId(userData->userTable), true)
         );
-    globalOutDataRegistry.assignWorker(userData->userTable, worker);
-    globalOutDataRegistry.updateTaskStatus(userData->userTable, DATA_READY);
+    globalOutgoingDataRegistry.assignWorker(userData->userTable, worker);
+    globalOutgoingDataRegistry.updateTaskStatus(userData->userTable, DATA_READY);
     Log().senderCoreInfo(__func__, "sender sink packet pushed to worker:", worker->getWorkerUID());
 }
 
@@ -194,13 +194,14 @@ void pushInstanceToWorkerQueue(std::list<std::string> *workerList)
         {
             tableId = (*j)["body"]["instanceid"];
             Log().senderCoreInfo(__func__, "queuing packet with instance ID:", tableId);
-            globalOutDataRegistry.addTable(tableId, worker);
+            globalOutgoingDataRegistry.add(tableId, worker);
             worker->queuePacket(
                 new OutPacket(
                     PacketConstructor().create(SP_DATA_SENT, worker->getWorkerUID(), *j)
-                    , tableId, true)
+                    , globalOutgoingDataRegistry.getRegistryFromId(tableId), true)
                 );
-            globalOutDataRegistry.updateTaskStatus(tableId, DATA_READY);
+            globalOutgoingDataRegistry.assignWorker(tableId, worker);
+            globalOutgoingDataRegistry.updateTaskStatus(tableId, DATA_READY);
         Log().senderCoreInfo(__func__, "queued packet into worker UID: ", workerUID);
     Log().senderCoreInfo(__func__, "cleared pending workerList");
     Log().senderCoreInfo(__func__, "worker list size:", workers.size());
