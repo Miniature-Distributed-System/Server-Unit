@@ -6,7 +6,7 @@
 #include "../lib/nlohmann/json-schema.hpp"
 #include "../worker_node/worker_registry.hpp"
 #include "../data_extractor/data_extractor.hpp"
-#include "../packet_processor/out_data_registry.hpp"
+#include "../packet_processor/outgoing_data_registry.hpp"
 #include "../packet_processor/packet_constructor.hpp"
 #include "../include/logger.hpp"
 #include "sender_core.hpp"

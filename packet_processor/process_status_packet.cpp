@@ -4,7 +4,7 @@
 #include "../sender_unit/worker_instance_list.hpp"
 #include "../include/packet.hpp"
 #include "../include/logger.hpp"
-#include "out_data_registry.hpp"
+#include "outgoing_data_registry.hpp"
 #include "process_packet.hpp"
 #include "packet_constructor.hpp"
 

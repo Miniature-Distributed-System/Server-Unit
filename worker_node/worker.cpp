@@ -1,6 +1,6 @@
 #include "../include/debug_rp.hpp"
 #include "../sched/timeout.hpp"
-#include "../packet_processor/out_data_registry.hpp"
+#include "../packet_processor/outgoing_data_registry.hpp"
 #include "../include/logger.hpp"
 #include "worker.hpp"
 

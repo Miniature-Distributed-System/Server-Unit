@@ -4,7 +4,7 @@
 #include "../include/debug_rp.hpp"
 #include "../sender_unit/instance.hpp"
 #include "../sender_unit/user_data.hpp"
-#include "../packet_processor/out_data_registry.hpp"
+#include "../packet_processor/outgoing_data_registry.hpp"
 #include "../include/logger.hpp"
 #include "../configs.h"
 #include "data_extractor.hpp"

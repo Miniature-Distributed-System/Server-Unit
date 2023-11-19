@@ -9,7 +9,7 @@
 #include "services/timeout_timer.hpp"
 #include "sender_unit/instance.hpp"
 #include "sender_unit/worker_instance_list.hpp"
-#include "packet_processor/out_data_registry.hpp"
+#include "packet_processor/outgoing_data_registry.hpp"
 #include "worker_node/worker_registry.hpp"
 #include "sender_unit/sender_core.hpp"
 #include "include/debug_rp.hpp"

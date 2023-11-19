@@ -4,7 +4,7 @@
 #include "../worker_node/worker_registry.hpp"
 #include "../configs.h"
 #include "process_packet.hpp"
-#include "out_data_registry.hpp"
+#include "outgoing_data_registry.hpp"
 
 ProcessDataPacket::ProcessDataPacket(json packet){
     tableId = packet["body"]["id"];

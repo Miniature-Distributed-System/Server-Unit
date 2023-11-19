@@ -4,7 +4,7 @@
 #include "../configs.h"
 #include "../data_extractor/data_extractor.hpp"
 #include "../sink/sink_stack.hpp"
-#include "../packet_processor/out_data_registry.hpp"
+#include "../packet_processor/outgoing_data_registry.hpp"
 #include "../include/debug_rp.hpp"
 #include "../include/logger.hpp"
 #include "sql_access.hpp"
