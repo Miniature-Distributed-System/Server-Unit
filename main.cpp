@@ -25,7 +25,7 @@ TaskPool *globalTaskPool;
 SenderCoreData *senderCoreData;
 SenderCore senderCore;
 Timeout *packetTimeout;
-Instance globalInstanceRegistery;
+UserDataTemplate globalUserDataTemplateRegistry;
 WorkerInstanceList workerInstanceList;
 
 int main()

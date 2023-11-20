@@ -121,14 +121,14 @@ void ProcessStatusPacket::packetStatusParse()
     switch(statusCode)
     {
         case P_RESET:
-            if(globalInstanceRegistery.isInstanceId(tableId)){
+            if(globalUserDataTemplateRegistry.isMatchingFound(tableId)){
                 // Update tracker about the table in processing
                 workerInstanceList.updateWorker(worker->getWorkerUID(), tableId);
             }
             break;
         case P_DATA_ACK:
             if(worker->matchAckablePacket(tableId)){
-                if(globalInstanceRegistery.isInstanceId(tableId)){
+                if(globalUserDataTemplateRegistry.isMatchingFound(tableId)){
                     // Update tracker about the received instance table
                     workerInstanceList.updateWorker(worker->getWorkerUID(), tableId);
                 }

@@ -19,7 +19,7 @@ class WorkerInstanceList {
         std::vector<WorkerInstanceStruct> workerList;
         std::vector<std::string> instanceIdList;
     public:
-        void updateInstanceList(std::list<InstanceStruct> instanceList);
+        void updateInstanceList(std::list<UserDataTemplateStruct> instanceList);
         void addWorker(std::string workerUid);
         void updateWorker(std::string workerUid, std::string tableId);
 };

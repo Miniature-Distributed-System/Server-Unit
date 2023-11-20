@@ -13,7 +13,7 @@ void WorkerInstanceStruct::update(std::string instanceId)
     }
 }
 
-void WorkerInstanceList::updateInstanceList(std::list<InstanceStruct> instanceList)
+void WorkerInstanceList::updateInstanceList(std::list<UserDataTemplateStruct> instanceList)
 {
     instanceIdList.clear();
     for(auto i = instanceList.begin(); i != instanceList.end(); i++){

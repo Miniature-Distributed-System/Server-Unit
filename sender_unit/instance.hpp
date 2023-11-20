@@ -11,34 +11,34 @@
 using json = nlohmann::json;
 #endif
 
-struct InstanceStruct {
+struct UserDataTemplateStruct {
     std::string instanceName;
     std::uint8_t algoType;
     std::string *data;
-    InstanceStruct(){}
-    InstanceStruct(std::string instanceName,std::uint8_t algoType, std::string *data){
+    UserDataTemplateStruct(){}
+    UserDataTemplateStruct(std::string instanceName,std::uint8_t algoType, std::string *data){
         this->instanceName = instanceName;
         this->data = data;
         this->algoType = algoType;
     }
 };
 
-class Instance {
-        std::list<InstanceStruct> instanceList;
-        std::list<json>* instanceJsonList;
-        sem_t instanceListLock;
+class UserDataTemplate {
+        std::list<UserDataTemplateStruct> uDataTemplateList;
+        std::list<json>* uDataTemplateJsonList;
+        sem_t uDataTemplateListLock;
         Flag dataUpdated;
     public:
-        Instance();
-        int update(std::list<InstanceStruct> instance);
-        std::list<InstanceStruct> getInstance();
+        UserDataTemplate();
+        int update(std::list<UserDataTemplateStruct> instance);
+        std::list<UserDataTemplateStruct> get();
         std::list<json> toJson();
         void resetFlag();
         bool getUpdateStatus();
-        int getInsanceListSize(){ return instanceList.size();};
-        bool isInstanceId(std::string table);
+        int listSize(){ return uDataTemplateList.size();};
+        bool isMatchingFound(std::string table);
 };
 
-extern Instance globalInstanceRegistery;
+extern UserDataTemplate globalUserDataTemplateRegistry;
 
 #endif

@@ -46,8 +46,8 @@ std::string* DataExtractor::getFileData(std::string fileName, bool isInstance)
 
 int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAccess *sqlAccess)
 {
-    InstanceStruct instanceStruct;
-    std::list<InstanceStruct> instanceList;
+    UserDataTemplateStruct instanceStruct;
+    std::list<UserDataTemplateStruct> instanceList;
     int j = 0;
 
     for(auto i = idList.begin(); i != idList.end(); i++,j++)
@@ -70,12 +70,12 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAc
         std::string algoTypeQuery = "SELECT " + INSTANCE_ALGO_COL_ID + " FROM " + INSTANCE_TABLE_NAME + " WHERE "
                         + INSTANCE_NAME_COL_ID + "='"+ curInstanceName +"';";
         std::uint8_t algoType = sqlAccess->sqlQueryDbGetInt(algoTypeQuery, INSTANCE_ALGO_COL_ID);
-        instanceStruct = InstanceStruct(curInstanceName, algoType, resultData);
+        instanceStruct = UserDataTemplateStruct(curInstanceName, algoType, resultData);
         instanceList.push_back(instanceStruct);
     }
 
     Log().info(__func__, "instance data extraction done, total records:", instanceList.size());
-    return globalInstanceRegistery.update(instanceList);
+    return globalUserDataTemplateRegistry.update(instanceList);
 }
 
 int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNameList, SqlAccess *sqlAccess)
