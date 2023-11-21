@@ -12,12 +12,12 @@ using json = nlohmann::json;
 #endif
 
 struct UserDataTemplateStruct {
-    std::string instanceName;
+    std::string templateName;
     std::uint8_t algoType;
     std::string *data;
     UserDataTemplateStruct(){}
-    UserDataTemplateStruct(std::string instanceName,std::uint8_t algoType, std::string *data){
-        this->instanceName = instanceName;
+    UserDataTemplateStruct(std::string templateName,std::uint8_t algoType, std::string *data){
+        this->templateName = templateName;
         this->data = data;
         this->algoType = algoType;
     }
@@ -30,13 +30,13 @@ class UserDataTemplate {
         Flag dataUpdated;
     public:
         UserDataTemplate();
-        int update(std::list<UserDataTemplateStruct> instance);
+        int update(std::list<UserDataTemplateStruct> templateStruct);
         std::list<UserDataTemplateStruct> get();
         std::list<json> toJson();
         void resetFlag();
         bool getUpdateStatus();
         int listSize(){ return uDataTemplateList.size();};
-        bool isMatchingFound(std::string table);
+        bool isMatchingFound(std::string templateId);
 };
 
 extern UserDataTemplate globalUserDataTemplateRegistry;

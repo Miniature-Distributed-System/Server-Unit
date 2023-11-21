@@ -17,7 +17,7 @@ void WorkerInstanceList::updateInstanceList(std::list<UserDataTemplateStruct> in
 {
     instanceIdList.clear();
     for(auto i = instanceList.begin(); i != instanceList.end(); i++){
-        instanceIdList.push_back((*i).instanceName);
+        instanceIdList.push_back((*i).templateName);
     }
 }
 

@@ -10,12 +10,11 @@ UserDataTemplate::UserDataTemplate()
     dataUpdated.initFlag();
 }
 
-int UserDataTemplate::update(std::list<UserDataTemplateStruct> instance)
+int UserDataTemplate::update(std::list<UserDataTemplateStruct> templateStruct)
 {
-    UserDataTemplateStruct instanceStruct;
     Flag itemPresent;
 
-    if(instance.size() == 0){
+    if(templateStruct.size() == 0){
         Log().error(__func__, "instance list is empty");
         return EXIT_FAILURE;
     }
@@ -25,9 +24,9 @@ int UserDataTemplate::update(std::list<UserDataTemplateStruct> instance)
     for(auto i = uDataTemplateList.begin(); i != uDataTemplateList.end(); i++){
         UserDataTemplateStruct instanceListItem = *i;
         itemPresent.initFlag(true);
-        for(auto j = instance.begin(); j != instance.end(); j++){
+        for(auto j = templateStruct.begin(); j != templateStruct.end(); j++){
             // If true then instance already exists in list no need to remake it
-            if(!(*j).instanceName.compare(instanceListItem.instanceName)){
+            if(!(*j).templateName.compare(instanceListItem.templateName)){
                 itemPresent.setFlag();
                 break;
             }
@@ -36,10 +35,10 @@ int UserDataTemplate::update(std::list<UserDataTemplateStruct> instance)
     }
 
     // This loop adds new instance items which aren't in the list
-    for(auto i = instance.begin(); i != instance.end(); i++){
+    for(auto i = templateStruct.begin(); i != templateStruct.end(); i++){
         itemPresent.initFlag(false);
         for(auto j = uDataTemplateList.begin(); j != uDataTemplateList.end(); j++){
-            if(!(*i).instanceName.compare((*j).instanceName)){
+            if(!(*i).templateName.compare((*j).templateName)){
                 itemPresent.setFlag();
                 break;
             }
@@ -55,8 +54,8 @@ int UserDataTemplate::update(std::list<UserDataTemplateStruct> instance)
         UserDataTemplateStruct instance = *i;
         json packet;
 
-        Log().info(__func__,"pushing instance ID: ", instance.instanceName, " into list");
-        packet["body"]["instanceid"] = instance.instanceName;
+        Log().info(__func__,"pushing instance ID: ", instance.templateName, " into list");
+        packet["body"]["instanceid"] = instance.templateName;
         packet["body"]["algotype"] = instance.algoType;
         packet["body"]["data"] = *instance.data;
         
@@ -95,11 +94,11 @@ bool UserDataTemplate::getUpdateStatus()
     return dataUpdated.isFlagSet();
 }
 
-bool UserDataTemplate::isMatchingFound(std::string instanceId)
+bool UserDataTemplate::isMatchingFound(std::string templateId)
 {
     sem_wait(&uDataTemplateListLock);
     for(auto i = uDataTemplateList.begin(); i != uDataTemplateList.end(); i++){
-        if(!instanceId.compare((*i).instanceName)){
+        if(!templateId.compare((*i).templateName)){
             sem_post(&uDataTemplateListLock);
             return true;
         }
