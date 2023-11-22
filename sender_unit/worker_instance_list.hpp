@@ -2,7 +2,7 @@
 #define WORKER_INST_H
 #include <vector>
 #include <string>
-#include "instance.hpp"
+#include "userdata_template_registry.hpp"
 
 class WorkerInstanceStruct {
         std::string workerUid;

@@ -10,7 +10,7 @@
 #include "../packet_processor/packet_constructor.hpp"
 #include "../include/logger.hpp"
 #include "sender_core.hpp"
-#include "instance.hpp"
+#include "userdata_template_registry.hpp"
 #include "user_data.hpp"
 #include "worker_instance_list.hpp"
 
