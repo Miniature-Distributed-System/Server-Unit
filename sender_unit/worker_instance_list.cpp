@@ -5,9 +5,9 @@
 
 void WorkerInstanceStruct::update(std::string instanceId)
 {
-    for(auto i = instanceIdList.begin(); i != instanceIdList.end(); i++){
+    for(auto i = templateIdList.begin(); i != templateIdList.end(); i++){
         if(!instanceId.compare(*i)){
-            instanceIdList.erase(i);
+            templateIdList.erase(i);
             return;
         }
     }

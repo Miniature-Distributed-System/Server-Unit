@@ -6,13 +6,13 @@
 
 class WorkerInstanceStruct {
         std::string workerUid;
-        std::vector<std::string> instanceIdList;
+        std::vector<std::string> templateIdList;
     public:
-        WorkerInstanceStruct(std::string workerUid, std::vector<std::string> instanceIdList) : workerUid(workerUid), 
-                        instanceIdList(instanceIdList) {};
-        void update(std::string instanceId);
+        WorkerInstanceStruct(std::string workerUid, std::vector<std::string> templateIdList) : workerUid(workerUid), 
+                        templateIdList(templateIdList) {};
+        void update(std::string templateId);
         std::string getWorkerUid(){ return workerUid; };
-        int getWorkerInstanceListSize() { return instanceIdList.size(); };
+        int getWorkerInstanceListSize() { return templateIdList.size(); };
 };
 
 class WorkerInstanceList {
