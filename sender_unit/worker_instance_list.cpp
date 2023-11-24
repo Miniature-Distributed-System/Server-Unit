@@ -15,9 +15,9 @@ void WorkerInstanceStruct::update(std::string instanceId)
 
 void WorkerInstanceList::updateInstanceList(std::list<UserDataTemplateStruct> instanceList)
 {
-    instanceIdList.clear();
+    templateIdList.clear();
     for(auto i = instanceList.begin(); i != instanceList.end(); i++){
-        instanceIdList.push_back((*i).templateName);
+        templateIdList.push_back((*i).templateName);
     }
 }
 
@@ -29,7 +29,7 @@ void WorkerInstanceList::addWorker(std::string workerUid)
         return;
     }
     worker->resetWorkerReady();
-    WorkerInstanceStruct workerInstanceStruct(workerUid, instanceIdList);
+    WorkerInstanceStruct workerInstanceStruct(workerUid, templateIdList);
     workerList.push_back(workerInstanceStruct);
     Log().info(__func__, "worker:", workerUid, " added to tracking list");
 }

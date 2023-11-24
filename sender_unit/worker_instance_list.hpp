@@ -17,7 +17,7 @@ class WorkerInstanceStruct {
 
 class WorkerInstanceList {
         std::vector<WorkerInstanceStruct> workerList;
-        std::vector<std::string> instanceIdList;
+        std::vector<std::string> templateIdList;
     public:
         void updateInstanceList(std::list<UserDataTemplateStruct> instanceList);
         void addWorker(std::string workerUid);
