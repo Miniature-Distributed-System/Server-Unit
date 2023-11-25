@@ -3,20 +3,20 @@
 #include "../include/debug_rp.hpp"
 #include "../include/logger.hpp"
 
-void WorkerInstanceStruct::update(std::string instanceId)
+void WorkerInstanceStruct::update(std::string templateId)
 {
     for(auto i = templateIdList.begin(); i != templateIdList.end(); i++){
-        if(!instanceId.compare(*i)){
+        if(!templateId.compare(*i)){
             templateIdList.erase(i);
             return;
         }
     }
 }
 
-void WorkerInstanceList::updateInstanceList(std::list<UserDataTemplateStruct> instanceList)
+void WorkerInstanceList::updateInstanceList(std::list<UserDataTemplateStruct> templateList)
 {
     templateIdList.clear();
-    for(auto i = instanceList.begin(); i != instanceList.end(); i++){
+    for(auto i = templateList.begin(); i != templateList.end(); i++){
         templateIdList.push_back((*i).templateName);
     }
 }
@@ -34,11 +34,11 @@ void WorkerInstanceList::addWorker(std::string workerUid)
     Log().info(__func__, "worker:", workerUid, " added to tracking list");
 }
 
-void WorkerInstanceList::updateWorker(std::string workerUid, std::string instanceId)
+void WorkerInstanceList::updateWorker(std::string workerUid, std::string templateId)
 {
     for(auto i = workerList.begin(); i != workerList.end(); i++){
         if(!workerUid.compare((*i).getWorkerUid())){
-            (*i).update(instanceId);
+            (*i).update(templateId);
             // All instance packets were acknowledged
             if((*i).getWorkerInstanceListSize() == 0){
                 Worker *worker = globalWorkerRegistry.getWorkerFromUid((*i).getWorkerUid());

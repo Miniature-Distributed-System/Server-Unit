@@ -1,5 +1,5 @@
-#ifndef INST_STRUCT_H
-#define INST_STRUCT_H
+#ifndef TEMPL_STRUCT_H
+#define TEMPL_STRUCT_H
 #include <string>
 #include <list>
 #include <semaphore.h>
