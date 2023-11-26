@@ -204,11 +204,31 @@ void pushInstanceToWorkerQueue(std::list<std::string> *workerList)
             globalOutgoingDataRegistry.updateTaskStatus(tableId, DATA_READY);
         Log().senderCoreInfo(__func__, "queued packet into worker UID: ", workerUID);
     Log().senderCoreInfo(__func__, "cleared pending workerList");
+}
+
+void updateAllWorkerInstances(std::list<std::string> *workerList)
+{
+    std::list<Worker*> workers;
+
+    workers = globalWorkerRegistry.getWorkerList();
+    // Only Add workers which are not registered in the list
     Log().senderCoreInfo(__func__, "worker list size:", workers.size());
+    for(auto i = workers.begin(); i != workers.end(); i++){
+        Worker* worker = *i;
+        Flag workerPresent;
+        workerPresent.initFlag(false);
+        // Don't add already registered workers to list
+        for(auto j = workerList->begin(); j != workerList->end(); j++){
+            if((*j).compare(worker->getWorkerUID())){
+                workerPresent.setFlag();
+                break;
+            }
         }
-        DEBUG_MSG(__func__, "queued packet into worker UID: ", workerUID);
-    DEBUG_MSG(__func__, "cleared pending workerList");
+        if(workerPresent.isFlagSet()) continue;
+        workerList->push_back(worker->getWorkerUID());
     }
+    pushInstanceToWorkerQueue(workerList);
+    globalUserDataTemplateRegistry.resetFlag();
     Log().senderCoreInfo(__func__, "all workers instances updated");
 }
 
@@ -233,6 +253,7 @@ JobStatus startSenderCore(void *data)
     int rc = 0;
     SenderCoreData *senderData = (SenderCoreData*)data;
 
+    //Check for any pending immigrant packets that needs to be sent to worker
     if(!senderData->isPendingPacketsListEmpty()){
         rc = pushPendingPackets(senderData->getPendingPacketsList());
         if(rc){
@@ -242,6 +263,11 @@ JobStatus startSenderCore(void *data)
         Log().senderCoreInfo(__func__, "pending packets pushed to queue");
     }
 
+    //Check if instance data was updated
+    if(globalUserDataTemplateRegistry.getUpdateStatus())
+        updateAllWorkerInstances(senderData->getWorkerList());
+
+    //Update all new workers registered in the sender list
     if(!senderData->isNewWorkerListEmpty()){
         pushInstanceToWorkerQueue(senderData->getWorkerList());
     } else {
