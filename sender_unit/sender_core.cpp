@@ -178,7 +178,7 @@ void pushInstanceToWorkerQueue(std::list<std::string> *workerList)
     std::string workerUID;
     Worker* worker;
     std::string tableId;
-    std::list<json>* instanceJson = globalInstanceRegistery.toJson();
+    std::list<json> instanceJson = globalUserDataTemplateRegistry.toJson();
 
     Log().senderCoreInfo(__func__, " worker list size:", workerList->size());
     for(auto i = workerList->begin(); i != workerList->end(); i++)
@@ -190,7 +190,7 @@ void pushInstanceToWorkerQueue(std::list<std::string> *workerList)
             workerList->erase(i--);
             continue;
         }
-        for(auto j = instanceJson->begin(); j != instanceJson->end(); j++)
+        for(auto j = instanceJson.begin(); j != instanceJson.end(); j++)
         {
             tableId = (*j)["body"]["instanceid"];
             Log().senderCoreInfo(__func__, "queuing packet with instance ID:", tableId);
@@ -232,6 +232,7 @@ void updateAllWorkerInstances(std::list<std::string> *workerList)
     Log().senderCoreInfo(__func__, "all workers instances updated");
 }
 
+// TO-DO:- Needs rework
 int pushPendingPackets(std::list<OutPacket*>* outPacketList)
 {
     Worker *worker = findIdealWorker();
