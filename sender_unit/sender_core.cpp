@@ -202,7 +202,13 @@ void pushInstanceToWorkerQueue(std::list<std::string> *workerList)
                 );
             globalOutgoingDataRegistry.assignWorker(tableId, worker);
             globalOutgoingDataRegistry.updateTaskStatus(tableId, DATA_READY);
+            // Track worker for the instance data
+            workerInstanceList.addWorker(worker->getWorkerUID());
+        }
         Log().senderCoreInfo(__func__, "queued packet into worker UID: ", workerUID);
+        workerList->erase(i--);
+    }
+
     Log().senderCoreInfo(__func__, "cleared pending workerList");
 }
 
