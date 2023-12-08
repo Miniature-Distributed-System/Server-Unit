@@ -13,7 +13,7 @@ extern std::string DATABASE_URL;
 extern std::string DATABASE_USERNAME;
 extern std::string DATABASE_PASSWORD;
 
-extern std::string INSTANCE_FILE_DATA_DIR;
+extern std::string TEMPLATE_FILE_DATA_DIR;
 extern std::string USER_FILE_DATA_DIR;
 extern std::string FINAL_RESULT_DATA_DIR;
 extern std::string INTER_RESULT_DATA_DIR;
@@ -27,9 +27,9 @@ extern std::string USERDAT_DAT_PRIORITY_COL_ID;
 extern std::string USERDAT_ALIASNAME_COL_ID;
 extern std::string USERDAT_STATUS_COL_ID;
 
-extern std::string INSTANCE_TABLE_NAME;
-extern std::string INSTANCE_NAME_COL_ID;
-extern std::string INSTANCE_ALGO_COL_ID;
-extern std::string INSTANCE_FILE_COL_ID;
+extern std::string TEMPLATE_TABLE_NAME;
+extern std::string TEMPLATE_NAME_COL_ID;
+extern std::string TEMPLATE_ALGO_COL_ID;
+extern std::string TEMPLATE_FILE_COL_ID;
 
 #endif

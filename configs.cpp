@@ -7,7 +7,7 @@ std::string DATABASE_URL = "tcp://127.0.0.1:3306";
 std::string DATABASE_USERNAME = "mcu";
 std::string DATABASE_PASSWORD = "password";
 
-std::string INSTANCE_FILE_DATA_DIR = "/instance/";
+std::string TEMPLATE_FILE_DATA_DIR = "/instance/";
 std::string USER_FILE_DATA_DIR = "/user_data/";
 std::string FINAL_RESULT_DATA_DIR = "/final_result/";
 std::string INTER_RESULT_DATA_DIR = "/inter_result/";
@@ -21,7 +21,7 @@ std::string USERDAT_DAT_PRIORITY_COL_ID = "priority";
 std::string USERDAT_ALIASNAME_COL_ID = "aliasname";
 std::string USERDAT_STATUS_COL_ID = "status";
 
-std::string INSTANCE_TABLE_NAME = "Home_instances";
-std::string INSTANCE_NAME_COL_ID = "instance_name";
-std::string INSTANCE_ALGO_COL_ID = "algorithm";
-std::string INSTANCE_FILE_COL_ID = "csvfile";
+std::string TEMPLATE_TABLE_NAME = "Home_instances";
+std::string TEMPLATE_NAME_COL_ID = "instance_name";
+std::string TEMPLATE_ALGO_COL_ID = "algorithm";
+std::string TEMPLATE_FILE_COL_ID = "csvfile";

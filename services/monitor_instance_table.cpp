@@ -10,7 +10,7 @@
 void* monitorInstanceTable(void *data)
 {
     //TO-DO
-    std::string queryTimeStamp = "SELECT MAX(timestamp) as timestamp FROM " + INSTANCE_TABLE_NAME + ";" ;
+    std::string queryTimeStamp = "SELECT MAX(timestamp) as timestamp FROM " + TEMPLATE_TABLE_NAME + ";" ;
     std::string queryBuilder;
     std::string columnName = "timestamp";
     std::string latestTimeStamp, currentTimeStamp;
@@ -25,7 +25,7 @@ void* monitorInstanceTable(void *data)
         if(currentTimeStamp.compare(latestTimeStamp)){
             Log().info(__func__, "current time stamp:", currentTimeStamp, " saved timestamp: ", latestTimeStamp);
             latestTimeStamp = currentTimeStamp;
-            instanceNameList = sqlAccess->sqlReadList(INSTANCE_TABLE_NAME, INSTANCE_NAME_COL_ID);
+            instanceNameList = sqlAccess->sqlReadList(TEMPLATE_TABLE_NAME, TEMPLATE_NAME_COL_ID);
             DataExtractor().executeInstanceExtractor(instanceNameList, sqlAccess);
         }
         sleep(DB_POLL_THREAD_SLEEP_TIMER);

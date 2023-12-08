@@ -27,7 +27,7 @@ std::string* DataExtractor::getFileData(std::string fileName, bool isInstance)
     std::string dataDirectoryPath;
     
     if(isInstance)
-        dataDirectoryPath = HOME_DIR + INSTANCE_FILE_DATA_DIR + fileName;
+        dataDirectoryPath = HOME_DIR + TEMPLATE_FILE_DATA_DIR + fileName;
     else
         dataDirectoryPath = HOME_DIR + USER_FILE_DATA_DIR + fileName;
 
@@ -58,18 +58,18 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAc
             continue;
         }
         
-        std::string csvFileNameQuery = "SELECT " + INSTANCE_FILE_COL_ID + " FROM " + INSTANCE_TABLE_NAME + " WHERE "
-                        + INSTANCE_NAME_COL_ID + "='"+ curInstanceName +"';";
-        std::string csvFileName = sqlAccess->sqlQueryDb(csvFileNameQuery, INSTANCE_FILE_COL_ID);
+        std::string csvFileNameQuery = "SELECT " + TEMPLATE_FILE_COL_ID + " FROM " + TEMPLATE_TABLE_NAME + " WHERE "
+                        + TEMPLATE_NAME_COL_ID + "='"+ curInstanceName +"';";
+        std::string csvFileName = sqlAccess->sqlQueryDb(csvFileNameQuery, TEMPLATE_FILE_COL_ID);
         resultData = getFileData(csvFileName, true);
         if(!resultData){
-            Log().error(__func__, "fetching ", csvFileName, " failed for ", curInstanceName, " in ", INSTANCE_TABLE_NAME);
+            Log().error(__func__, "fetching ", csvFileName, " failed for ", curInstanceName, " in ", TEMPLATE_TABLE_NAME);
             continue;
         }
 
-        std::string algoTypeQuery = "SELECT " + INSTANCE_ALGO_COL_ID + " FROM " + INSTANCE_TABLE_NAME + " WHERE "
-                        + INSTANCE_NAME_COL_ID + "='"+ curInstanceName +"';";
-        std::uint8_t algoType = sqlAccess->sqlQueryDbGetInt(algoTypeQuery, INSTANCE_ALGO_COL_ID);
+        std::string algoTypeQuery = "SELECT " + TEMPLATE_ALGO_COL_ID + " FROM " + TEMPLATE_TABLE_NAME + " WHERE "
+                        + TEMPLATE_NAME_COL_ID + "='"+ curInstanceName +"';";
+        std::uint8_t algoType = sqlAccess->sqlQueryDbGetInt(algoTypeQuery, TEMPLATE_ALGO_COL_ID);
         instanceStruct = UserDataTemplateStruct(curInstanceName, algoType, resultData);
         instanceList.push_back(instanceStruct);
     }
