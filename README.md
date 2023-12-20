@@ -15,13 +15,20 @@ for any changes done by the WebApp aka User. Server takes the data added by user
    - For User data it registers this data to be processed in the registry and starts tracking this data via registry and pushes it into sender sink.
    - For template data the a new template struct is constructed and added into list and `globalUserDataTemplateRegistry` is updated.
  - Step 3:
-    - The scheduler picks up User data from the sink and does worker best match and queues it against the choosen worker.
+    - The Worker scheduler picks up User data from the sink and does worker best match and queues it against the choosen worker.
     - If it was template data then all workers connected are updated with this new information.
   - Step 4:
-     - When the worker reconnects it is sent this queued data and the registry is updated and timer is set.
-     - If worker acknowledges within timeout the registry is updated into next status or its resent.
+     - When the worker reconnects it is sent this queued data and the registry status for the corrosponding data is updated and timer is set.
+     - If worker acknowledges within timeout the registry status is updated into next status or data is re-sent to worker.
   - Step 5:
      - When worker sends the result of user data the user data result packet is queued initially in Receiver sink.
+  - Step 6:
      - The Packet processor then preprocesses/validates the packet.
      - The information is extracted and Registry is updated into final state and discarded once done.
+  - Step 7:
      - The WebApp database is updated with result.
+     - Registry for that data entry is flushed.
+
+- The server has a task scheduler that handles all the tasks above.
+- Sinks are used for In/Out data.
+- At the moment there can only be one instance of server later there will be support for more instances.
