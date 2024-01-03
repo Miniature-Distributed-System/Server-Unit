@@ -19,6 +19,12 @@ TaskPriority getTaskPriority(int priority)
     }
 }
 
+/*
+  getFileData: This Method fetches the data blob from the file as is for the provided filename.
+  The fileName has full name with extension. The isInstance specifies if its a Template data or 
+  User data as they are stored seperately in different directories. If file is not found then
+  the Error is logged and returns NULL string.
+*/
 std::string* DataExtractor::getFileData(std::string fileName, bool isInstance)
 {
     std::string *resultData, extractedData;
@@ -44,6 +50,16 @@ std::string* DataExtractor::getFileData(std::string fileName, bool isInstance)
     return NULL;
 }
 
+/*
+  executeInstanceExtractor: It extracts the Template table data for the given list of Template Names.
+  The Template/Rule names serves as Primary key using which we can pull the Template Data associated 
+  with it. The Monitor gives a list of added/modified Rules and it pulls all data for all these names.
+  The Sql Access is used to access the SQL Server Database and access the data.
+  If in any case record for the Name supplied doesnt exist the error is logged and continues with rest
+  of the names.
+  UserDataTemplateStruct DS is created for the pulled data and queued into InstanceList.
+  UserDataTemplateRegistry is updated and Upper layers handle the rest.
+*/
 int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAccess *sqlAccess)
 {
     UserDataTemplateStruct instanceStruct;
@@ -78,6 +94,17 @@ int DataExtractor::executeInstanceExtractor(std::list<std::string> idList, SqlAc
     return globalUserDataTemplateRegistry.update(instanceList);
 }
 
+/*
+  executeUserTableExtractor: It extracts the User Data table data for the given list of User Data Names.
+  The User Data names serves as Primary key using which we can pull the User Data associated with it. 
+  The Monitor gives a list of added/modified User data and it pulls all data for all these names. These 
+  user data are data that needs processing using the associated rules and algorithm. The Sql Access is 
+  used to access the SQL Server Database and access the data. If in any case record for the Name supplied 
+  doesnt exist the error is logged and continues with rest of the names.
+  
+  UserDataTable DS is created for the pulled data and queued into SenderSink.
+  OutgoingDataRegistry is updated and Upper layers handle the rest.
+*/
 int DataExtractor::executeUserTableExtractor(std::list<std::string> userTableNameList, SqlAccess *sqlAccess)
 {
     std::string csvFileNameQuery;
