@@ -10,6 +10,13 @@ UserDataTemplate::UserDataTemplate()
     dataUpdated.initFlag();
 }
 
+/*
+  update: This adds the UserDataTemplateStruct DS to the list
+  The method goes through all structs and compares if a instance of this already exists
+  then the don't add that entry else add the entry. itemPresent flag is set if it already
+  exists in the list which causes the DS to be skipped.
+  It generates the json for the data in DS. This data is exported to worker
+*/
 int UserDataTemplate::update(std::list<UserDataTemplateStruct> templateStruct)
 {
     Flag itemPresent;
@@ -71,11 +78,17 @@ int UserDataTemplate::update(std::list<UserDataTemplateStruct> templateStruct)
     return 0;
 }
 
+/*
+  get: This fetches the copy of user DataTemplateList
+*/
 std::list<UserDataTemplateStruct> UserDataTemplate::get()
 {
     return uDataTemplateList;
 }
 
+/*
+  toJson: Takes each entry of list and converts them into json and returns a json list
+*/
 std::list<json> UserDataTemplate::toJson()
 {
     std::list<json> outJsonList;
@@ -84,16 +97,28 @@ std::list<json> UserDataTemplate::toJson()
     return outJsonList;
 }
 
+/*
+  resetFlag: It resets the data updated flag which tells if list was recently updated or not
+*/
 void UserDataTemplate::resetFlag()
 {
     dataUpdated.resetFlag();
 }
 
+/*
+  resetFlag: It gets the data updated flag which tells if list was recently updated or not
+*/
 bool UserDataTemplate::getUpdateStatus()
 {
     return dataUpdated.isFlagSet();
 }
 
+/*
+  isMatchingFound: Is used to check if the template ID exists in the list already.
+  Usually used at the fringes where the packets are verfied to see if what worker
+  sent is valid or not aka the result it gave isnt duplicate or data associated with
+  it is no more present. This prevents us from doing any invalid access.
+*/
 bool UserDataTemplate::isMatchingFound(std::string templateId)
 {
     sem_wait(&uDataTemplateListLock);
