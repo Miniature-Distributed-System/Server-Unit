@@ -10,6 +10,14 @@
 #include "sql_access.hpp"
 #include "monitor.hpp"
 
+/*
+  monitorUserTable: monitors the SQL Server Database for any newly added User data records.
+  It uses the inital timestamp as 2022-05-01 00:00:00 and checks any new data after that. if
+  new data found then latest timestamp is updated. It extracts the user data table record 
+  names that have been added. It calls the User data extractors to do further extraction and
+  triggering next stages. It sleeps after every poll SQL Server can get overwhelmed 
+  especially when there are two monitors working on a low end system.
+*/
 void *monitorUserTable(void *data)
 {
     //TO-DO
